@@ -1,6 +1,7 @@
 package com.charmroom.charmroom.entity.embid;
 
 import java.io.Serializable;
+
 import jakarta.persistence.Embeddable;
 import lombok.Getter;
 
