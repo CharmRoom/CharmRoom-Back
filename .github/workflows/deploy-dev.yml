@@ -37,7 +37,7 @@ jobs:
           port: ${{ secrets.DEV_PORT }}
           username: ${{ secrets.DEV_USERNAME }}
           key: ${{ secrets.DEV_PRIVATE_KEY }}
-          scripts: |
+          script: |
             ls -al
           
           
