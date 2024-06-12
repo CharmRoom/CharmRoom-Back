@@ -1,10 +1,13 @@
 package com.charmroom.charmroom.entity;
 
+import java.util.List;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -33,4 +36,7 @@ public class Club {
 
     @OneToOne
     private Image image;
+    
+    @OneToMany(mappedBy = "club")
+    private List<User> userList;
 }
