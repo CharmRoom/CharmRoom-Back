@@ -28,6 +28,11 @@ jobs:
         java-version: '21'
         distribution: 'temurin'
 
+    - name: Set application.properties
+      run: |
+        mkdir -p src/main/resources
+        echo "${{ secrets.APPLICATION_PROPERTIES }}" > src/main/resources/application.properties
+        
     # Configure Gradle for optimal use in GitHub Actions, including caching of downloaded dependencies.
     # See: https://github.com/gradle/actions/blob/main/setup-gradle/README.md
     - name: Setup Gradle
