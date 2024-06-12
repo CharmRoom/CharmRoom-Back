@@ -36,7 +36,7 @@ public class User {
 	private Boolean withdraw;
 	
 	@Enumerated(EnumType.STRING)
-	private Level level;
+	private UserLevel level;
 	
 	@OneToOne
 	private Image image;

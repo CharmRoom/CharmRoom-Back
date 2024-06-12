@@ -1,6 +1,6 @@
 package com.charmroom.charmroom.entity;
 
-public enum Level {
+public enum UserLevel {
 	BASIC, ADMIN;
 	
 }
