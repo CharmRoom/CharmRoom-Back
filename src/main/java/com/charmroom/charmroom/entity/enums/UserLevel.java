@@ -1,4 +1,4 @@
-package com.charmroom.charmroom.entity;
+package com.charmroom.charmroom.entity.enums;
 
 public enum UserLevel {
 	BASIC, ADMIN;

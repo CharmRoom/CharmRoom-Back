@@ -2,6 +2,8 @@ package com.charmroom.charmroom.entity;
 
 import org.hibernate.annotations.ColumnDefault;
 
+import com.charmroom.charmroom.entity.enums.BoardType;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

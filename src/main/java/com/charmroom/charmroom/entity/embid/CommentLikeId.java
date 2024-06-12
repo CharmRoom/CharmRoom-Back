@@ -1,4 +1,4 @@
-package com.charmroom.charmroom.entity;
+package com.charmroom.charmroom.entity.embid;
 
 import java.io.Serializable;
 

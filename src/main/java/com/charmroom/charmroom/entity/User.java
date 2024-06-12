@@ -1,5 +1,7 @@
 package com.charmroom.charmroom.entity;
 
+import com.charmroom.charmroom.entity.enums.UserLevel;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

@@ -1,5 +1,7 @@
 package com.charmroom.charmroom.entity;
 
+import com.charmroom.charmroom.entity.embid.SubscribeId;
+
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.MapsId;
