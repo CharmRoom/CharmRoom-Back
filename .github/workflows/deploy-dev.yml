@@ -49,7 +49,6 @@ jobs:
           password: ${{ secrets.DEV_PRIVATE_KEY }}
           source: "deploy.sh"
           target: "~/cicd"
-          strip_components: 2
       - name: Run deploy script
         uses: appleboy/ssh-action@master
         with:
