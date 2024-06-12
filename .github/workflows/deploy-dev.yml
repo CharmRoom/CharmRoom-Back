@@ -36,7 +36,7 @@ jobs:
           host: ${{ secrets.DEV_HOST }}
           port: ${{ secrets.DEV_PORT }}
           username: ${{ secrets.DEV_USERNAME }}
-          key: ${{ secrets.DEV_PRIVATE_KEY }}
+          password: ${{ secrets.DEV_PRIVATE_KEY }}
           script: |
             ls -al
           
