@@ -30,7 +30,7 @@ jobs:
         uses: gradle/actions/setup-gradle@417ae3ccd767c252f5661f1ace9f835f9654f2b5 # v3.1.0
       - name: Build with Gradle Wrapper
         run: ./gradlew build
-      - name: SCP jar file
+      - name: SCP JAR
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.DEV_HOST }}
@@ -39,7 +39,17 @@ jobs:
           password: ${{ secrets.DEV_PRIVATE_KEY }}
           source: "./build/libs/*.jar"
           target: "~/cicd"
-          strip-components: 2
+          strip_components: 2
+      - name: SCP Deploy script
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.DEV_HOST }}
+          port: ${{ secrets.DEV_PORT }}
+          username: ${{ secrets.DEV_USERNAME }}
+          password: ${{ secrets.DEV_PRIVATE_KEY }}
+          source: "deploy.sh"
+          target: "~/cicd"
+          strip_components: 2
       - name: Run deploy script
         uses: appleboy/ssh-action@master
         with:
@@ -48,9 +58,8 @@ jobs:
           username: ${{ secrets.DEV_USERNAME }}
           password: ${{ secrets.DEV_PRIVATE_KEY }}
           script: |
-            echo "${{ secrets.DEPLOY_SH }}" > ~/cicd/deploy.sh
             chmod +x ~/cicd/deploy.sh
-            sh ~/cicd/deploy.sh
+            ~/cicd/deploy.sh
             
           
           

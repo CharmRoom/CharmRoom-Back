@@ -39,4 +39,3 @@ out/
 ### Credentials ###
 /src/main/resources/*.properties
 /src/main/resources/*.yml
-/deploy.sh
