@@ -8,8 +8,7 @@ else
 	sleep 3
 fi
 
-JAR_PATH="~/cicd/*.jar"
-chmod +x $JAR_PATH
-nohup java -jar $JAR_PATH > /dev/null 2> /dev/null < /dev/null &
+chmod +x ~/cicd/*.jar
+nohup java -jar ~/cicd/*.jar > /dev/null 2> /dev/null < /dev/null &
 echo "Deploy Successfully Finished!!!"
 
