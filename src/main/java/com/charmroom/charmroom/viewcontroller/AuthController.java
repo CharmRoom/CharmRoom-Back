@@ -17,12 +17,12 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/auth")
 public class AuthController {
 	private final UserService userService;
-	
+
 	@GetMapping("/signup")
 	public String signup(SignupForm signupForm) {
 		return "signup_form";
 	}
-	
+
 	@PostMapping("/signup")
 	public String signup(@Valid SignupForm signupForm, BindingResult bindingResult) {
 		if (bindingResult.hasErrors()) {
@@ -33,10 +33,16 @@ public class AuthController {
 					"패스워드 확인이 일치하지 않습니다.");
 			return "signup_form";
 		}
-		
-		userService.create(signupForm.getId(), signupForm.getEmail(), 
+
+		userService.create(signupForm.getId(), signupForm.getEmail(),
 				signupForm.getNickname(), signupForm.getPassword());
-		
+
 		return "redirect:/";
 	}
+
+	@GetMapping("/login")
+	public String login() {
+		return "login_form";
+	}
+
 }
