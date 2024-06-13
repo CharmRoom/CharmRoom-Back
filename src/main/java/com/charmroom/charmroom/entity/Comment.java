@@ -32,6 +32,9 @@ public class Comment {
 	@ManyToOne
 	private User user;
 	
+	@ManyToOne
+	private Article article;
+	
 	@Column(columnDefinition = "TEXT")
 	private String body;
 	

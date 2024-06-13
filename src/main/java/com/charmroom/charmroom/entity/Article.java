@@ -51,5 +51,9 @@ public class Article {
     private Integer view;
     
     @OneToMany(mappedBy = "article")
+    private List<Comment> commentList;
+    
+    @OneToMany(mappedBy = "article")
     private List<Attachment> attachmentList;
+    
 }
