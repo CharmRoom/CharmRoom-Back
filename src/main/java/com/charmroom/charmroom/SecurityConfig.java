@@ -19,7 +19,7 @@ public class SecurityConfig {
 		http.
 				authorizeHttpRequests((authorizeHttpRequests) -> authorizeHttpRequests
 						.requestMatchers(new AntPathRequestMatcher("/**")).permitAll())
-				.formLogin((formLogin) -> formLogin.loginPage("/auth/login")
+				.formLogin((formLogin) -> formLogin.usernameParameter("id").loginPage("/auth/login")
 						.defaultSuccessUrl("/"))
 		;
 		return http.build();
