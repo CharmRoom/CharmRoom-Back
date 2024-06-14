@@ -2,8 +2,6 @@ package com.charmroom.charmroom.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.List;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -100,8 +98,7 @@ class ImageRepositoryUnitTest {
 	class DeleteTest {
 		@Test
 		public void success() {
-			// given
-			Image savedImage = imageRepository.save(image);
+			imageRepository.save(image);
 			
 			// when
 			imageRepository.delete(image);

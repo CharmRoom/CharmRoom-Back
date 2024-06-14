@@ -34,15 +34,41 @@ public class User {
 	@Column(length = 255, nullable = false)
 	private String password;
 	
+	@Builder.Default
 	@Column(nullable = false)
-	private Boolean withdraw;
+	private Boolean withdraw = false;
 	
+	@Builder.Default
 	@Enumerated(EnumType.STRING)
-	private UserLevel level;
+	private UserLevel level = UserLevel.BASIC;
 	
 	@OneToOne
 	private Image image;
 	
 	@ManyToOne
 	private Club club;
+	
+	public void updateNickname(String nickname) {
+		this.nickname = nickname;
+	}
+	
+	public void updatePassword(String encryptedPassword) {
+		this.password = encryptedPassword;
+	}
+	
+	public void updateWithdraw(Boolean withdraw) {
+		this.withdraw = withdraw;
+	}
+	
+	public void updateLevel(UserLevel level) {
+		this.level = level;
+	}
+	
+	public void updateImage(Image image) {
+		this.image = image;
+	}
+	
+	public void updateClub(Club club) {
+		this.club = club;
+	}
 }
