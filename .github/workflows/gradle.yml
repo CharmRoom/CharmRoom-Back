@@ -25,11 +25,15 @@ jobs:
         java-version: '21'
         distribution: 'temurin'
 
-    - name: Set application.properties
+    - name: Set application.yml
       run: |
         mkdir -p src/main/resources
         echo "${{ secrets.APPLICATION_YML }}" > src/main/resources/application.yml
         
+    - name: Set application-test.yml
+      run: |
+        mkdir -p src/test/resources
+        echo "${{ secrets.APPLICATION_TEST_YML }}" > src/test/resources/application-test.yml
     # Configure Gradle for optimal use in GitHub Actions, including caching of downloaded dependencies.
     # See: https://github.com/gradle/actions/blob/main/setup-gradle/README.md
     - name: Setup Gradle
