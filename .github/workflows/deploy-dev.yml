@@ -22,10 +22,10 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-      - name: Set application.properties
+      - name: Set application.yml
         run: |
           mkdir -p src/main/resources
-          echo "${{ secrets.DEV_APPLICATION_PROPERTIES }}" > src/main/resources/application.properties
+          echo "${{ secrets.DEV_APPLICATION_YML }}" > src/main/resources/application.yml
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@417ae3ccd767c252f5661f1ace9f835f9654f2b5 # v3.1.0
       - name: Build with Gradle Wrapper
