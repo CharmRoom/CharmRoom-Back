@@ -16,7 +16,7 @@ import com.charmroom.charmroom.entity.enums.BoardType;
 @DataJpaTest
 @TestPropertySource(properties = {"spring.config.location = classpath:application-test.yml"})
 @AutoConfigureTestDatabase(replace=AutoConfigureTestDatabase.Replace.NONE)
-@DisplayName("Image Repository 단위 테스트")
+@DisplayName("Board Repository 단위 테스트")
 public class BoardRepositoryUnitTest {
 	@Autowired
 	private BoardRepository boardRepository;
