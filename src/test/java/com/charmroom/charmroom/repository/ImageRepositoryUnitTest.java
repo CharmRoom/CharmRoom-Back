@@ -16,7 +16,7 @@ import com.charmroom.charmroom.entity.Image;
 @TestPropertySource(properties = {"spring.config.location = classpath:application-test.yml"})
 @AutoConfigureTestDatabase(replace=AutoConfigureTestDatabase.Replace.NONE)
 @DisplayName("Image Repository 단위 테스트")
-class ImageRepositoryUnitTest {
+public class ImageRepositoryUnitTest {
 	
 	@Autowired
 	private ImageRepository imageRepository;
@@ -109,7 +109,4 @@ class ImageRepositoryUnitTest {
 			assertThat(imageList).isEmpty();
 		}
 	}
-	
-	
-	
 }

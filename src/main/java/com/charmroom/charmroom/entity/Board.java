@@ -1,7 +1,5 @@
 package com.charmroom.charmroom.entity;
 
-import org.hibernate.annotations.ColumnDefault;
-
 import com.charmroom.charmroom.entity.enums.BoardType;
 
 import jakarta.persistence.Column;
@@ -31,6 +29,14 @@ public class Board {
 	private BoardType type;
 	
 	@Column(nullable = false)
-	@ColumnDefault(value = "false")
-	private Boolean exposed;
+	@Builder.Default
+	private Boolean exposed = false;
+	
+	public void updateType(BoardType type) {
+		this.type = type;
+	}
+	
+	public void updateExposed(Boolean exposed) {
+		this.exposed = exposed;
+	}
 }
