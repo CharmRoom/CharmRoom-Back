@@ -46,4 +46,8 @@ public class Comment {
 	
 	@OneToMany(mappedBy="comment")
 	private List<CommentLike> commentLike;
+	
+	public void updateBody(String body) {
+		this.body = body;
+	}
 }
