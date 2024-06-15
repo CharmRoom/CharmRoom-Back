@@ -15,6 +15,7 @@ import com.charmroom.charmroom.entity.Article;
 import com.charmroom.charmroom.entity.Board;
 import com.charmroom.charmroom.entity.Club;
 import com.charmroom.charmroom.entity.Comment;
+import com.charmroom.charmroom.entity.CommentLike;
 import com.charmroom.charmroom.entity.Image;
 import com.charmroom.charmroom.entity.User;
 import com.charmroom.charmroom.entity.enums.BoardType;
@@ -23,7 +24,9 @@ import com.charmroom.charmroom.entity.enums.BoardType;
 @TestPropertySource(properties = { "spring.config.location = classpath:application-test.yml" })
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DisplayName("Comment Repository 단위 테스트")
-public class CommentRepositoryUnitTest {
+public class CommentLikeRepositoryUnitTest {
+	@Autowired
+	private CommentLikeRepository commentLikeRepository;
 	@Autowired
 	private CommentRepository commentRepository;
 	@Autowired
@@ -38,8 +41,8 @@ public class CommentRepositoryUnitTest {
 	private BoardRepository boardRepository;
 
 	private User user;
-	private Article article;
 	private Comment comment;
+	private CommentLike commentLike;
 
 	private Image buildImage() {
 		return Image.builder().path("/example/example").build();
@@ -76,32 +79,40 @@ public class CommentRepositoryUnitTest {
 		return Article.builder().user(user).board(board).title("title").body("body").build();
 	}
 
-	private Comment buildComment(User user, Article article) {
-		return Comment.builder()
+	private Comment buildComment() {
+		User user = buildUser();
+		userRepository.save(user);
+		Article article = buildArticle();
+		articleRepository.save(article);
+		return Comment.builder().user(user).article(article).body("contents").build();
+	}
+
+	private CommentLike buildCommentLike(User user, Comment comment) {
+		return CommentLike.builder()
 				.user(user)
-				.article(article)
-				.body("contents").build();
+				.comment(comment)
+				.type(true).build();
 	}
 
 	@BeforeEach
 	void setup() {
 		user = buildUser();
 		userRepository.save(user);
-		article = buildArticle();
-		articleRepository.save(article);
-		comment = buildComment(user, article);
+		comment = buildComment();
+		commentRepository.save(comment);
+		commentLike = buildCommentLike(user, comment);
 	}
-
+	
 	@Nested
 	class Create {
 		@Test
 		public void success() {
 			// given
 			// when
-			Comment saved = commentRepository.save(comment);
+			CommentLike saved = commentLikeRepository.save(commentLike);
 			// then
 			assertThat(saved).isNotNull();
-			assertThat(saved).isEqualTo(comment);
+			assertThat(saved.getId()).isEqualTo(commentLike.getId());
 		}
 	}
 
@@ -110,10 +121,10 @@ public class CommentRepositoryUnitTest {
 		@Test
 		public void success() {
 			// given
-			Comment saved = commentRepository.save(comment);
+			CommentLike saved = commentLikeRepository.save(commentLike);
 
 			// when
-			var found = commentRepository.findById(comment.getId());
+			var found = commentLikeRepository.findByUserAndComment(user, comment);
 			// then
 			assertThat(found).isPresent();
 			assertThat(found).get().isEqualTo(saved);
@@ -122,29 +133,15 @@ public class CommentRepositoryUnitTest {
 		@Test
 		public void fail() {
 			// given
-			commentRepository.save(comment);
-
+			commentLikeRepository.save(commentLike);
+			
 			// when
-			var found = commentRepository.findById(12345);
+			Comment tmp = Comment.builder().build();
+			commentRepository.save(tmp);
+			var found = commentLikeRepository.findByUserAndComment(user, tmp);
 
 			// then
 			assertThat(found).isNotPresent();
-		}
-	}
-
-	@Nested
-	class Update {
-		@Test
-		public void success() {
-			// given
-			Comment saved = commentRepository.save(comment);
-
-			// when
-			saved.updateBody("New contents");
-			// then
-			var found = commentRepository.findById(comment.getId()).get();
-			assertThat(found).isNotNull();
-			assertThat(found.getBody()).isEqualTo("New contents");
 		}
 	}
 
@@ -153,13 +150,13 @@ public class CommentRepositoryUnitTest {
 		@Test
 		public void success() {
 			// given
-			Comment saved = commentRepository.save(comment);
+			CommentLike saved = commentLikeRepository.save(commentLike);
 
 			// when
-			commentRepository.delete(saved);
+			commentLikeRepository.delete(saved);
 
 			// then
-			var found = commentRepository.findAll();
+			var found = commentLikeRepository.findAll();
 			assertThat(found).isNotNull();
 			assertThat(found).isEmpty();
 		}
