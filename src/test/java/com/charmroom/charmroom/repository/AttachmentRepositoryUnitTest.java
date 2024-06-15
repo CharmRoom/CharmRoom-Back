@@ -12,23 +12,21 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.TestPropertySource;
 
 import com.charmroom.charmroom.entity.Article;
+import com.charmroom.charmroom.entity.Attachment;
 import com.charmroom.charmroom.entity.Board;
 import com.charmroom.charmroom.entity.Club;
-import com.charmroom.charmroom.entity.Comment;
-import com.charmroom.charmroom.entity.CommentLike;
 import com.charmroom.charmroom.entity.Image;
 import com.charmroom.charmroom.entity.User;
+import com.charmroom.charmroom.entity.enums.AttachmentType;
 import com.charmroom.charmroom.entity.enums.BoardType;
 
 @DataJpaTest
 @TestPropertySource(properties = { "spring.config.location = classpath:application-test.yml" })
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@DisplayName("CommentLike Repository 단위 테스트")
-public class CommentLikeRepositoryUnitTest {
+@DisplayName("Attachment Repository 단위 테스트")
+public class AttachmentRepositoryUnitTest {
 	@Autowired
-	private CommentLikeRepository commentLikeRepository;
-	@Autowired
-	private CommentRepository commentRepository;
+	private AttachmentRepository attachmentRepository;
 	@Autowired
 	private UserRepository userRepository;
 	@Autowired
@@ -39,11 +37,10 @@ public class CommentLikeRepositoryUnitTest {
 	private ClubRepository clubRepository;
 	@Autowired
 	private BoardRepository boardRepository;
-
-	private User user;
-	private Comment comment;
-	private CommentLike commentLike;
-
+	
+	private Article article;
+	private Attachment attachment;
+	
 	private Image buildImage() {
 		return Image.builder().path("/example/example").build();
 	}
@@ -78,29 +75,20 @@ public class CommentLikeRepositoryUnitTest {
 
 		return Article.builder().user(user).board(board).title("title").body("body").build();
 	}
-
-	private Comment buildComment() {
-		User user = buildUser();
-		userRepository.save(user);
-		Article article = buildArticle();
-		articleRepository.save(article);
-		return Comment.builder().user(user).article(article).body("contents").build();
+	
+	private Attachment buildAttachment(Article article) {
+		return Attachment.builder()
+				.article(article)
+				.path("/example/path")
+				.type(AttachmentType.IMAGE)
+				.build();
 	}
-
-	private CommentLike buildCommentLike(User user, Comment comment) {
-		return CommentLike.builder()
-				.user(user)
-				.comment(comment)
-				.type(true).build();
-	}
-
+	
 	@BeforeEach
 	void setup() {
-		user = buildUser();
-		userRepository.save(user);
-		comment = buildComment();
-		commentRepository.save(comment);
-		commentLike = buildCommentLike(user, comment);
+		article = buildArticle();
+		articleRepository.save(article);
+		attachment = buildAttachment(article);
 	}
 	
 	@Nested
@@ -109,10 +97,10 @@ public class CommentLikeRepositoryUnitTest {
 		public void success() {
 			// given
 			// when
-			CommentLike saved = commentLikeRepository.save(commentLike);
+			Attachment saved = attachmentRepository.save(attachment);
 			// then
 			assertThat(saved).isNotNull();
-			assertThat(saved.getId()).isEqualTo(commentLike.getId());
+			assertThat(saved).isEqualTo(attachment);
 		}
 	}
 
@@ -121,10 +109,10 @@ public class CommentLikeRepositoryUnitTest {
 		@Test
 		public void success() {
 			// given
-			CommentLike saved = commentLikeRepository.save(commentLike);
+			Attachment saved = attachmentRepository.save(attachment);
 
 			// when
-			var found = commentLikeRepository.findByUserAndComment(user, comment);
+			var found = attachmentRepository.findById(attachment.getId());
 			// then
 			assertThat(found).isPresent();
 			assertThat(found).get().isEqualTo(saved);
@@ -133,12 +121,10 @@ public class CommentLikeRepositoryUnitTest {
 		@Test
 		public void fail() {
 			// given
-			commentLikeRepository.save(commentLike);
-			
+			attachmentRepository.save(attachment);
+
 			// when
-			Comment tmp = Comment.builder().build();
-			commentRepository.save(tmp);
-			var found = commentLikeRepository.findByUserAndComment(user, tmp);
+			var found = attachmentRepository.findById(12345);
 
 			// then
 			assertThat(found).isNotPresent();
@@ -150,13 +136,13 @@ public class CommentLikeRepositoryUnitTest {
 		@Test
 		public void success() {
 			// given
-			CommentLike saved = commentLikeRepository.save(commentLike);
+			Attachment saved = attachmentRepository.save(attachment);
 
 			// when
-			commentLikeRepository.delete(saved);
+			attachmentRepository.delete(saved);
 
 			// then
-			var found = commentLikeRepository.findAll();
+			var found = attachmentRepository.findAll();
 			assertThat(found).isNotNull();
 			assertThat(found).isEmpty();
 		}
