@@ -162,9 +162,9 @@ public class UserRepositoryUnitTest {
 			
 			// when
 			userRepository.delete(user);
-			var userList = userRepository.findAll();
 			
 			// then
+			var userList = userRepository.findAll();
 			assertThat(userList).isNotNull();
 			assertThat(userList).isEmpty();
 		}

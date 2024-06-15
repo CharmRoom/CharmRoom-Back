@@ -6,13 +6,14 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import com.charmroom.charmroom.entity.enums.PointType;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,7 +30,7 @@ public class Point {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	
-	@OneToOne
+	@ManyToOne
 	private User user;
 	
 	@CreationTimestamp
@@ -37,4 +38,8 @@ public class Point {
 	
 	@Enumerated(EnumType.STRING)
 	private PointType type;
+	
+	@Column(nullable = false)
+	@Builder.Default
+	private Integer diff = 0;
 }
