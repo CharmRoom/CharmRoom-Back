@@ -30,7 +30,7 @@ public class Attachment {
 	private Article article;
 	
 	@Enumerated(EnumType.STRING)
-	private AttachmentType state;
+	private AttachmentType type;
 	
 	@Column(length = 512)
 	private String path;

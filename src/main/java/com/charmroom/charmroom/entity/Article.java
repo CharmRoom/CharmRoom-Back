@@ -48,7 +48,8 @@ public class Article {
     private LocalDateTime updatedAt;
 
     @Column(nullable = false)
-    private Integer view;
+    @Builder.Default
+    private Integer view = 0;
     
     @OneToMany(mappedBy = "article")
     private List<Comment> commentList;

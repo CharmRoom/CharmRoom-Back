@@ -7,7 +7,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,8 +15,8 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @Builder
-@AllArgsConstructor
 public class CommentLike {
+
 	@EmbeddedId
 	private CommentLikeId id;
 	
@@ -29,5 +28,13 @@ public class CommentLike {
 	@ManyToOne
 	private Comment comment;
 	
-	private Boolean type;
+	@Builder.Default
+	private Boolean type = true;
+	
+	public CommentLike(CommentLikeId id, User user, Comment comment, Boolean type) {
+		this.id = new CommentLikeId(user.getId(), comment.getId());
+		this.user = user;
+		this.comment = comment;
+		this.type = type;
+	}
 }
