@@ -9,6 +9,6 @@ public enum UserLevel {
 	UserLevel(String value) {
 		this.value = value;
 	}
-
+	
 	private String value;
 }

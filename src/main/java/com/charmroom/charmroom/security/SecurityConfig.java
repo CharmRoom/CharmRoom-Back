@@ -43,6 +43,9 @@ public class SecurityConfig {
 				.anyRequest().authenticated()
 				);
 		
+		// JWTFilter 등록
+		http.addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
+		
 		// 로그인 필터 추가
 		LoginFilter loginFilter = new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil);
 		loginFilter.setFilterProcessesUrl("/api/auth/login"); // POST
