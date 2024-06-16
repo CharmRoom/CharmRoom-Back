@@ -40,4 +40,24 @@ public class Ad {
 
     @OneToOne
     private Image image;
+
+    public void updateTitle(String title) {
+        this.title = title;
+    }
+
+    public void updateStart(LocalDateTime start) {
+        this.start = start;
+    }
+
+    public void updateEnd(LocalDateTime end) {
+        this.end = end;
+    }
+
+    public void updateLink(String link) {
+        this.link = link;
+    }
+
+    public void updateImage(Image image) {
+        this.image = image;
+    }
 }
