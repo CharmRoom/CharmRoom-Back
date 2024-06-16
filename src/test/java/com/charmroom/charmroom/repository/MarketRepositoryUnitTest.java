@@ -105,6 +105,7 @@ public class MarketRepositoryUnitTest {
         @Test
         void fail_readMarketWithWrongId() {
             // given
+            marketRepository.save(market);
             Integer wrongMarketId = 999;
             // when
             Optional<Market> found = marketRepository.findById(wrongMarketId);
