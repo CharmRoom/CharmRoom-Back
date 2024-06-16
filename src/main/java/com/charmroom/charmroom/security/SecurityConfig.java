@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 public class SecurityConfig {
 	
 	private final AuthenticationConfiguration authenticationConfiguration;
+	private final JWTUtil jwtUtil;
 	
 	@Bean
 	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -37,14 +38,16 @@ public class SecurityConfig {
 		http.authorizeHttpRequests((authorizeHttpRequests) -> authorizeHttpRequests
 				// API permit list
 				.requestMatchers("/api/auth/login", "/api/auth/signup").permitAll()
-				.requestMatchers("/", "/auth/login", "/auth/signup").permitAll()
-				.requestMatchers("/api/admin/**").hasRole("ADMIN")
+				.requestMatchers("/", "/login", "/auth/login", "/auth/signup").permitAll()
+				.requestMatchers("/api/admin/**").hasAnyAuthority("ROLE_ADMIN")
 				.anyRequest().authenticated()
 				);
 		
 		// 로그인 필터 추가
+		LoginFilter loginFilter = new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil);
+		loginFilter.setFilterProcessesUrl("/api/auth/login"); // POST
 		http.addFilterAt(
-				new LoginFilter(authenticationManager(authenticationConfiguration)),
+				loginFilter,
 				UsernamePasswordAuthenticationFilter.class);
 		
 		// 세션 설정

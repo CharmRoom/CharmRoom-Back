@@ -48,7 +48,7 @@ public class User {
 	
 	@Builder.Default
 	@Enumerated(EnumType.STRING)
-	private UserLevel level = UserLevel.BASIC;
+	private UserLevel level = UserLevel.ROLE_BASIC;
 	
 	@OneToOne
 	private Image image;
