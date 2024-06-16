@@ -37,4 +37,16 @@ public class Market {
 
     @Column(nullable = false)
     private String tag;
+
+    public void updatePrice(int price) {
+        this.price = price;
+    }
+
+    public void updateTag(String tag) {
+        this.tag = tag;
+    }
+
+    public void updateState(MarketArticleState enumType) {
+        this.state = enumType;
+    }
 }
