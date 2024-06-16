@@ -57,7 +57,7 @@ public class UserRepositoryUnitTest {
 		clubRepository.save(club);
 		
 		return User.builder()
-				.id("test")
+				.username("test")
 				.password("test")
 				.email("test@test.com")
 				.nickname("test")
@@ -109,7 +109,7 @@ public class UserRepositoryUnitTest {
 			userRepository.save(user);
 			
 			// when
-			var result = userRepository.findById("12345");
+			var result = userRepository.findById(12345);
 			
 			// then
 			assertThat(result).isNotPresent();

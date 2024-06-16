@@ -11,6 +11,6 @@ public class SubscribeId implements Serializable{
 
 	private static final long serialVersionUID = 20249614918670233L;
 	
-	private String subscriber;
-	private String target;
+	private Integer subscriber;
+	private Integer target;
 }

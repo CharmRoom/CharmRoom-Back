@@ -14,10 +14,9 @@ public class UserService {
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
 	
-	public User create(String id, String email, String nickname,
-			String password ) {
+	public User create(String id, String email, String nickname, String password ) {
 		User user = User.builder()
-				.id(id)
+				.username(id)
 				.email(email)
 				.nickname(nickname)
 				.password(passwordEncoder.encode(password))
