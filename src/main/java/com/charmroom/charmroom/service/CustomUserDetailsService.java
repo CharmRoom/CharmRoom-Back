@@ -23,7 +23,6 @@ public class CustomUserDetailsService implements UserDetailsService {
 		if (userByUsername.isEmpty()) {
 			throw new UsernameNotFoundException("Username Not Found: " + username);
 		}
-		User user = userByUsername.get();
 		return new CustomUserDetails(userByUsername.get());
 	}
 }
