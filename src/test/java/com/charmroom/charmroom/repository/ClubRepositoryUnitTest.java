@@ -31,7 +31,6 @@ public class ClubRepositoryUnitTest {
 
     private Club club;
     private Image image;
-    private User user;
 
     private Image createTestImage() {
         return Image.builder()

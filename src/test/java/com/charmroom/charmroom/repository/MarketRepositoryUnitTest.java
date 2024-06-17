@@ -92,7 +92,7 @@ public class MarketRepositoryUnitTest {
             Article article2 = createTestArticle("3");
             articleRepository.save(article2);
             Market saved1 = marketRepository.save(createTestMarket(article1));
-            Market saved2 = marketRepository.save(createTestMarket(article2));
+            marketRepository.save(createTestMarket(article2));
 
             // when
             List<Market> founds = marketRepository.findAll();
@@ -148,7 +148,7 @@ public class MarketRepositoryUnitTest {
             articleRepository.save(article3);
             Market saved1 = marketRepository.save(createTestMarket(article1));
             Market saved2 = marketRepository.save(createTestMarket(article2));
-            Market saved3 = marketRepository.save(createTestMarket(article3));
+            marketRepository.save(createTestMarket(article3));
 
             // when
             marketRepository.delete(saved1);

@@ -145,8 +145,8 @@ public class ArticleRepositoryUnitTest {
         void success() {
             // given
             Article article1 = articleRepository.save(createTestArticle("A"));
-            Article article2 = articleRepository.save(createTestArticle("B"));
-            Article article3 = articleRepository.save(createTestArticle("C"));
+            articleRepository.save(createTestArticle("B"));
+            articleRepository.save(createTestArticle("C"));
 
             // when
             articleRepository.delete(article1);

@@ -98,7 +98,7 @@ public class SubscribeRepositoryUnitTest {
         @Test
         void fail_ReadSubscribeWithDifferentTarget() {
             // given
-            Subscribe saved = subscribeRepository.save(subscribe);
+            subscribeRepository.save(subscribe);
             User different = User.builder()
                     .username("3")
                     .email("")

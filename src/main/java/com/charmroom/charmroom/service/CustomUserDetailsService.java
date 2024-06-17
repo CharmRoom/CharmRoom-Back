@@ -6,7 +6,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.charmroom.charmroom.dto.CustomUserDetails;
-import com.charmroom.charmroom.entity.User;
 import com.charmroom.charmroom.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
