@@ -7,7 +7,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,7 +15,6 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @Builder
-@AllArgsConstructor
 public class Wish {
     @EmbeddedId
     private WishId id;
@@ -29,5 +27,9 @@ public class Wish {
     @ManyToOne
     private Market market;
 
-
+    public Wish(WishId id, User user, Market market) {
+        this.id = new WishId(user.getId(), market.getId());
+        this.user = user;
+        this.market = market;
+    }
 }
