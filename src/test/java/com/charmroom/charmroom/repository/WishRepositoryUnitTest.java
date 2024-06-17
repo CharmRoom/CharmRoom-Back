@@ -1,6 +1,10 @@
 package com.charmroom.charmroom.repository;
 
-import com.charmroom.charmroom.entity.*;
+import com.charmroom.charmroom.entity.Wish;
+import com.charmroom.charmroom.entity.Board;
+import com.charmroom.charmroom.entity.User;
+import com.charmroom.charmroom.entity.Article;
+import com.charmroom.charmroom.entity.Market;
 import com.charmroom.charmroom.entity.enums.BoardType;
 import com.charmroom.charmroom.entity.enums.MarketArticleState;
 import org.junit.jupiter.api.BeforeEach;
