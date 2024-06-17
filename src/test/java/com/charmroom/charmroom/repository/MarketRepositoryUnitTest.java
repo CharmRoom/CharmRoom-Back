@@ -43,12 +43,12 @@ public class MarketRepositoryUnitTest {
         return Board.builder().type(BoardType.LIST).exposed(false).build();
     }
 
-    private User createTestUser() {
-        return User.builder().id("1").email("").nickname("").password("").withdraw(false).build();
+    private User createTestUser(String username) {
+        return User.builder().username(username).email("").nickname("").password("").withdraw(false).build();
     }
 
-    private Article createTestArticle() {
-        User user = createTestUser();
+    private Article createTestArticle(String username) {
+        User user = createTestUser(username);
         userRepository.save(user);
         Board board = createTestBoard();
         boardRepository.save(board);
@@ -61,7 +61,7 @@ public class MarketRepositoryUnitTest {
 
     @BeforeEach
     void setUp() {
-        article = createTestArticle();
+        article = createTestArticle("1");
         Article saved = articleRepository.save(article);
         market = createTestMarket(saved);
     }
@@ -87,12 +87,12 @@ public class MarketRepositoryUnitTest {
         @Test
         void success() {
             // given
-            Article article1 = createTestArticle();
+            Article article1 = createTestArticle("2");
             articleRepository.save(article1);
-            Article article2 = createTestArticle();
+            Article article2 = createTestArticle("3");
             articleRepository.save(article2);
             Market saved1 = marketRepository.save(createTestMarket(article1));
-            Market saved2 = marketRepository.save(createTestMarket(article2));
+            marketRepository.save(createTestMarket(article2));
 
             // when
             List<Market> founds = marketRepository.findAll();
@@ -140,15 +140,15 @@ public class MarketRepositoryUnitTest {
         @Test
         void success_deleteSomeMarketArticles() {
             // give
-            Article article1 = createTestArticle();
+            Article article1 = createTestArticle("a");
             articleRepository.save(article1);
-            Article article2 = createTestArticle();
+            Article article2 = createTestArticle("b");
             articleRepository.save(article2);
-            Article article3 = createTestArticle();
+            Article article3 = createTestArticle("c");
             articleRepository.save(article3);
             Market saved1 = marketRepository.save(createTestMarket(article1));
             Market saved2 = marketRepository.save(createTestMarket(article2));
-            Market saved3 = marketRepository.save(createTestMarket(article3));
+            marketRepository.save(createTestMarket(article3));
 
             // when
             marketRepository.delete(saved1);

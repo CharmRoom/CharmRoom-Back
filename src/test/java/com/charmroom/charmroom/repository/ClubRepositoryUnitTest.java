@@ -31,7 +31,6 @@ public class ClubRepositoryUnitTest {
 
     private Club club;
     private Image image;
-    private User user;
 
     private Image createTestImage() {
         return Image.builder()
@@ -39,25 +38,22 @@ public class ClubRepositoryUnitTest {
                 .build();
     }
 
-    private User createTestUser1() {
-        return User.builder().id("1").email("").nickname("").password("").withdraw(false).build();
+    private User createTestUser(String username) {
+        return User.builder().username(username).email("").nickname("").password("").withdraw(false).build();
     }
 
-    private User createTestUser2() {
-        return User.builder().id("1").email("").nickname("").password("").withdraw(false).build();
-    }
 
     private Club createTestClub() {
         imageRepository.save(createTestImage());
-        userRepository.save(createTestUser1());
-        userRepository.save(createTestUser2());
+        userRepository.save(createTestUser("1"));
+        userRepository.save(createTestUser("2"));
 
         return Club.builder()
                 .name("Club Name")
                 .description("Club Description")
                 .contact("")
                 .image(image)
-                .userList(List.of(createTestUser1(), createTestUser2()))
+                .userList(List.of(createTestUser("1"), createTestUser("2")))
                 .build();
     }
 
