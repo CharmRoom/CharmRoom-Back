@@ -7,7 +7,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,7 +15,6 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @Builder
-@AllArgsConstructor
 public class Subscribe {
 	@EmbeddedId
 	private SubscribeId id;
@@ -28,4 +26,10 @@ public class Subscribe {
 	@MapsId("target")
 	@OneToOne
 	private User target;
+
+	public Subscribe(SubscribeId id, User subscriber, User target) {
+		this.id = new SubscribeId(subscriber.getId(), target.getId());
+		this.subscriber = subscriber;
+		this.target = target;
+	}
 }
