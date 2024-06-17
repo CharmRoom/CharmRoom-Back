@@ -47,9 +47,9 @@ public class WishRepositoryUnitTest {
                 .build();
     }
 
-    private User createTestUser() {
+    private User createTestUser(String username) {
         return User.builder()
-                .id("1")
+                .username(username)
                 .email("")
                 .nickname("")
                 .password("")
@@ -58,7 +58,7 @@ public class WishRepositoryUnitTest {
     }
 
     private Article createTestArticle() {
-        User user = createTestUser();
+        User user = createTestUser("1");
         userRepository.save(user);
 
         Board board = createTestBoard();
@@ -91,7 +91,7 @@ public class WishRepositoryUnitTest {
 
     @BeforeEach
     void setUp() {
-        User user = createTestUser();
+        User user = createTestUser("2");
         userRepository.save(user);
         Article article = createTestArticle();
         articleRepository.save(article);

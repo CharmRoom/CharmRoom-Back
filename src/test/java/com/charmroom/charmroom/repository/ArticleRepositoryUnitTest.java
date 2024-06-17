@@ -30,16 +30,16 @@ public class ArticleRepositoryUnitTest {
 
     Article article;
 
-    private User createTestUser() {
-        return User.builder().id("1").email("").nickname("").password("").withdraw(false).build();
+    private User createTestUser(String username) {
+        return User.builder().username(username).email("").nickname("").password("").withdraw(false).build();
     }
 
     private Board createTestBoard() {
         return Board.builder().type(BoardType.LIST).exposed(false).build();
     }
 
-    private Article createTestArticle() {
-        User user = createTestUser();
+    private Article createTestArticle(String username) {
+        User user = createTestUser(username);
         userRepository.save(user);
         Board board = createTestBoard();
         boardRepository.save(board);
@@ -48,7 +48,7 @@ public class ArticleRepositoryUnitTest {
 
     @BeforeEach
     void setup() {
-        article = createTestArticle();
+        article = createTestArticle("1");
     }
 
     @Nested
@@ -144,9 +144,9 @@ public class ArticleRepositoryUnitTest {
         @Test
         void success() {
             // given
-            Article article1 = articleRepository.save(createTestArticle());
-            Article article2 = articleRepository.save(createTestArticle());
-            Article article3 = articleRepository.save(createTestArticle());
+            Article article1 = articleRepository.save(createTestArticle("A"));
+            Article article2 = articleRepository.save(createTestArticle("B"));
+            Article article3 = articleRepository.save(createTestArticle("C"));
 
             // when
             articleRepository.delete(article1);

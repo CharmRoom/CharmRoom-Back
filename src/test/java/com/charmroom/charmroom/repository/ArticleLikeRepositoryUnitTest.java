@@ -41,12 +41,12 @@ public class ArticleLikeRepositoryUnitTest {
         return Board.builder().type(BoardType.LIST).exposed(false).build();
     }
 
-    private User createTestUser() {
-        return User.builder().id("1").email("").nickname("").password("").withdraw(false).build();
+    private User createTestUser(String username) {
+        return User.builder().username(username).email("").nickname("").password("").withdraw(false).build();
     }
 
-    private Article createTestArticle() {
-        User user = createTestUser();
+    private Article createTestArticle(String username) {
+        User user = createTestUser(username);
         userRepository.save(user);
         Board board = createTestBoard();
         boardRepository.save(board);
@@ -59,10 +59,10 @@ public class ArticleLikeRepositoryUnitTest {
 
     @BeforeEach
     void setUp() {
-        user = createTestUser();
+        user = createTestUser("1");
         userRepository.save(user);
 
-        article = createTestArticle();
+        article = createTestArticle("2");
         articleRepository.save(article);
 
         articleLike = createTestArticleLike();
@@ -103,7 +103,7 @@ public class ArticleLikeRepositoryUnitTest {
         void fail_ReadArticleLikeWithWrongUser() {
             // given
             articleLikeRepository.save(articleLike);
-            User _user = User.builder().id("2").email("").nickname("").password("").withdraw(false).build();
+            User _user = User.builder().username("3").email("").nickname("").password("").withdraw(false).build();
             User savedUser = userRepository.save(_user);
 
             // when

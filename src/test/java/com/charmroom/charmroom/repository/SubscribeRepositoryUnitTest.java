@@ -31,7 +31,7 @@ public class SubscribeRepositoryUnitTest {
 
     private User createSubscriber() {
         return User.builder()
-                .id("1")
+                .username("1")
                 .email("subscriber@charmroom.com")
                 .nickname("subscriber")
                 .password(".")
@@ -41,7 +41,7 @@ public class SubscribeRepositoryUnitTest {
 
     private User createTarget() {
         return User.builder()
-                .id("2")
+                .username("2")
                 .email("target@charmroom.com")
                 .nickname("target")
                 .password(".")
@@ -100,7 +100,7 @@ public class SubscribeRepositoryUnitTest {
             // given
             Subscribe saved = subscribeRepository.save(subscribe);
             User different = User.builder()
-                    .id("3")
+                    .username("3")
                     .email("")
                     .nickname("")
                     .password(".")
