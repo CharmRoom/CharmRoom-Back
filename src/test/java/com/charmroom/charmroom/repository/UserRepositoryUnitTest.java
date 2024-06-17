@@ -57,7 +57,7 @@ public class UserRepositoryUnitTest {
 		clubRepository.save(club);
 		
 		return User.builder()
-				.id("test")
+				.username("test")
 				.password("test")
 				.email("test@test.com")
 				.nickname("test")
@@ -109,7 +109,7 @@ public class UserRepositoryUnitTest {
 			userRepository.save(user);
 			
 			// when
-			var result = userRepository.findById("12345");
+			var result = userRepository.findById(12345);
 			
 			// then
 			assertThat(result).isNotPresent();
@@ -128,7 +128,7 @@ public class UserRepositoryUnitTest {
 			String newNickname = "new_nickname";
 			String newPassword = "new_password";
 			Boolean newWithdraw = true;
-			UserLevel newLevel = UserLevel.ADMIN;
+			UserLevel newLevel = UserLevel.ROLE_ADMIN;
 			Image newImage = buildImage();
 			Club newClub = buildClub();
 			imageRepository.save(newImage);

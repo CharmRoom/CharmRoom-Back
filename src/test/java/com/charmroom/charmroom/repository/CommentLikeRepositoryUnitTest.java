@@ -55,14 +55,14 @@ public class CommentLikeRepositoryUnitTest {
 		return Club.builder().name("").contact("").description("").image(clubImage).build();
 	}
 
-	private User buildUser() {
+	private User buildUser(String username) {
 		Image image = buildImage();
 		imageRepository.save(image);
 
 		Club club = buildClub();
 		clubRepository.save(club);
 
-		return User.builder().id("test").password("test").email("test@test.com").nickname("test").image(image)
+		return User.builder().username(username).password("test").email("test@test.com").nickname("test").image(image)
 				.club(club).build();
 	}
 
@@ -73,14 +73,14 @@ public class CommentLikeRepositoryUnitTest {
 	private Article buildArticle() {
 		Board board = buildBoard();
 		boardRepository.save(board);
-		User user = buildUser();
+		User user = buildUser("1111");
 		userRepository.save(user);
 
 		return Article.builder().user(user).board(board).title("title").body("body").build();
 	}
 
 	private Comment buildComment() {
-		User user = buildUser();
+		User user = buildUser("2222");
 		userRepository.save(user);
 		Article article = buildArticle();
 		articleRepository.save(article);
@@ -96,7 +96,7 @@ public class CommentLikeRepositoryUnitTest {
 
 	@BeforeEach
 	void setup() {
-		user = buildUser();
+		user = buildUser("3333");
 		userRepository.save(user);
 		comment = buildComment();
 		commentRepository.save(comment);

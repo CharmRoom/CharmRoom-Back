@@ -13,6 +13,6 @@ import lombok.NoArgsConstructor;
 @Embeddable
 public class CommentLikeId implements Serializable {
 	private static final long serialVersionUID = -782649823267495831L;
-	private String userId;
+	private Integer userId;
 	private Integer commentId;
 }

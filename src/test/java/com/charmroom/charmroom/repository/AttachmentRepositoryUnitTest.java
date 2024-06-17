@@ -59,7 +59,7 @@ public class AttachmentRepositoryUnitTest {
 		Club club = buildClub();
 		clubRepository.save(club);
 
-		return User.builder().id("test").password("test").email("test@test.com").nickname("test").image(image)
+		return User.builder().username("test").password("test").email("test@test.com").nickname("test").image(image)
 				.club(club).build();
 	}
 

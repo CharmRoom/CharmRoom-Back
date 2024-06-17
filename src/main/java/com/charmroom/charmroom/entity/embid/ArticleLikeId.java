@@ -17,5 +17,5 @@ public class ArticleLikeId implements Serializable {
     private static final long serialVersionUID = 23453463533336235L;
 
     private Integer articleId;
-    private String userId;
+    private Integer userId;
 }

@@ -8,6 +8,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -25,8 +27,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class User {
 	@Id
-	@Column(length = 30, nullable = false)
-	private String id;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Integer id;
+	
+	@Column(length = 30, nullable = false, unique = true)
+	private String username;
 	
 	@Column(length = 255, nullable = false)
 	private String email;
@@ -43,7 +48,7 @@ public class User {
 	
 	@Builder.Default
 	@Enumerated(EnumType.STRING)
-	private UserLevel level = UserLevel.BASIC;
+	private UserLevel level = UserLevel.ROLE_BASIC;
 	
 	@OneToOne
 	private Image image;
@@ -51,7 +56,7 @@ public class User {
 	@ManyToOne
 	private Club club;
 	
-	@OneToMany
+	@OneToMany(mappedBy = "user")
 	private List<Point> pointList;
 	
 	public void updateNickname(String nickname) {

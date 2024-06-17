@@ -4,11 +4,11 @@ import lombok.Getter;
 
 @Getter
 public enum UserLevel {
-	BASIC("ROLE_USER"), ADMIN("ROLE_ADMIN");
+	ROLE_BASIC("ROLE_BASIC"), ROLE_ADMIN("ROLE_ADMIN");
 
 	UserLevel(String value) {
 		this.value = value;
 	}
-
+	
 	private String value;
 }
