@@ -39,4 +39,20 @@ public class Club {
     
     @OneToMany(mappedBy = "club")
     private List<User> userList;
+
+    public void updateName(String name) {
+        this.name = name;
+    }
+
+    public void updateDescription(String description) {
+        this.description = description;
+    }
+
+    public void updateContact(String contact) {
+        this.contact = contact;
+    }
+
+    public void updateImage(Image Image) {
+        this.image = Image;
+    }
 }

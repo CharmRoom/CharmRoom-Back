@@ -35,10 +35,10 @@ public class Article {
     @ManyToOne
     private Board board;
 
-    @Column(length = 255)
+    @Column(length = 255, nullable = false)
     private String title;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String body;
 
     @CreationTimestamp
@@ -56,5 +56,12 @@ public class Article {
     
     @OneToMany(mappedBy = "article")
     private List<Attachment> attachmentList;
-    
+
+    public void updateTitle(String title) {
+        this.title = title;
+    }
+
+    public void updatedBody(String body) {
+        this.body = body;
+    }
 }

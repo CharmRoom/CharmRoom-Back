@@ -8,7 +8,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,7 +16,6 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @Builder
-@AllArgsConstructor
 public class ArticleLike {
     @EmbeddedId
     private ArticleLikeId id;
@@ -32,4 +30,11 @@ public class ArticleLike {
 
     @Column(nullable = false)
     private boolean type;
+
+    public ArticleLike(ArticleLikeId id, Article article, User user, boolean type) {
+        this.id = new ArticleLikeId(article.getId(), user.getId());
+        this.article = article;
+        this.user = user;
+        this.type = type;
+    }
 }
