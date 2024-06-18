@@ -44,7 +44,9 @@ public class AuthApiController {
 		
 		User created = userService.create(signupRequestDto.getUsername(), signupRequestDto.getEmail(),
 				signupRequestDto.getNickname(), signupRequestDto.getPassword());
-		
+		if (created == null) {
+			return ResponseEntity.badRequest().body(CommonResponseDto.invalid("user already exist"));
+		}
 		return ResponseEntity.ok(CommonResponseDto.okay(SignupResponseDto.fromEntity(created)));
 	}
 }

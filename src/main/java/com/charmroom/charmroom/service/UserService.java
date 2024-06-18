@@ -14,9 +14,11 @@ public class UserService {
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
 	
-	public User create(String id, String email, String nickname, String password ) {
+	public User create(String username, String email, String nickname, String password ) {
+		if (userRepository.existsByUsername(username)) return null;
+		
 		User user = User.builder()
-				.username(id)
+				.username(username)
 				.email(email)
 				.nickname(nickname)
 				.password(passwordEncoder.encode(password))
