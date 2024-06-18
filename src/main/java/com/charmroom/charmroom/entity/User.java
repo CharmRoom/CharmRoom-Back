@@ -33,10 +33,10 @@ public class User {
 	@Column(length = 30, nullable = false, unique = true)
 	private String username;
 	
-	@Column(length = 255, nullable = false)
+	@Column(length = 255, nullable = false, unique = true)
 	private String email;
 	
-	@Column(length = 30, nullable = false)
+	@Column(length = 30, nullable = false, unique = true)
 	private String nickname;
 	
 	@Column(length = 255, nullable = false)

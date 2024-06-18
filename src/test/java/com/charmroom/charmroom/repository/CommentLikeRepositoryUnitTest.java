@@ -62,7 +62,7 @@ public class CommentLikeRepositoryUnitTest {
 		Club club = buildClub();
 		clubRepository.save(club);
 
-		return User.builder().username(username).password("test").email("test@test.com").nickname("test").image(image)
+		return User.builder().username(username).password("test").email(username + "@test.com").nickname(username).image(image)
 				.club(club).build();
 	}
 
