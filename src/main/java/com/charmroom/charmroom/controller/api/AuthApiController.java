@@ -1,10 +1,6 @@
-package com.charmroom.charmroom.apicontroller;
-
-import java.util.HashMap;
-import java.util.Map;
+package com.charmroom.charmroom.controller.api;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,26 +23,9 @@ public class AuthApiController {
 	
 	@PostMapping("/signup")
 	public ResponseEntity<?> signup(
-			@RequestBody @Valid SignupRequestDto signupRequestDto,
-			BindingResult bindingResult) {
-		if (!signupRequestDto.getPassword().equals(signupRequestDto.getRePassword())) {
-			bindingResult.rejectValue("rePassword", "passwordIncorrect",
-					"패스워드 확인이 일치하지 않습니다.");
-		}
-		
-		if (bindingResult.hasErrors()) {
-			Map<String, String> errors = new HashMap<>();
-			bindingResult.getFieldErrors().forEach(error -> {
-				errors.put(error.getField(), error.getDefaultMessage());
-			});
-			return ResponseEntity.badRequest().body(CommonResponseDto.invalid(errors));
-		}
-		
+			@RequestBody @Valid SignupRequestDto signupRequestDto) {
 		User created = userService.create(signupRequestDto.getUsername(), signupRequestDto.getEmail(),
 				signupRequestDto.getNickname(), signupRequestDto.getPassword());
-		if (created == null) {
-			return ResponseEntity.badRequest().body(CommonResponseDto.invalid("user already exist"));
-		}
 		return ResponseEntity.ok(CommonResponseDto.okay(SignupResponseDto.fromEntity(created)));
 	}
 }

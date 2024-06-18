@@ -15,8 +15,7 @@ public class UserService {
 	private final PasswordEncoder passwordEncoder;
 	
 	public User create(String username, String email, String nickname, String password ) {
-		if (userRepository.existsByUsername(username)) return null;
-		
+		if (isDuplicatedUsername(username)) return null;
 		User user = User.builder()
 				.username(username)
 				.email(email)
@@ -24,7 +23,17 @@ public class UserService {
 				.password(passwordEncoder.encode(password))
 				.withdraw(false)
 				.build();
-		userRepository.save(user);
-		return user;
+		return userRepository.save(user);
+	}
+	
+	public Boolean isDuplicatedUsername(String username) {
+		return userRepository.existsByUsername(username);
+	}
+
+	
+	public String findUsernameByEmail(String email) {
+		var user = userRepository.findByEmail(email);
+		if(!user.isPresent()) return null;
+		return user.get().getUsername();
 	}
 }
