@@ -14,7 +14,7 @@ public enum CustomError {
 	DUPLICATED_NICKNAME(HttpStatus.BAD_REQUEST, "", "Duplicated nickname"),
 	
 	
-	USER_NOTFOUND(HttpStatus.NOT_FOUND, "", "User not found")
+	NOTFOUND_USER(HttpStatus.NOT_FOUND, "", "User not found")
 	;
 	private final HttpStatus status;
 	private final String code;
