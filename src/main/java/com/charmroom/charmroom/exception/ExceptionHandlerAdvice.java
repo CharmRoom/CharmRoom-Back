@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.charmroom.charmroom.dto.CommonResponseDto;
+import com.charmroom.charmroom.dto.CustomErrorResponseDto;
 
 @RestControllerAdvice(annotations = RestController.class)
 public class ExceptionHandlerAdvice {
@@ -23,6 +24,11 @@ public class ExceptionHandlerAdvice {
 				key = ((FieldError)err).getField();
 			errors.put(key, err.getDefaultMessage());
 		});
-		return ResponseEntity.badRequest().body(CommonResponseDto.invalid(errors));
+		return CommonResponseDto.invalid(errors).toResponse();
+	}
+	
+	@ExceptionHandler(CustomException.class)
+	public ResponseEntity<?> handleCustomException(CustomException e){
+		return CustomErrorResponseDto.toResponse(e);
 	}
 }

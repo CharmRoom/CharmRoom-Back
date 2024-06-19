@@ -24,8 +24,7 @@ public class AuthApiController {
 	@PostMapping("/signup")
 	public ResponseEntity<?> signup(
 			@RequestBody @Valid SignupRequestDto signupRequestDto) {
-		User created = userService.create(signupRequestDto.getUsername(), signupRequestDto.getEmail(),
-				signupRequestDto.getNickname(), signupRequestDto.getPassword());
-		return ResponseEntity.ok(CommonResponseDto.okay(SignupResponseDto.fromEntity(created)));
+		User created = userService.create(signupRequestDto.getUsername(), signupRequestDto.getEmail(), signupRequestDto.getNickname(), signupRequestDto.getPassword());
+		return CommonResponseDto.ok(SignupResponseDto.fromEntity(created)).toResponse();
 	}
 }
