@@ -19,8 +19,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.charmroom.charmroom.entity.User;
-import com.charmroom.charmroom.exception.CustomError;
-import com.charmroom.charmroom.exception.CustomException;
+import com.charmroom.charmroom.exception.BusinessLogicError;
+import com.charmroom.charmroom.exception.BusinessLogicException;
 import com.charmroom.charmroom.repository.UserRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -76,13 +76,13 @@ public class UserServiceUnitTest {
 			// given
 			doReturn(true).when(userRepository).existsByUsername(username);
 			
-			var thrown = assertThrows(CustomException.class, () -> {
+			var thrown = assertThrows(BusinessLogicException.class, () -> {
 				// when
 				userService.create(username, email, nickname, password);	
 			});
 			
 			// then
-			assertThat(thrown.getError()).isEqualTo(CustomError.DUPLICATED_USERNAME);
+			assertThat(thrown.getError()).isEqualTo(BusinessLogicError.DUPLICATED_USERNAME);
 		}
 		
 		@Test
@@ -91,13 +91,13 @@ public class UserServiceUnitTest {
 			doReturn(false).when(userRepository).existsByUsername(username);
 			doReturn(true).when(userRepository).existsByEmail(email);
 			
-			var thrown = assertThrows(CustomException.class, () -> {
+			var thrown = assertThrows(BusinessLogicException.class, () -> {
 				// when
 				userService.create(username, email, nickname, password);	
 			});
 			
 			// then
-			assertThat(thrown.getError()).isEqualTo(CustomError.DUPLICATED_EMAIL);
+			assertThat(thrown.getError()).isEqualTo(BusinessLogicError.DUPLICATED_EMAIL);
 			
 		}
 		
@@ -108,13 +108,13 @@ public class UserServiceUnitTest {
 			doReturn(false).when(userRepository).existsByEmail(email);
 			doReturn(true).when(userRepository).existsByNickname(nickname);
 			
-			var thrown = assertThrows(CustomException.class, () -> {
+			var thrown = assertThrows(BusinessLogicException.class, () -> {
 				// when
 				userService.create(username, email, nickname, password);	
 			});
 			
 			// then
-			assertThat(thrown.getError()).isEqualTo(CustomError.DUPLICATED_NICKNAME);
+			assertThat(thrown.getError()).isEqualTo(BusinessLogicError.DUPLICATED_NICKNAME);
 		}
 	}
 	
@@ -137,12 +137,12 @@ public class UserServiceUnitTest {
 			doReturn(Optional.empty()).when(userRepository).findByEmail(email);
 			
 			// when
-			var thrown = assertThrows(CustomException.class, () -> {
+			var thrown = assertThrows(BusinessLogicException.class, () -> {
 				userService.findUsernameByEmail(email);
 			});
 			
 			// then
-			assertThat(thrown.getError()).isEqualTo(CustomError.NOTFOUND_USER);
+			assertThat(thrown.getError()).isEqualTo(BusinessLogicError.NOTFOUND_USER);
 			assertThat(thrown.getMessage()).isEqualTo("email: "+ email);
 		}
 	}
@@ -167,10 +167,10 @@ public class UserServiceUnitTest {
 			doReturn(Optional.empty()).when(userRepository).findByUsername(username);
 			
 			// when
-			var thrown = assertThrows(CustomException.class, () -> {
+			var thrown = assertThrows(BusinessLogicException.class, () -> {
 				userService.changePassword(username, "1234");
 			});
-			assertThat(thrown.getError()).isEqualTo(CustomError.NOTFOUND_USER);
+			assertThat(thrown.getError()).isEqualTo(BusinessLogicError.NOTFOUND_USER);
 			assertThat(thrown.getMessage()).isEqualTo("username: " + username);
 		}
 	}
@@ -195,10 +195,10 @@ public class UserServiceUnitTest {
 			doReturn(Optional.empty()).when(userRepository).findByUsername(username);
 			
 			// when
-			var thrown = assertThrows(CustomException.class, () -> {
+			var thrown = assertThrows(BusinessLogicException.class, () -> {
 				userService.changeNickname(username, "1234");
 			});
-			assertThat(thrown.getError()).isEqualTo(CustomError.NOTFOUND_USER);
+			assertThat(thrown.getError()).isEqualTo(BusinessLogicError.NOTFOUND_USER);
 			assertThat(thrown.getMessage()).isEqualTo("username: " + username);
 		}
 	}
@@ -222,10 +222,10 @@ public class UserServiceUnitTest {
 			doReturn(Optional.empty()).when(userRepository).findByUsername(username);
 			
 			// when
-			var thrown = assertThrows(CustomException.class, () -> {
+			var thrown = assertThrows(BusinessLogicException.class, () -> {
 				userService.changeWithdraw(username, true);
 			});
-			assertThat(thrown.getError()).isEqualTo(CustomError.NOTFOUND_USER);
+			assertThat(thrown.getError()).isEqualTo(BusinessLogicError.NOTFOUND_USER);
 			assertThat(thrown.getMessage()).isEqualTo("username: " + username);
 		}
 	}
