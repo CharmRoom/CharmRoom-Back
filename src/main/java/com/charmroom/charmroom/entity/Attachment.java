@@ -34,4 +34,6 @@ public class Attachment {
 	
 	@Column(length = 512)
 	private String path;
+	
+	private String originalName;
 }

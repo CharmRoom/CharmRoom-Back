@@ -1,14 +1,19 @@
 package com.charmroom.charmroom.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.charmroom.charmroom.entity.Club;
+import com.charmroom.charmroom.entity.Image;
 import com.charmroom.charmroom.entity.User;
 import com.charmroom.charmroom.exception.BusinessLogicError;
 import com.charmroom.charmroom.exception.BusinessLogicException;
-import com.charmroom.charmroom.repository.ClubRepository;
 import com.charmroom.charmroom.repository.ImageRepository;
 import com.charmroom.charmroom.repository.UserRepository;
+import com.charmroom.charmroom.util.CharmroomUtil;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +22,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserService {
 	private final UserRepository userRepository;
+	private final ImageRepository imageRepository;
+	
 	private final PasswordEncoder passwordEncoder;
+	private final CharmroomUtil.Upload uploadUtil;
 	
 	public User create(String username, String email, String nickname, String password) {
 		if (isDuplicatedUsername(username)) throw new BusinessLogicException(BusinessLogicError.DUPLICATED_USERNAME);
@@ -35,6 +43,10 @@ public class UserService {
 		return userRepository.save(user);
 	}
 	
+	public Page<User> getAllUsersByPageable(Pageable pageable){
+		return userRepository.findAll(pageable);
+	}
+	
 	public Boolean isDuplicatedUsername(String username) {
 		return userRepository.existsByUsername(username);
 	}
@@ -47,7 +59,7 @@ public class UserService {
 		return userRepository.existsByEmail(email);
 	}
 	
-	public String findUsernameByEmail(String email) {
+	public String loadUsernameByEmail(String email) {
 		User user = userRepository.findByEmail(email)
 				.orElseThrow(() -> new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "email: " + email));
 		return user.getUsername();
@@ -77,4 +89,21 @@ public class UserService {
 		return user;
 	}
 	
+	@Transactional
+	public User setClub(String username, Club club) {
+		User user = userRepository.findByUsername(username)
+				.orElseThrow(() -> new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "username: " + username));
+		user.updateClub(club);
+		return user;
+	}
+	
+	@Transactional
+	public User setImage(String username, MultipartFile imageFile) {
+		User user = userRepository.findByUsername(username)
+				.orElseThrow(() -> new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "username: " + username));
+		Image image = uploadUtil.buildImage(imageFile);
+		Image saved = imageRepository.save(image);
+		user.updateImage(saved);
+		return user;
+	}
 }

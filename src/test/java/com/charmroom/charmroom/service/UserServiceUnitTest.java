@@ -4,7 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -15,20 +17,32 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import com.charmroom.charmroom.entity.Club;
+import com.charmroom.charmroom.entity.Image;
 import com.charmroom.charmroom.entity.User;
 import com.charmroom.charmroom.exception.BusinessLogicError;
 import com.charmroom.charmroom.exception.BusinessLogicException;
+import com.charmroom.charmroom.repository.ImageRepository;
 import com.charmroom.charmroom.repository.UserRepository;
+import com.charmroom.charmroom.util.CharmroomUtil;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceUnitTest {
 	@Mock
 	private UserRepository userRepository;
+	@Mock
+	private ImageRepository imageRepository;
 	@Spy
 	private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+	@Mock
+	private CharmroomUtil.Upload uploadUtil;
 	@InjectMocks
 	private UserService userService;
 	
@@ -39,6 +53,14 @@ public class UserServiceUnitTest {
 	private String password;
 	private String encryptedPassword;
 	
+	User buildUser(String prefix) {
+		return User.builder()
+				.username(prefix + username)
+				.nickname(prefix + nickname)
+				.email(email)
+				.password(encryptedPassword)
+				.build();
+	}
 	@BeforeEach
 	void setup() {
 		username = "username";
@@ -46,12 +68,7 @@ public class UserServiceUnitTest {
 		email = "email@example.com";
 		password = "password";
 		encryptedPassword = passwordEncoder.encode(password);
-		mockedUser = User.builder()
-				.username(username)
-				.nickname(nickname)
-				.email(email)
-				.password(encryptedPassword)
-				.build();
+		mockedUser = buildUser("");
 	}
 	
 	@Nested
@@ -68,7 +85,7 @@ public class UserServiceUnitTest {
 			User created = userService.create(username, email, nickname, password);
 			// then
 			assertThat(created).isNotNull();
-			assertThat(created.getPassword()).isEqualTo(encryptedPassword);
+			assertThat(created.getPassword()).isEqualTo(mockedUser.getPassword());
 		}
 		
 		@Test
@@ -119,6 +136,24 @@ public class UserServiceUnitTest {
 	}
 	
 	@Nested
+	class GetUserList{
+		@Test
+		void success() {
+			// given
+			var listUser = List.of(buildUser("1"), buildUser("2"), buildUser("3"));
+			var pageRequest = PageRequest.of(0, 3, Direction.ASC, "username");
+			var pageUser = new PageImpl<>(listUser);
+			
+			doReturn(pageUser).when(userRepository).findAll(pageRequest);
+			
+			// when
+			var result = userService.getAllUsersByPageable(pageRequest);
+			
+			assertThat(result).hasSize(3);
+		}
+	}
+	
+	@Nested
 	class FindUsernameByEmail {
 		@Test
 		void success() {
@@ -126,7 +161,7 @@ public class UserServiceUnitTest {
 			doReturn(Optional.of(mockedUser)).when(userRepository).findByEmail(email);
 			
 			// when
-			String foundUsername = userService.findUsernameByEmail(email);
+			String foundUsername = userService.loadUsernameByEmail(email);
 			
 			// then
 			assertThat(foundUsername).isEqualTo(username);
@@ -138,7 +173,7 @@ public class UserServiceUnitTest {
 			
 			// when
 			var thrown = assertThrows(BusinessLogicException.class, () -> {
-				userService.findUsernameByEmail(email);
+				userService.loadUsernameByEmail(email);
 			});
 			
 			// then
@@ -227,6 +262,94 @@ public class UserServiceUnitTest {
 			});
 			assertThat(thrown.getError()).isEqualTo(BusinessLogicError.NOTFOUND_USER);
 			assertThat(thrown.getMessage()).isEqualTo("username: " + username);
+		}
+	}
+	
+	@Nested
+	class SetClub{
+		@Test
+		void success() {
+			// given
+			doReturn(Optional.of(mockedUser)).when(userRepository).findByUsername(username);
+			Club club = Club.builder()
+					.name("")
+					.description("")
+					.contact("")
+					.build();
+			// when
+			User changed = userService.setClub(username, club);
+			
+			// then
+			assertThat(changed.getClub()).isEqualTo(club);
+		}
+		@Test
+		void fail() {
+			doReturn(Optional.empty()).when(userRepository).findByUsername(username);
+			Club club = Club.builder()
+					.name("")
+					.description("")
+					.contact("")
+					.build();
+			var thrown = assertThrows(BusinessLogicException.class, () -> {
+				userService.setClub(username, club);
+			});
+			assertThat(thrown.getError()).isEqualTo(BusinessLogicError.NOTFOUND_USER);
+			assertThat(thrown.getMessage()).isEqualTo("username: " + username);
+		}
+	}
+	
+	@Nested
+	class SetImage{
+		@Test
+		void success() {
+			// given
+			MockMultipartFile imageFile = new MockMultipartFile("file", "test.png", "image/png", "test".getBytes());
+			Image image = Image.builder()
+					.path("")
+					.originalName("")
+					.build(); 
+			
+			doReturn(Optional.of(mockedUser)).when(userRepository).findByUsername(username);
+			doReturn(image).when(uploadUtil).buildImage(imageFile);
+			doReturn(image).when(imageRepository).save(image);
+			
+			
+			// when
+			User changed = userService.setImage(username, imageFile);
+			
+			// then
+			assertThat(changed.getImage()).isEqualTo(image);
+		}
+		@Test
+		void failByNotFoundUser() {
+			MockMultipartFile imageFile = new MockMultipartFile("file", "test.png", "image/png", "test".getBytes());
+			doReturn(Optional.empty()).when(userRepository).findByUsername(username);
+			
+			// when
+			var thrown = assertThrows(BusinessLogicException.class, () -> {
+				userService.setImage(username, imageFile);
+			});
+			
+			// then
+			assertThat(thrown.getError()).isEqualTo(BusinessLogicError.NOTFOUND_USER);
+			assertThat(thrown.getMessage()).isEqualTo("username: " + username);
+		}
+		
+		@Test
+		void failByNotImageFile() {
+			// given
+			MockMultipartFile imageFile = new MockMultipartFile("file", "test.png", "video/png", "test".getBytes());
+			doReturn(Optional.of(mockedUser)).when(userRepository).findByUsername(username);
+			doThrow(new BusinessLogicException(BusinessLogicError.FILE_NOT_IMAGE))
+				.when(uploadUtil).buildImage(imageFile);
+			
+			// when
+			var thrown = assertThrows(BusinessLogicException.class, () ->{
+				userService.setImage(username, imageFile);
+			});
+			
+			// then
+			assertThat(thrown.getError()).isEqualTo(BusinessLogicError.FILE_NOT_IMAGE);
 		}
 	}
 }

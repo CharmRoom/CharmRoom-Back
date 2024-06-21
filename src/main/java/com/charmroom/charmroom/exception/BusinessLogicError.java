@@ -10,16 +10,23 @@ import lombok.RequiredArgsConstructor;
 public enum BusinessLogicError {
 	
 	// Unknown
-	UNKNOWN(HttpStatus.BAD_REQUEST, "00000", "Unknown"),
+	UNKNOWN(HttpStatus.BAD_REQUEST, "UNKNOWN", "Unknown"),
 	// end Unknown
 	
+	// Image
+	FILE_NOT_IMAGE(HttpStatus.BAD_REQUEST, "08000", "Content type of the file is not image"),
 	// User
 	DUPLICATED_USERNAME(HttpStatus.BAD_REQUEST, "12000", "Duplicated username"),
 	DUPLICATED_EMAIL(HttpStatus.BAD_REQUEST, "12001", "Duplicated email"),
 	DUPLICATED_NICKNAME(HttpStatus.BAD_REQUEST, "12002", "Duplicated nickname"),
 	
-	NOTFOUND_USER(HttpStatus.NOT_FOUND, "12100", "User not found")
+	NOTFOUND_USER(HttpStatus.NOT_FOUND, "12100", "User not found"), 
 	// end User
+	
+	// ETC
+	MKDIR_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "MKDIR_FAIL", "mkdir failed"),
+	CHMOD_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "CHMOD_FAIL", "chmod failed")
+	// end ETC
 	;
 	private final HttpStatus status;
 	private final String code;

@@ -24,6 +24,8 @@ public class Image {
 	@Column(length = 512, nullable = false)
 	private String path;
 	
+	private String originalName;
+	
 	public void update(String path) {
 		this.path = path;
 	}
