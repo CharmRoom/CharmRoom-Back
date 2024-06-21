@@ -26,7 +26,7 @@ public enum BusinessLogicError {
 	// end User
 
 	// Article
-	NOTFOUND_ARTICLE(HttpStatus.NOT_FOUND, "01101", "Article not found"),
+	NOTFOUND_ARTICLE(HttpStatus.NOT_FOUND, "01100", "Article not found"),
 	// end Article
 
 	// ETC
