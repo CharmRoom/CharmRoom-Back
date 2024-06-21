@@ -15,6 +15,8 @@ public enum BusinessLogicError {
 	
 	// Image
 	FILE_NOT_IMAGE(HttpStatus.BAD_REQUEST, "08000", "Content type of the file is not image"),
+	// end Image
+
 	// User
 	DUPLICATED_USERNAME(HttpStatus.BAD_REQUEST, "12000", "Duplicated username"),
 	DUPLICATED_EMAIL(HttpStatus.BAD_REQUEST, "12001", "Duplicated email"),
@@ -22,7 +24,11 @@ public enum BusinessLogicError {
 	
 	NOTFOUND_USER(HttpStatus.NOT_FOUND, "12100", "User not found"), 
 	// end User
-	
+
+	// Article
+	NOTFOUND_ARTICLE(HttpStatus.NOT_FOUND, "01101", "Article not found"),
+	// end Article
+
 	// ETC
 	MKDIR_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "MKDIR_FAIL", "mkdir failed"),
 	CHMOD_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "CHMOD_FAIL", "chmod failed")
