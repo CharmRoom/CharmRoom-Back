@@ -106,6 +106,27 @@ public class CommentRepositoryUnitTest {
 	}
 
 	@Nested
+	class CreateChildComment{
+		@Test
+		public void success() {
+			// given
+			
+			// when
+			Comment saved = commentRepository.save(comment);
+			Comment child = Comment.builder()
+					.user(saved.getUser())
+					.article(saved.getArticle())
+					.parent(saved)
+					.body("")
+					.build();
+			Comment savedChild = commentRepository.save(child);
+			
+			// then
+			assertThat(savedChild).isNotNull();
+			assertThat(savedChild.getParent()).isEqualTo(saved);
+		}
+	}
+	@Nested
 	class Read {
 		@Test
 		public void success() {

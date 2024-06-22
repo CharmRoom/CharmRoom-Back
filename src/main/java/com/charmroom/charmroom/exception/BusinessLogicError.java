@@ -13,9 +13,18 @@ public enum BusinessLogicError {
 	UNKNOWN(HttpStatus.BAD_REQUEST, "UNKNOWN", "Unknown"),
 	// end Unknown
 	
+	// Article
+	NOTFOUND_ARTICLE(HttpStatus.NOT_FOUND, "01100", "Article not found"),
+	// end Article
+	
 	// Club
 	NOTFOUND_CLUB(HttpStatus.NOT_FOUND, "05100", "Club not found"),
 	// end Club
+	
+	// Comment
+	NOTFOUND_COMMENT(HttpStatus.NOT_FOUND, "06100", "Comment not found"),
+	UNAUTHORIZED_COMMENT(HttpStatus.UNAUTHORIZED, "06200", "Don't have permission on comment"),
+	// end Comment
 	
 	// Image
 	FILE_NOT_IMAGE(HttpStatus.BAD_REQUEST, "08000", "Content type of the file is not image"),
@@ -31,7 +40,7 @@ public enum BusinessLogicError {
 	
 	// ETC
 	MKDIR_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "MKDIR_FAIL", "mkdir failed"),
-	CHMOD_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "CHMOD_FAIL", "chmod failed")
+	CHMOD_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "CHMOD_FAIL", "chmod failed"), 
 	// end ETC
 	;
 	private final HttpStatus status;
