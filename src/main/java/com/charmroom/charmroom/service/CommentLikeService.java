@@ -11,6 +11,7 @@ import com.charmroom.charmroom.repository.CommentLikeRepository;
 import com.charmroom.charmroom.repository.CommentRepository;
 import com.charmroom.charmroom.repository.UserRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -20,6 +21,7 @@ public class CommentLikeService {
 	private final CommentRepository commentRepository;
 	private final CommentLikeRepository commentLikeRepository;
 	
+	@Transactional
 	public CommentLike likeOrDislike(String username, Integer commentId, Boolean type) {
 		User user = userRepository.findByUsername(username)
 				.orElseThrow(() -> new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "username: " + username));

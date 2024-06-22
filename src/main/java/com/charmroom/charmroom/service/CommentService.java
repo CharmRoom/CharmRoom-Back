@@ -59,6 +59,7 @@ public class CommentService {
 		return comment;
 	}
 	
+	@Transactional
 	public Comment setDisable(Integer commentId, String username, Boolean disabled) {
 		User user = userRepository.findByUsername(username)
 				.orElseThrow(() -> new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "username: " + username));
