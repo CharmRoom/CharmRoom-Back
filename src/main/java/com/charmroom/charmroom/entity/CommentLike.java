@@ -37,4 +37,8 @@ public class CommentLike {
 		this.comment = comment;
 		this.type = type;
 	}
+	
+	public void updateType(Boolean type) {
+		this.type = type;
+	}
 }
