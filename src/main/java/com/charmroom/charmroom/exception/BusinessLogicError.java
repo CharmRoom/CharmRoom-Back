@@ -13,6 +13,10 @@ public enum BusinessLogicError {
 	UNKNOWN(HttpStatus.BAD_REQUEST, "UNKNOWN", "Unknown"),
 	// end Unknown
 
+	// Ad
+	NOTFOUND_AD(HttpStatus.NOT_FOUND, "00100", "Ad not found"),
+	// end Ad
+
 	// Article
 	NOTFOUND_ARTICLE(HttpStatus.NOT_FOUND, "01100", "Article not found"),
 	// end Article
