@@ -12,7 +12,17 @@ public enum BusinessLogicError {
 	// Unknown
 	UNKNOWN(HttpStatus.BAD_REQUEST, "UNKNOWN", "Unknown"),
 	// end Unknown
-	
+
+	// Article
+	NOTFOUND_ARTICLE(HttpStatus.NOT_FOUND, "01100", "Article not found"),
+	// end Article
+
+	// Club
+	DUPLICATED_CLUBNAME(HttpStatus.BAD_REQUEST, "05000", "Duplicated club name"),
+
+	NOTFOUND_CLUB(HttpStatus.NOT_FOUND, "05100", "Club not found"),
+	// end Club
+
 	// Image
 	FILE_NOT_IMAGE(HttpStatus.BAD_REQUEST, "08000", "Content type of the file is not image"),
 	// end Image
@@ -24,10 +34,6 @@ public enum BusinessLogicError {
 	
 	NOTFOUND_USER(HttpStatus.NOT_FOUND, "12100", "User not found"), 
 	// end User
-
-	// Article
-	NOTFOUND_ARTICLE(HttpStatus.NOT_FOUND, "01100", "Article not found"),
-	// end Article
 
 	// ETC
 	MKDIR_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "MKDIR_FAIL", "mkdir failed"),
