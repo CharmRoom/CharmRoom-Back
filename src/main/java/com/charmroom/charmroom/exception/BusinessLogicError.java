@@ -40,6 +40,10 @@ public enum BusinessLogicError {
 	NOTFOUND_IMAGE(HttpStatus.NOT_FOUND, "08100", "Image not found"),
 	// end Image
 	
+	// Point
+	NOTFOUND_POINT(HttpStatus.NOT_FOUND, "10100", "Point not found"),
+	// end Point
+	
 	// User
 	DUPLICATED_USERNAME(HttpStatus.BAD_REQUEST, "12000", "Duplicated username"),
 	DUPLICATED_EMAIL(HttpStatus.BAD_REQUEST, "12001", "Duplicated email"),
