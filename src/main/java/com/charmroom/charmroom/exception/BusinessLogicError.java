@@ -21,6 +21,11 @@ public enum BusinessLogicError {
 	NOTFOUND_ATTACHMENT(HttpStatus.NOT_FOUND, "03100", "Attachment not found"),
 	// end Attachment
 	
+	// Board
+	DUPLICATED_BOARD_NAME(HttpStatus.BAD_REQUEST, "04000", "Duplicated board name"),
+	NOTFOUND_BOARD(HttpStatus.NOT_FOUND, "04100", "Board not found"),
+	// end Board
+	
 	// Club
 	NOTFOUND_CLUB(HttpStatus.NOT_FOUND, "05100", "Club not found"),
 	// end Club
