@@ -37,4 +37,8 @@ public class ArticleLike {
         this.user = user;
         this.type = type;
     }
+
+    public void changeType(boolean type) {
+        this.type = type;
+    }
 }
