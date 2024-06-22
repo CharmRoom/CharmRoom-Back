@@ -13,8 +13,14 @@ public enum BusinessLogicError {
 	UNKNOWN(HttpStatus.BAD_REQUEST, "UNKNOWN", "Unknown"),
 	// end Unknown
 	
+	// Club
+	NOTFOUND_CLUB(HttpStatus.NOT_FOUND, "05100", "Club not found"),
+	// end Club
+	
 	// Image
 	FILE_NOT_IMAGE(HttpStatus.BAD_REQUEST, "08000", "Content type of the file is not image"),
+	// end Image
+	
 	// User
 	DUPLICATED_USERNAME(HttpStatus.BAD_REQUEST, "12000", "Duplicated username"),
 	DUPLICATED_EMAIL(HttpStatus.BAD_REQUEST, "12001", "Duplicated email"),

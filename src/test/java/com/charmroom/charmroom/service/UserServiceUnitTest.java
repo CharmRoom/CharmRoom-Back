@@ -29,6 +29,7 @@ import com.charmroom.charmroom.entity.Image;
 import com.charmroom.charmroom.entity.User;
 import com.charmroom.charmroom.exception.BusinessLogicError;
 import com.charmroom.charmroom.exception.BusinessLogicException;
+import com.charmroom.charmroom.repository.ClubRepository;
 import com.charmroom.charmroom.repository.ImageRepository;
 import com.charmroom.charmroom.repository.UserRepository;
 import com.charmroom.charmroom.util.CharmroomUtil;
@@ -39,6 +40,8 @@ public class UserServiceUnitTest {
 	private UserRepository userRepository;
 	@Mock
 	private ImageRepository imageRepository;
+	@Mock
+	private ClubRepository clubRepository;
 	@Spy
 	private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 	@Mock
@@ -270,31 +273,49 @@ public class UserServiceUnitTest {
 		@Test
 		void success() {
 			// given
-			doReturn(Optional.of(mockedUser)).when(userRepository).findByUsername(username);
 			Club club = Club.builder()
+					.id(1)
 					.name("")
 					.description("")
 					.contact("")
 					.build();
+			doReturn(Optional.of(mockedUser)).when(userRepository).findByUsername(username);
+			doReturn(Optional.of(club)).when(clubRepository).findById(1);
+			
 			// when
-			User changed = userService.setClub(username, club);
+			User changed = userService.setClub(username, 1);
 			
 			// then
 			assertThat(changed.getClub()).isEqualTo(club);
 		}
 		@Test
-		void fail() {
+		void failByNotfoundUser() {
+			// given
 			doReturn(Optional.empty()).when(userRepository).findByUsername(username);
-			Club club = Club.builder()
-					.name("")
-					.description("")
-					.contact("")
-					.build();
+			
+			// when
 			var thrown = assertThrows(BusinessLogicException.class, () -> {
-				userService.setClub(username, club);
+				userService.setClub(username, 1);
 			});
+			
+			// then
 			assertThat(thrown.getError()).isEqualTo(BusinessLogicError.NOTFOUND_USER);
 			assertThat(thrown.getMessage()).isEqualTo("username: " + username);
+		}
+		@Test
+		void failByNotfoundClub() {
+			// given
+			doReturn(Optional.of(mockedUser)).when(userRepository).findByUsername(username);
+			doReturn(Optional.empty()).when(clubRepository).findById(1);
+			
+			// when
+			var thrown = assertThrows(BusinessLogicException.class, () -> {
+				userService.setClub(username, 1);
+			});
+			
+			// then
+			assertThat(thrown.getError()).isEqualTo(BusinessLogicError.NOTFOUND_CLUB);
+			assertThat(thrown.getMessage()).isEqualTo("id: 1");
 		}
 	}
 	
