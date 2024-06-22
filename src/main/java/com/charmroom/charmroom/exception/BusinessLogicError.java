@@ -17,6 +17,10 @@ public enum BusinessLogicError {
 	NOTFOUND_ARTICLE(HttpStatus.NOT_FOUND, "01100", "Article not found"),
 	// end Article
 	
+	// Attachment
+	NOTFOUND_ATTACHMENT(HttpStatus.NOT_FOUND, "03100", "Attachment not found"),
+	// end Attachment
+	
 	// Club
 	NOTFOUND_CLUB(HttpStatus.NOT_FOUND, "05100", "Club not found"),
 	// end Club
@@ -28,6 +32,7 @@ public enum BusinessLogicError {
 	
 	// Image
 	FILE_NOT_IMAGE(HttpStatus.BAD_REQUEST, "08000", "Content type of the file is not image"),
+	NOTFOUND_IMAGE(HttpStatus.NOT_FOUND, "08100", "Image not found"),
 	// end Image
 	
 	// User
@@ -41,6 +46,7 @@ public enum BusinessLogicError {
 	// ETC
 	MKDIR_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "MKDIR_FAIL", "mkdir failed"),
 	CHMOD_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "CHMOD_FAIL", "chmod failed"), 
+	DELETE_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "DELETE_FAIL", "file delete failed"),
 	// end ETC
 	;
 	private final HttpStatus status;
