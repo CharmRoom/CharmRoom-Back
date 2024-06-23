@@ -136,5 +136,45 @@ public class CharmroomUtilTest {
 				assertThat(savedEtc.isFile()).isTrue();
 			}
 		}
+		
+		@Nested
+		@Order(4)
+		class Delete{
+			@Test
+			void success() {
+				// given
+				MockMultipartFile imageFile = new MockMultipartFile("file", "test1.png", "image/png", "test".getBytes());
+				MockMultipartFile attachmentFile = new MockMultipartFile("file", "test3.html", "text/html", "test".getBytes());
+				
+				Image image = uploadUtil.buildImage(imageFile);
+				Attachment attachment = uploadUtil.buildAttachment(attachmentFile);
+				
+				// when
+				uploadUtil.deleteImageFile(image);
+				uploadUtil.deleteAttachmentFile(attachment);
+				
+				// then
+				File deletedImage = new File(image.getPath());
+				assertThat(deletedImage.exists()).isFalse();
+				File deletedAttachment = new File(attachment.getPath());
+				assertThat(deletedAttachment.exists()).isFalse();
+			}
+			
+			@Test
+			void fail() {
+				// given
+				MockMultipartFile imageFile = new MockMultipartFile("file", "test1.png", "image/png", "test".getBytes());
+				Image image = uploadUtil.buildImage(imageFile);
+				
+				// when
+				uploadUtil.deleteImageFile(image);
+				var thrown = assertThrows(BusinessLogicException.class, () -> {
+					uploadUtil.deleteImageFile(image);
+				});
+				
+				// then
+				assertThat(thrown.getError()).isEqualTo(BusinessLogicError.DELETE_FAIL);
+			}
+		}
 	}
 }

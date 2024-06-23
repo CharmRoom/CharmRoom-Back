@@ -11,6 +11,7 @@ import com.charmroom.charmroom.entity.Image;
 import com.charmroom.charmroom.entity.User;
 import com.charmroom.charmroom.exception.BusinessLogicError;
 import com.charmroom.charmroom.exception.BusinessLogicException;
+import com.charmroom.charmroom.repository.ClubRepository;
 import com.charmroom.charmroom.repository.ImageRepository;
 import com.charmroom.charmroom.repository.UserRepository;
 import com.charmroom.charmroom.util.CharmroomUtil;
@@ -23,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 public class UserService {
 	private final UserRepository userRepository;
 	private final ImageRepository imageRepository;
+	private final ClubRepository clubRepository;
 	
 	private final PasswordEncoder passwordEncoder;
 	private final CharmroomUtil.Upload uploadUtil;
@@ -90,9 +92,11 @@ public class UserService {
 	}
 	
 	@Transactional
-	public User setClub(String username, Club club) {
+	public User setClub(String username, Integer clubId) {
 		User user = userRepository.findByUsername(username)
 				.orElseThrow(() -> new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "username: " + username));
+		Club club = clubRepository.findById(clubId)
+				.orElseThrow(() -> new BusinessLogicException(BusinessLogicError.NOTFOUND_CLUB, "id: " + clubId));
 		user.updateClub(club);
 		return user;
 	}

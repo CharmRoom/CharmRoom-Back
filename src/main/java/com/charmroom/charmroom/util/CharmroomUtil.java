@@ -68,12 +68,25 @@ public class CharmroomUtil {
 					.build();
 		}
 		
+		public void deleteImageFile(Image image) {
+			unlinkFile(image.getPath());
+		}
+		
+		public void deleteAttachmentFile(Attachment attachment) {
+			unlinkFile(attachment.getPath());
+		}
+		
+		private void unlinkFile(String path) {
+			if ( ! new File(path).delete() )
+				throw new BusinessLogicException(BusinessLogicError.DELETE_FAIL);
+		}
+		
 		private String newFileName(String path, MultipartFile file) {
 			String original = file.getOriginalFilename();
-			String ext = original.substring(original.lastIndexOf(".") + 1);
+			String ext = original.substring(original.lastIndexOf("."));
 			String uuid = UUID.randomUUID().toString();
 			
-			return path + File.separator + uuid + "." + ext;
+			return path + File.separator + uuid + ext;
 		}
 		private void uploadFile(String path, MultipartFile file) {
 			try {
@@ -82,7 +95,6 @@ public class CharmroomUtil {
 			} catch (IllegalStateException | IOException e) {
 				log.info("File save failed: " + path);
 			}
-			
 		}
 		
 		private void setPathReady(String path) {
