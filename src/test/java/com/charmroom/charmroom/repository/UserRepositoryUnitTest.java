@@ -2,6 +2,8 @@ package com.charmroom.charmroom.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -9,6 +11,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.test.context.TestPropertySource;
 
 import com.charmroom.charmroom.entity.Club;
@@ -49,7 +53,7 @@ public class UserRepositoryUnitTest {
 				.build();
 	}
 	
-	private User buildUser() {
+	private User buildUser(String username) {
 		Image image = buildImage();
 		imageRepository.save(image);
 		
@@ -57,10 +61,10 @@ public class UserRepositoryUnitTest {
 		clubRepository.save(club);
 		
 		return User.builder()
-				.username("test")
-				.password("test")
-				.email("test@test.com")
-				.nickname("test")
+				.username(username)
+				.password(username)
+				.email(username + "@test.com")
+				.nickname(username)
 				.image(image)
 				.club(club)
 				.build();
@@ -68,7 +72,7 @@ public class UserRepositoryUnitTest {
 	
 	@BeforeEach
 	void setup() {
-		user = buildUser();
+		user = buildUser("1");
 	}
 	
 	@Nested
@@ -167,6 +171,31 @@ public class UserRepositoryUnitTest {
 			var userList = userRepository.findAll();
 			assertThat(userList).isNotNull();
 			assertThat(userList).isEmpty();
+		}
+	}
+	
+	@Nested
+	class PageTest{
+		@Test
+		public void success() {
+			// given
+			User u1 = userRepository.save(buildUser("1"));
+			User u2 = userRepository.save(buildUser("2"));
+			User u3 = userRepository.save(buildUser("3"));
+			User u4 = userRepository.save(buildUser("4"));
+			User u5 = userRepository.save(buildUser("5"));
+			
+			var pageRequest1 = PageRequest.of(0, 3, Direction.ASC, "username");
+			var pageRequest2 = PageRequest.of(1, 3, Direction.ASC, "username");
+			
+			// when
+			var result1 = userRepository.findAll(pageRequest1);
+			var result2 = userRepository.findAll(pageRequest2);
+			
+			assertThat(result1).hasSize(3);
+			assertThat(result1).hasSameElementsAs(List.of(u1, u2, u3));
+			assertThat(result2).hasSize(2);
+			assertThat(result2).hasSameElementsAs(List.of(u4, u5));
 		}
 	}
 }

@@ -1,16 +1,16 @@
-package com.charmroom.charmroom.viewcontroller;
+package com.charmroom.charmroom.controller.api;
 
 import java.security.Principal;
 
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-@Controller
-public class IndexController {
+@RestController
+public class MainController {
 	
 	@GetMapping("/")
 	@ResponseBody

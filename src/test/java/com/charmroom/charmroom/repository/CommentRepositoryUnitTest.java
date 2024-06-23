@@ -59,7 +59,7 @@ public class CommentRepositoryUnitTest {
 		Club club = buildClub();
 		clubRepository.save(club);
 
-		return User.builder().username(username).password("test").email("test@test.com").nickname("test").image(image)
+		return User.builder().username(username).password("test").email(username + "@test.com").nickname(username).image(image)
 				.club(club).build();
 	}
 
@@ -105,6 +105,27 @@ public class CommentRepositoryUnitTest {
 		}
 	}
 
+	@Nested
+	class CreateChildComment{
+		@Test
+		public void success() {
+			// given
+			
+			// when
+			Comment saved = commentRepository.save(comment);
+			Comment child = Comment.builder()
+					.user(saved.getUser())
+					.article(saved.getArticle())
+					.parent(saved)
+					.body("")
+					.build();
+			Comment savedChild = commentRepository.save(child);
+			
+			// then
+			assertThat(savedChild).isNotNull();
+			assertThat(savedChild.getParent()).isEqualTo(saved);
+		}
+	}
 	@Nested
 	class Read {
 		@Test

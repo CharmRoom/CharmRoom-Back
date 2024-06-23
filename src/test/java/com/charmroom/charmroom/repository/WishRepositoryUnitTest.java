@@ -50,8 +50,8 @@ public class WishRepositoryUnitTest {
     private User createTestUser(String username) {
         return User.builder()
                 .username(username)
-                .email("")
-                .nickname("")
+                .email(username + "@test.com")
+                .nickname(username)
                 .password("")
                 .withdraw(false)
                 .build();

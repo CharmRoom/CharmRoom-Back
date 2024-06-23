@@ -35,6 +35,12 @@ public class Comment {
 	@ManyToOne
 	private Article article;
 	
+	@ManyToOne
+	private Comment parent;
+	
+	@OneToMany(mappedBy = "parent")
+	private List<Comment> childList;
+	
 	@Column(columnDefinition = "TEXT")
 	private String body;
 	
@@ -44,10 +50,18 @@ public class Comment {
 	@UpdateTimestamp
 	private LocalDateTime updatedAt;
 	
+	@Builder.Default
+	@Column(nullable = false)
+	private Boolean disabled = false;
+	
 	@OneToMany(mappedBy="comment")
 	private List<CommentLike> commentLike;
 	
 	public void updateBody(String body) {
 		this.body = body;
+	}
+	
+	public void setDisabled(Boolean disabled) {
+		this.disabled = disabled;
 	}
 }

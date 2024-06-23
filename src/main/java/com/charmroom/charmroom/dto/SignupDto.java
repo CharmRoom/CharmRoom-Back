@@ -1,5 +1,6 @@
 package com.charmroom.charmroom.dto;
 
+import com.charmroom.charmroom.dto.validation.ValidUser;
 import com.charmroom.charmroom.entity.User;
 
 import jakarta.validation.constraints.Email;
@@ -10,14 +11,17 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
 public class SignupDto {
 	@Data
 	@NoArgsConstructor
 	@AllArgsConstructor
 	@Builder
+	@ValidUser.Same.PasswordConfirm(password = "password", rePassword = "rePassword")
 	public static class SignupRequestDto {
 		@Size(min = 3, max = 30)
 		@NotEmpty(message = "ID는 필수항목입니다.")
+		@ValidUser.Unique.Username
 		private String username;
 	
 		@Size(max = 255)
@@ -31,10 +35,12 @@ public class SignupDto {
 		@Size(max = 255)
 		@NotEmpty(message = "이메일은 필수항목입니다.")
 		@Email
+		@ValidUser.Unique.Email
 		private String email;
 		
 		@Size(min = 3, max = 30)
 		@NotEmpty(message = "닉네임은 필수항목입니다.")
+		@ValidUser.Unique.Nickname
 		private String nickname;
 	}
 	

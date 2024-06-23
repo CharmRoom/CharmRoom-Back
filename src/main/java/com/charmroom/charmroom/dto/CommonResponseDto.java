@@ -1,5 +1,8 @@
 package com.charmroom.charmroom.dto;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,24 +19,33 @@ public class CommonResponseDto<D> {
 	D data;
 	
 	@Getter
+	@RequiredArgsConstructor
 	public enum Code{
-		BAD_REQUEST("BAD_REQUEST"), OKAY("OKAY"), NOT_FOUND("NOT_FOUND"), CREATED("CREATED"), INVALID("NOT_VALID");
-		Code(String code) {
-			this.code = code;
-		}
-		private String code;
+		BAD_REQUEST(HttpStatus.BAD_REQUEST, "BAD_REQUEST"),
+		OKAY(HttpStatus.OK, "OKAY"),
+		NOT_FOUND(HttpStatus.NOT_FOUND, "NOT_FOUND"),
+		CREATED(HttpStatus.CREATED, "CREATED"),
+		INVALID(HttpStatus.NOT_ACCEPTABLE, "NOT_VALID")
+		;
+
+		private final HttpStatus status;
+		private final String code;
 	}
 	
-	public static <D> CommonResponseDto<D> okay(){
+	public ResponseEntity<CommonResponseDto<D>> toResponse() {
+		return ResponseEntity.status(code.status).body(this);
+	}
+	
+	public static <D> CommonResponseDto<D> ok(){
 		return new CommonResponseDto<>(Code.OKAY, null, null); 
 	}
-	public static <D> CommonResponseDto<D> okay(D data){ 
+	public static <D> CommonResponseDto<D> ok(D data){ 
 		return new CommonResponseDto<>(Code.OKAY, null, data); 
 	}
-	public static <D> CommonResponseDto<D> okay(String message){
+	public static <D> CommonResponseDto<D> ok(String message){
 		return new CommonResponseDto<>(Code.OKAY, message, null);
 	}
-	public static <D> CommonResponseDto<D> okay(String message, D data){
+	public static <D> CommonResponseDto<D> ok(String message, D data){
 		return new CommonResponseDto<>(Code.OKAY, message, data);
 	}
 	public static <D> CommonResponseDto<D> badRequest(){

@@ -44,7 +44,7 @@ public class MarketRepositoryUnitTest {
     }
 
     private User createTestUser(String username) {
-        return User.builder().username(username).email("").nickname("").password("").withdraw(false).build();
+        return User.builder().username(username).email(username + "@test.com").nickname(username).password("").withdraw(false).build();
     }
 
     private Article createTestArticle(String username) {
