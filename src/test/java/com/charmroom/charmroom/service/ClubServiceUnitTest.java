@@ -1,14 +1,14 @@
 package com.charmroom.charmroom.service;
 
-import com.charmroom.charmroom.entity.Club;
-import com.charmroom.charmroom.entity.Image;
-import com.charmroom.charmroom.entity.User;
-import com.charmroom.charmroom.exception.BusinessLogicError;
-import com.charmroom.charmroom.exception.BusinessLogicException;
-import com.charmroom.charmroom.repository.ClubRepository;
-import com.charmroom.charmroom.repository.ImageRepository;
-import com.charmroom.charmroom.repository.UserRepository;
-import com.charmroom.charmroom.util.CharmroomUtil;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
+
+import java.util.List;
+import java.util.Optional;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -23,14 +23,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.mock.web.MockMultipartFile;
 
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.verify;
+import com.charmroom.charmroom.entity.Club;
+import com.charmroom.charmroom.entity.Image;
+import com.charmroom.charmroom.exception.BusinessLogicError;
+import com.charmroom.charmroom.exception.BusinessLogicException;
+import com.charmroom.charmroom.repository.ClubRepository;
+import com.charmroom.charmroom.repository.ImageRepository;
+import com.charmroom.charmroom.repository.UserRepository;
+import com.charmroom.charmroom.util.CharmroomUtil;
 
 @ExtendWith(MockitoExtension.class)
 public class ClubServiceUnitTest {
@@ -50,15 +50,7 @@ public class ClubServiceUnitTest {
     private String description;
     private String contact;
     private int clubId;
-    private String username;
-    private User user;
-
-    private User createUser(String prefix) {
-        return User.builder()
-                .username(prefix + username)
-                .build();
-    }
-
+    
     private Club createClub(String prefix) {
         return Club.builder()
                 .id(clubId)
@@ -75,7 +67,6 @@ public class ClubServiceUnitTest {
         description = "club description";
         contact = "club contact";
         club = createClub("");
-        user = createUser("");
     }
 
     @Nested

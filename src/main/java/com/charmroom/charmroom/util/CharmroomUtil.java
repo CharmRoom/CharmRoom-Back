@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.charmroom.charmroom.entity.Article;
 import com.charmroom.charmroom.entity.Attachment;
 import com.charmroom.charmroom.entity.Image;
 import com.charmroom.charmroom.entity.enums.AttachmentType;
@@ -51,7 +52,7 @@ public class CharmroomUtil {
 					.build();
 		}
 		
-		public Attachment buildAttachment(MultipartFile attachment) {
+		public Attachment buildAttachment(MultipartFile attachment, Article article) {
 			String originalName = attachment.getOriginalFilename();
 			String fullPath = newFileName(attachmentUploadPath, attachment);
 			uploadFile(fullPath, attachment);
@@ -62,6 +63,7 @@ public class CharmroomUtil {
 				type = AttachmentType.VIDEO;
 			
 			return Attachment.builder()
+					.article(article)
 					.path(fullPath)
 					.originalName(originalName)
 					.type(type)

@@ -19,6 +19,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.TestPropertySource;
 
+import com.charmroom.charmroom.entity.Article;
 import com.charmroom.charmroom.entity.Attachment;
 import com.charmroom.charmroom.entity.Image;
 import com.charmroom.charmroom.entity.enums.AttachmentType;
@@ -109,10 +110,12 @@ public class CharmroomUtilTest {
 				MockMultipartFile imageFile = new MockMultipartFile("file", "test1.png", "image/png", "test".getBytes());
 				MockMultipartFile videoFile = new MockMultipartFile("file", "test2.mp4", "video/mp4", "test".getBytes());
 				MockMultipartFile etcFile = new MockMultipartFile("file", "test3.html", "text/html", "test".getBytes());
+				Article article = Article.builder()
+						.build();
 				// when
-				Attachment image = uploadUtil.buildAttachment(imageFile);
-				Attachment video = uploadUtil.buildAttachment(videoFile);
-				Attachment etc = uploadUtil.buildAttachment(etcFile);
+				Attachment image = uploadUtil.buildAttachment(imageFile, article);
+				Attachment video = uploadUtil.buildAttachment(videoFile, article);
+				Attachment etc = uploadUtil.buildAttachment(etcFile, article);
 				
 				// then
 				assertThat(image).isNotNull();
@@ -147,7 +150,9 @@ public class CharmroomUtilTest {
 				MockMultipartFile attachmentFile = new MockMultipartFile("file", "test3.html", "text/html", "test".getBytes());
 				
 				Image image = uploadUtil.buildImage(imageFile);
-				Attachment attachment = uploadUtil.buildAttachment(attachmentFile);
+				Article article = Article.builder()
+						.build();
+				Attachment attachment = uploadUtil.buildAttachment(attachmentFile, article);
 				
 				// when
 				uploadUtil.deleteImageFile(image);
