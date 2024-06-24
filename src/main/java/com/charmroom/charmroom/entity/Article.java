@@ -1,6 +1,7 @@
 package com.charmroom.charmroom.entity;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -54,8 +55,9 @@ public class Article {
     @OneToMany(mappedBy = "article")
     private List<Comment> commentList;
     
+    @Builder.Default
     @OneToMany(mappedBy = "article")
-    private List<Attachment> attachmentList;
+    private List<Attachment> attachmentList = new ArrayList<>();
 
     public void updateTitle(String title) {
         this.title = title;

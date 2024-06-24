@@ -1,5 +1,13 @@
 package com.charmroom.charmroom.service;
 
+import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.charmroom.charmroom.entity.Article;
 import com.charmroom.charmroom.entity.Attachment;
 import com.charmroom.charmroom.entity.Board;
@@ -9,15 +17,8 @@ import com.charmroom.charmroom.exception.BusinessLogicException;
 import com.charmroom.charmroom.repository.ArticleRepository;
 import com.charmroom.charmroom.repository.AttachmentRepository;
 import com.charmroom.charmroom.util.CharmroomUtil;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -27,22 +28,22 @@ public class ArticleService {
     private final CharmroomUtil.Upload uploadUtil;
 
     public Article createArticle(User user, Board board, String title, String body, List<MultipartFile> fileList) {
-        List<Attachment> attachmentList = new ArrayList<>();
-
-        for (MultipartFile attachment : fileList) {
-            Attachment attachmentEntity = uploadUtil.buildAttachment(attachment);
-            Attachment saved = attachmentRepository.save(attachmentEntity);
-            attachmentList.add(saved);
-        }
+        
 
         Article article = Article.builder()
                 .title(title)
                 .body(body)
                 .user(user)
                 .board(board)
-                .attachmentList(attachmentList)
                 .build();
 
+
+        for (MultipartFile attachment : fileList) {
+            Attachment attachmentEntity = uploadUtil.buildAttachment(attachment, article);
+            Attachment saved = attachmentRepository.save(attachmentEntity);
+            article.getAttachmentList().add(saved);
+        }
+        
         return articleRepository.save(article);
     }
 
