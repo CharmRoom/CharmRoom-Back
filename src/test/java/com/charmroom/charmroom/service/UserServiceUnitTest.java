@@ -3,8 +3,10 @@ package com.charmroom.charmroom.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
 
 import java.util.List;
 import java.util.Optional;
@@ -86,6 +88,30 @@ public class UserServiceUnitTest {
 			
 			// when
 			User created = userService.create(username, email, nickname, password);
+			// then
+			assertThat(created).isNotNull();
+			assertThat(created.getPassword()).isEqualTo(mockedUser.getPassword());
+		}
+		
+		@Test
+		void successWithImage() {
+			// given
+			doReturn(mockedUser).when(userRepository).save(any(User.class));
+			doReturn(false).when(userRepository).existsByUsername(username);
+			doReturn(false).when(userRepository).existsByEmail(email);
+			doReturn(false).when(userRepository).existsByNickname(nickname);
+			
+			MockMultipartFile imageFile = new MockMultipartFile("file", "test.png", "image/png", "test".getBytes());
+			Image image = Image.builder()
+					.path("")
+					.originalName("")
+					.build(); 
+			doReturn(image).when(uploadUtil).buildImage(imageFile);
+			doReturn(image).when(imageRepository).save(image);
+			
+			// when
+			User created = userService.create(username, email, nickname, password, imageFile);
+			
 			// then
 			assertThat(created).isNotNull();
 			assertThat(created.getPassword()).isEqualTo(mockedUser.getPassword());
@@ -339,6 +365,32 @@ public class UserServiceUnitTest {
 			User changed = userService.setImage(username, imageFile);
 			
 			// then
+			assertThat(changed.getImage()).isEqualTo(image);
+		}
+		
+		@Test
+		void successWhenImageAlreadyExists() {
+			// given
+			MockMultipartFile imageFile = new MockMultipartFile("file", "test.png", "image/png", "test".getBytes());
+			Image image = Image.builder()
+					.path("")
+					.originalName("")
+					.build(); 
+			User user = User.builder()
+					.image(image)
+					.build();
+			doReturn(Optional.of(user)).when(userRepository).findByUsername(username);
+			
+			doNothing().when(uploadUtil).deleteImageFile(user.getImage());
+			
+			doReturn(image).when(uploadUtil).buildImage(imageFile);
+			doReturn(image).when(imageRepository).save(image);
+			
+			// when
+			User changed = userService.setImage(username, imageFile);
+			
+			// then
+			verify(uploadUtil).deleteImageFile(user.getImage());
 			assertThat(changed.getImage()).isEqualTo(image);
 		}
 		@Test
