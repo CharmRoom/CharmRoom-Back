@@ -29,10 +29,16 @@ public class UserService {
 	private final PasswordEncoder passwordEncoder;
 	private final CharmroomUtil.Upload uploadUtil;
 	
-	public User create(String username, String email, String nickname, String password) {
+	public User create(String username, String email, String nickname, String password, MultipartFile imageFile) {
 		if (isDuplicatedUsername(username)) throw new BusinessLogicException(BusinessLogicError.DUPLICATED_USERNAME);
 		if (isDuplicatedEmail(email)) throw new BusinessLogicException(BusinessLogicError.DUPLICATED_EMAIL);
 		if (isDuplicatedNickname(nickname)) throw new BusinessLogicException(BusinessLogicError.DUPLICATED_NICKNAME);
+		
+		Image userImage = null;
+		if (imageFile != null) {
+			Image image = uploadUtil.buildImage(imageFile);
+			userImage = imageRepository.save(image);
+		}
 		
 		User user = User.builder()
 				.username(username)
@@ -40,10 +46,15 @@ public class UserService {
 				.nickname(nickname)
 				.password(passwordEncoder.encode(password))
 				.withdraw(false)
+				.image(userImage)
 				.build();
-		
 		return userRepository.save(user);
 	}
+	
+	public User create(String username, String email, String nickname, String password) {
+		return create(username, email, nickname, password, null);
+	}
+	
 	
 	public Page<User> getAllUsersByPageable(Pageable pageable){
 		return userRepository.findAll(pageable);
@@ -105,6 +116,9 @@ public class UserService {
 	public User setImage(String username, MultipartFile imageFile) {
 		User user = userRepository.findByUsername(username)
 				.orElseThrow(() -> new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "username: " + username));
+		if (user.getImage() != null) {
+			uploadUtil.deleteImageFile(user.getImage());
+		}
 		Image image = uploadUtil.buildImage(imageFile);
 		Image saved = imageRepository.save(image);
 		user.updateImage(saved);
