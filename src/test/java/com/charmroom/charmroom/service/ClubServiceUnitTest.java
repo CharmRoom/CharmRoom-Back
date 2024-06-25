@@ -3,6 +3,7 @@ package com.charmroom.charmroom.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
@@ -50,7 +51,7 @@ public class ClubServiceUnitTest {
     private String description;
     private String contact;
     private int clubId;
-    
+
     private Club createClub(String prefix) {
         return Club.builder()
                 .id(clubId)
@@ -78,8 +79,17 @@ public class ClubServiceUnitTest {
             doReturn(club).when(clubRepository).save(any(Club.class));
             doReturn(false).when(clubRepository).existsByName(clubName);
 
+            MockMultipartFile imageFile = new MockMultipartFile("file", "test.png", "image/png", "test".getBytes());
+
+            Image image = Image.builder()
+                    .path("")
+                    .originalName("")
+                    .build();
+
+            doReturn(image).when(uploadUtil).buildImage(imageFile);
+
             // when
-            Club created = clubService.createClub(clubName, description, contact);
+            Club created = clubService.createClub(clubName, description, contact, imageFile);
 
             // then
             verify(clubRepository).save(any(Club.class));
@@ -90,9 +100,13 @@ public class ClubServiceUnitTest {
         void fail_ClubNameDuplicated() {
             // given
             doReturn(true).when(clubRepository).existsByName(clubName);
+
+            MockMultipartFile imageFile = new MockMultipartFile("file", "test.png", "image/png", "test".getBytes());
+
             // when
             BusinessLogicException thrown = assertThrows(BusinessLogicException.class, () ->
-                    clubService.createClub(clubName, description, contact));
+                    clubService.createClub(clubName, description, contact, imageFile));
+
             // then
             assertThat(thrown.getError()).isEqualTo(BusinessLogicError.DUPLICATED_CLUBNAME);
         }
@@ -306,5 +320,34 @@ public class ClubServiceUnitTest {
             // then
             assertThat(thrown.getError()).isEqualTo(BusinessLogicError.NOTFOUND_CLUB);
         }
+
+        @Test
+        void whenClubImageAlreadyExists() {
+            // given
+            MockMultipartFile imageFile = new MockMultipartFile("file", "test.png", "image/png", "test".getBytes());
+
+            Image image = Image.builder()
+                    .path("")
+                    .originalName("")
+                    .build();
+
+            Club club = Club.builder()
+                    .image(image)
+                    .build();
+
+            doReturn(Optional.of(club)).when(clubRepository).findByName(club.getName());
+            doNothing().when(uploadUtil).deleteImageFile(club.getImage());
+            doReturn(image).when(uploadUtil).buildImage(imageFile);
+            doReturn(image).when(imageRepository).save(image);
+
+            // when
+            Club updated = clubService.setImage(club.getName(), imageFile);
+
+            // then
+            verify(uploadUtil).deleteImageFile(club.getImage());
+            assertThat(updated.getImage()).isEqualTo(image);
+        }
     }
 }
+
+
