@@ -1,8 +1,8 @@
 package com.charmroom.charmroom.controller.api;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,13 +18,18 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
-public class AuthApiController {
+public class AuthController {
 	private final UserService userService;
 	
 	@PostMapping("/signup")
 	public ResponseEntity<?> signup(
-			@RequestBody @Valid SignupRequestDto signupRequestDto) {
-		User created = userService.create(signupRequestDto.getUsername(), signupRequestDto.getEmail(), signupRequestDto.getNickname(), signupRequestDto.getPassword());
-		return CommonResponseDto.ok(SignupResponseDto.fromEntity(created)).toResponse();
+			@ModelAttribute @Valid SignupRequestDto signupRequestDto) {
+		User created = userService.create(
+				signupRequestDto.getUsername(),
+				signupRequestDto.getEmail(), 
+				signupRequestDto.getNickname(),
+				signupRequestDto.getPassword(),
+				signupRequestDto.getImage());
+		return CommonResponseDto.created(SignupResponseDto.fromEntity(created)).toResponse();
 	}
 }

@@ -22,7 +22,7 @@ public class CommonResponseDto<D> {
 	@RequiredArgsConstructor
 	public enum Code{
 		BAD_REQUEST(HttpStatus.BAD_REQUEST, "BAD_REQUEST"),
-		OKAY(HttpStatus.OK, "OKAY"),
+		OKAY(HttpStatus.OK, "OK"),
 		NOT_FOUND(HttpStatus.NOT_FOUND, "NOT_FOUND"),
 		CREATED(HttpStatus.CREATED, "CREATED"),
 		INVALID(HttpStatus.NOT_ACCEPTABLE, "NOT_VALID")
