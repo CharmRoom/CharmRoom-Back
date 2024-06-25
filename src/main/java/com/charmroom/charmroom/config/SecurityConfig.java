@@ -1,4 +1,4 @@
-package com.charmroom.charmroom.security;
+package com.charmroom.charmroom.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,6 +11,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import com.charmroom.charmroom.security.JWTFilter;
+import com.charmroom.charmroom.security.JWTUtil;
+import com.charmroom.charmroom.security.LoginFilter;
 
 import lombok.RequiredArgsConstructor;
 
@@ -37,7 +41,7 @@ public class SecurityConfig {
 		// 경로 별 인가 작업
 		http.authorizeHttpRequests((authorizeHttpRequests) -> authorizeHttpRequests
 				// API permit list
-				.requestMatchers("/api/auth/login", "/api/auth/signup").permitAll()
+				.requestMatchers("/api/auth/login", "/api/auth/signup", "/static/image/**").permitAll()
 				.requestMatchers("/", "/error/**" , "/login", "/auth/login", "/auth/signup").permitAll()
 				.requestMatchers("/api/admin/**").hasAnyAuthority("ROLE_ADMIN")
 				.anyRequest().authenticated()
