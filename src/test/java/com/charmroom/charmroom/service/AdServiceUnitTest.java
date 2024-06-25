@@ -28,6 +28,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
@@ -180,8 +181,8 @@ public class AdServiceUnitTest {
     }
 
     @Nested
-    @DisplayName("Update Image")
-    class UpdateImage {
+    @DisplayName("Set Image")
+    class SetImage {
         @Test
         void success() {
             // given
@@ -193,7 +194,7 @@ public class AdServiceUnitTest {
             doReturn(Optional.of(ad)).when(adRepository).findById(adId);
 
             // when
-            Ad updated = adService.updateImage(adId, imageFile);
+            Ad updated = adService.setImage(adId, imageFile);
 
             // then
             assertThat(updated).isNotNull();
@@ -209,11 +210,38 @@ public class AdServiceUnitTest {
 
             // when
             BusinessLogicException thrown = assertThrows(BusinessLogicException.class, () ->
-                    adService.updateImage(adId, imageFile));
+                    adService.setImage(adId, imageFile));
 
             // then
             assertThat(thrown).isInstanceOf(BusinessLogicException.class);
             assertThat(thrown.getMessage()).isEqualTo("adId: " + adId);
+        }
+
+        @Test
+        void whenAdImageAlreadyExists() {
+            // given
+            MockMultipartFile imageFile = new MockMultipartFile("file", "test.png", "image/png", "test".getBytes());
+
+            Image image = Image.builder()
+                    .path("")
+                    .originalName("")
+                    .build();
+
+            Ad ad = Ad.builder()
+                    .image(image)
+                    .build();
+
+            doReturn(Optional.of(ad)).when(adRepository).findById(ad.getId());
+            doNothing().when(imageRepository).delete(ad.getImage());
+            doReturn(image).when(uploadUtil).buildImage(imageFile);
+            doReturn(image).when(imageRepository).save(image);
+
+            // when
+            Ad updated = adService.setImage(ad.getId(), imageFile);
+
+            // then
+            verify(imageRepository).delete(ad.getImage());
+            assertThat(updated.getImage()).isEqualTo(image);
         }
     }
 

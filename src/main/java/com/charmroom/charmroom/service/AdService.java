@@ -63,14 +63,19 @@ public class AdService {
     }
 
     @Transactional
-    public Ad updateImage(Integer adId, MultipartFile imageFile) {
-        Image image = uploadUtil.buildImage(imageFile);
-        Image savedImage = imageRepository.save(image);
-
+    public Ad setImage(Integer adId, MultipartFile imageFile) {
         Ad ad = adRepository.findById(adId).orElseThrow(() ->
                 new BusinessLogicException(BusinessLogicError.NOTFOUND_AD, "adId: " + adId));
 
-        ad.updateImage(savedImage);
+        Image adImage = null;
+        if (ad.getImage() != null) {
+            imageRepository.delete(ad.getImage());
+        }
+
+        Image image = uploadUtil.buildImage(imageFile);
+        adImage = imageRepository.save(image);
+
+        ad.updateImage(adImage);
         return ad;
     }
 

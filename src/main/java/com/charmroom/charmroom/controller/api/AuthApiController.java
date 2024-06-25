@@ -6,9 +6,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.charmroom.charmroom.dto.CommonResponseDto;
-import com.charmroom.charmroom.dto.SignupDto.SignupRequestDto;
-import com.charmroom.charmroom.dto.SignupDto.SignupResponseDto;
+import com.charmroom.charmroom.dto.presentation.CommonResponseDto;
+import com.charmroom.charmroom.dto.presentation.SignupDto.SignupRequestDto;
+import com.charmroom.charmroom.dto.presentation.SignupDto.SignupResponseDto;
 import com.charmroom.charmroom.entity.User;
 import com.charmroom.charmroom.service.UserService;
 

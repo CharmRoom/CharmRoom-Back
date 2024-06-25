@@ -21,16 +21,27 @@ public class ClubService {
     private final ImageRepository imageRepository;
     private final CharmroomUtil.Upload uploadUtil;
 
-    public Club createClub(String clubName, String description, String contact) {
+    public Club createClub(String clubName, String description, String contact, MultipartFile imageFile) {
         if(isDuplicateClubName(clubName)) throw new BusinessLogicException(BusinessLogicError.DUPLICATED_CLUBNAME);
+
+        Image clubImage = null;
+        if (imageFile != null) {
+            Image image = uploadUtil.buildImage(imageFile);
+            clubImage = imageRepository.save(image);
+        }
 
         Club club = Club.builder()
                 .name(clubName)
                 .description(description)
                 .contact(contact)
+                .image(clubImage)
                 .build();
 
         return clubRepository.save(club);
+    }
+
+    public Club createClub(String clubName, String description, String contact) {
+        return createClub(clubName, description, contact, null);
     }
 
     public boolean isDuplicateClubName(String clubName) {
@@ -85,6 +96,10 @@ public class ClubService {
     public Club setImage(String clubName, MultipartFile imageFile) {
         Club club = clubRepository.findByName(clubName).orElseThrow(() ->
                 new BusinessLogicException(BusinessLogicError.NOTFOUND_CLUB, "clubName: " + clubName));
+
+        if (club.getImage() != null) {
+            uploadUtil.deleteImageFile(club.getImage());
+        }
 
         Image image = uploadUtil.buildImage(imageFile);
         Image saved = imageRepository.save(image);
