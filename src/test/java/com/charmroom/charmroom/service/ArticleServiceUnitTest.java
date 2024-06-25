@@ -1,16 +1,16 @@
 package com.charmroom.charmroom.service;
 
-import com.charmroom.charmroom.entity.Article;
-import com.charmroom.charmroom.entity.Attachment;
-import com.charmroom.charmroom.entity.Board;
-import com.charmroom.charmroom.entity.User;
-import com.charmroom.charmroom.entity.enums.AttachmentType;
-import com.charmroom.charmroom.entity.enums.BoardType;
-import com.charmroom.charmroom.exception.BusinessLogicError;
-import com.charmroom.charmroom.exception.BusinessLogicException;
-import com.charmroom.charmroom.repository.ArticleRepository;
-import com.charmroom.charmroom.repository.AttachmentRepository;
-import com.charmroom.charmroom.util.CharmroomUtil;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.List;
+import java.util.Optional;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -29,15 +29,17 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import com.charmroom.charmroom.entity.Article;
+import com.charmroom.charmroom.entity.Attachment;
+import com.charmroom.charmroom.entity.Board;
+import com.charmroom.charmroom.entity.User;
+import com.charmroom.charmroom.entity.enums.AttachmentType;
+import com.charmroom.charmroom.entity.enums.BoardType;
+import com.charmroom.charmroom.exception.BusinessLogicError;
+import com.charmroom.charmroom.exception.BusinessLogicException;
+import com.charmroom.charmroom.repository.ArticleRepository;
+import com.charmroom.charmroom.repository.AttachmentRepository;
+import com.charmroom.charmroom.util.CharmroomUtil;
 
 @ExtendWith(MockitoExtension.class)
 public class ArticleServiceUnitTest {
@@ -135,9 +137,9 @@ public class ArticleServiceUnitTest {
         @Test
         void success() {
             // given
-            doReturn(attachment1).when(uploadUtil).buildAttachment(multipartFile1);
-            doReturn(attachment2).when(uploadUtil).buildAttachment(multipartFile2);
-            doReturn(attachment3).when(uploadUtil).buildAttachment(multipartFile3);
+            doReturn(attachment1).when(uploadUtil).buildAttachment(eq(multipartFile1), any(Article.class));
+            doReturn(attachment2).when(uploadUtil).buildAttachment(eq(multipartFile2), any(Article.class));
+            doReturn(attachment3).when(uploadUtil).buildAttachment(eq(multipartFile3), any(Article.class));
             doReturn(attachment1).when(attachmentRepository).save(attachment1);
             doReturn(attachment2).when(attachmentRepository).save(attachment2);
             doReturn(attachment3).when(attachmentRepository).save(attachment3);
