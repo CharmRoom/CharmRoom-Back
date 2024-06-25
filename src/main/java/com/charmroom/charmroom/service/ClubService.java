@@ -40,6 +40,10 @@ public class ClubService {
         return clubRepository.save(club);
     }
 
+    public Club createClub(String clubName, String description, String contact) {
+        return createClub(clubName, description, contact, null);
+    }
+
     public boolean isDuplicateClubName(String clubName) {
         return clubRepository.existsByName(clubName);
     }

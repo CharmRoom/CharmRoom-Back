@@ -74,7 +74,7 @@ public class ClubServiceUnitTest {
     @DisplayName("Create Club")
     class CreateClub {
         @Test
-        void success() {
+        void success_whenImageFileExists() {
             // given
             doReturn(club).when(clubRepository).save(any(Club.class));
             doReturn(false).when(clubRepository).existsByName(clubName);
@@ -90,6 +90,25 @@ public class ClubServiceUnitTest {
 
             // when
             Club created = clubService.createClub(clubName, description, contact, imageFile);
+
+            // then
+            verify(clubRepository).save(any(Club.class));
+            assertThat(created).isNotNull();
+        }
+
+        @Test
+        void success_whenImageFileNotExists() {
+            // given
+            doReturn(club).when(clubRepository).save(any(Club.class));
+            doReturn(false).when(clubRepository).existsByName(clubName);
+
+            Image image = Image.builder()
+                    .path("")
+                    .originalName("")
+                    .build();
+
+            // when
+            Club created = clubService.createClub(clubName, description, contact);
 
             // then
             verify(clubRepository).save(any(Club.class));
