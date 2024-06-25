@@ -2,6 +2,7 @@ package com.charmroom.charmroom.service;
 
 import java.util.List;
 
+import com.charmroom.charmroom.repository.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ public class ArticleService {
     private final ArticleRepository articleRepository;
     private final AttachmentRepository attachmentRepository;
     private final CharmroomUtil.Upload uploadUtil;
+    private final UserRepository userRepository;
 
     public Article createArticle(User user, Board board, String title, String body, List<MultipartFile> fileList) {
         
@@ -58,12 +60,19 @@ public class ArticleService {
     }
 
     @Transactional
-    public Article updateArticle(Integer articleId, Article updated) {
+    public Article updateArticle(Integer articleId, String username, String title, String body) {
+        User user = userRepository.findByUsername(username).orElseThrow(() ->
+                new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "username: " + username));
+
         Article originalArticle = articleRepository.findById(articleId).orElseThrow(
                 () -> new BusinessLogicException(BusinessLogicError.NOTFOUND_ARTICLE, "articleId: " + articleId)
         );
-        originalArticle.updateTitle(updated.getTitle());
-        originalArticle.updatedBody(updated.getBody());
+
+        if (!originalArticle.getUser().equals(user)) {
+            throw new BusinessLogicException(BusinessLogicError.UNAUTHORIZED_ARTICLE, "articleId: " + articleId);
+        }
+        originalArticle.updateTitle(title);
+        originalArticle.updatedBody(body);
 
         return originalArticle;
     }

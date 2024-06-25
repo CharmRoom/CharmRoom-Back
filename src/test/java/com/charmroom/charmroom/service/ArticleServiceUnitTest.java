@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 import java.util.Optional;
 
+import com.charmroom.charmroom.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -49,6 +50,8 @@ public class ArticleServiceUnitTest {
     private AttachmentRepository attachmentRepository;
     @Mock
     private CharmroomUtil.Upload uploadUtil;
+    @Mock
+    private UserRepository userRepository;
     @Spy
     private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     @InjectMocks
@@ -231,41 +234,53 @@ public class ArticleServiceUnitTest {
         @Test
         void success() {
             // given
-            Article updated = Article.builder()
-                    .title("updated")
-                    .body("updated")
-                    .build();
-
+            doReturn(Optional.of(user)).when(userRepository).findByUsername(user.getUsername());
             doReturn(Optional.of(article)).when(articleRepository).findById(article.getId());
 
+            String newTitle = "new title";
+            String newBody = "new body";
+
             // when
-            Article updatedArticle = articleService.updateArticle(article.getId(), updated);
+            Article updatedArticle = articleService.updateArticle(article.getId(), user.getUsername(), newTitle, newBody);
 
             // then
             verify(articleRepository).findById(article.getId());
-            assertThat(updatedArticle.getTitle()).isEqualTo(updated.getTitle());
-            assertThat(updatedArticle.getBody()).isEqualTo(updated.getBody());
+            assertThat(updatedArticle.getTitle()).isEqualTo(newTitle);
+            assertThat(updatedArticle.getBody()).isEqualTo(newBody);
         }
 
         @Test
         void fail_noArticleFound() {
             // given
-            Article updated = Article.builder()
-                    .title("updated")
-                    .body("updated")
-                    .build();
-
+            doReturn(Optional.of(user)).when(userRepository).findByUsername(user.getUsername());
             doReturn(Optional.empty()).when(articleRepository).findById(article.getId());
 
             // when
             BusinessLogicException thrown = assertThrows(BusinessLogicException.class, () ->
-                    articleService.updateArticle(article.getId(), updated)
+                    articleService.updateArticle(article.getId(), user.getUsername(), "", "")
             );
 
             // then
             verify(articleRepository).findById(article.getId());
             assertThat(thrown.getError()).isEqualTo(BusinessLogicError.NOTFOUND_ARTICLE);
             assertThat(thrown.getMessage()).isEqualTo("articleId: " + article.getId());
+        }
+
+        @Test
+        void fail_unauthorizedUserUpdateArticle() {
+            // given
+            User unauthorized = User.builder()
+                    .username("unauthorized")
+                    .build();
+            doReturn(Optional.of(unauthorized)).when(userRepository).findByUsername(unauthorized.getUsername());
+            doReturn(Optional.of(article)).when(articleRepository).findById(article.getId());
+
+            // when
+            BusinessLogicException thrown = assertThrows(BusinessLogicException.class, () ->
+                    articleService.updateArticle(article.getId(), unauthorized.getUsername(), "", ""));
+
+            // then
+            assertThat(thrown.getError()).isEqualTo(BusinessLogicError.UNAUTHORIZED_ARTICLE);
         }
     }
 
