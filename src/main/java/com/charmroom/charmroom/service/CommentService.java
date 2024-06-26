@@ -2,6 +2,8 @@ package com.charmroom.charmroom.service;
 
 import org.springframework.stereotype.Service;
 
+import com.charmroom.charmroom.dto.business.CommentDto;
+import com.charmroom.charmroom.dto.business.CommentMapper;
 import com.charmroom.charmroom.entity.Article;
 import com.charmroom.charmroom.entity.Comment;
 import com.charmroom.charmroom.entity.User;
@@ -21,7 +23,7 @@ public class CommentService {
 	private final ArticleRepository articleRepository;
 	private final CommentRepository commentRepository;
 	
-	public Comment create(Integer articleId, String username, String body, Integer parentId) {
+	public CommentDto create(Integer articleId, String username, String body, Integer parentId) {
 		User user = userRepository.findByUsername(username)
 				.orElseThrow(() -> new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "username: " + username));
 		Article article = articleRepository.findById(articleId)
@@ -40,15 +42,16 @@ public class CommentService {
 				.body(body)
 				.build();
 		
-		return commentRepository.save(comment);
+		Comment saved = commentRepository.save(comment);
+		return CommentMapper.toDto(saved);
 	}
 	
-	public Comment create(Integer articleId, String username, String body) {
+	public CommentDto create(Integer articleId, String username, String body) {
 		return create(articleId, username, body, 0);
 	}
 
 	@Transactional
-	public Comment update(Integer commentId, String username, String body) {
+	public CommentDto update(Integer commentId, String username, String body) {
 		User user = userRepository.findByUsername(username)
 				.orElseThrow(() -> new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "username: " + username));
 		Comment comment = commentRepository.findById(commentId)
@@ -56,11 +59,11 @@ public class CommentService {
 		if (!comment.getUser().equals(user))
 			throw new BusinessLogicException(BusinessLogicError.UNAUTHORIZED_COMMENT, "username: " + username);
 		comment.updateBody(body);
-		return comment;
+		return CommentMapper.toDto(comment);
 	}
 	
 	@Transactional
-	public Comment setDisable(Integer commentId, String username, Boolean disabled) {
+	public CommentDto setDisable(Integer commentId, String username, Boolean disabled) {
 		User user = userRepository.findByUsername(username)
 				.orElseThrow(() -> new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "username: " + username));
 		Comment comment = commentRepository.findById(commentId)
@@ -68,14 +71,14 @@ public class CommentService {
 		if (!comment.getUser().equals(user))
 			throw new BusinessLogicException(BusinessLogicError.UNAUTHORIZED_COMMENT, "username: " + username);
 		comment.setDisabled(disabled);
-		return comment;
+		return CommentMapper.toDto(comment);
 	}
 	
-	public Comment disable(Integer commentId, String username) {
+	public CommentDto disable(Integer commentId, String username) {
 		return setDisable(commentId, username, true);
 	}
 	
-	public Comment enable(Integer commentId, String username) {
+	public CommentDto enable(Integer commentId, String username) {
 		return setDisable(commentId, username, false);
 	}
 }

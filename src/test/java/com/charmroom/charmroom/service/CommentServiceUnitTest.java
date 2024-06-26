@@ -213,7 +213,7 @@ public class CommentServiceUnitTest {
 			doReturn(Optional.of(comment)).when(commentRepository).findById(comment.getId());
 			
 			// when
-			Comment disabled = commentService.disable(comment.getId(), user.getUsername());
+			var disabled = commentService.disable(comment.getId(), user.getUsername());
 			
 			// then
 			assertThat(disabled.getDisabled()).isTrue();
