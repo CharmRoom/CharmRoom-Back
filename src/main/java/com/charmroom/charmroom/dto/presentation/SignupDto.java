@@ -53,16 +53,5 @@ public class SignupDto {
 		private String email;
 		private String nickname;
 		private String role;
-		
-		public static SignupResponseDto fromEntity(User user) {
-			return SignupResponseDto.builder()
-					.username(user.getUsername())
-					.email(user.getEmail())
-					.nickname(user.getNickname())
-					.role(user.getLevel().getValue())
-					.build();
-		}
 	}
-	
-	
 }
