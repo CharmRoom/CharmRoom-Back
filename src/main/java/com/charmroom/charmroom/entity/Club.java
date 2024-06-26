@@ -1,5 +1,6 @@
 package com.charmroom.charmroom.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.Column;
@@ -37,8 +38,9 @@ public class Club {
     @OneToOne
     private Image image;
     
+    @Builder.Default
     @OneToMany(mappedBy = "club")
-    private List<User> userList;
+    private List<User> userList = new ArrayList<>();
 
     public void updateName(String name) {
         this.name = name;

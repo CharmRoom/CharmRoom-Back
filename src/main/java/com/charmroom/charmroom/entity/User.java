@@ -1,5 +1,6 @@
 package com.charmroom.charmroom.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.charmroom.charmroom.entity.enums.UserLevel;
@@ -56,8 +57,9 @@ public class User {
 	@ManyToOne
 	private Club club;
 	
+	@Builder.Default
 	@OneToMany(mappedBy = "user")
-	private List<Point> pointList;
+	private List<Point> pointList = new ArrayList<>();
 	
 	public void updateNickname(String nickname) {
 		this.nickname = nickname;
