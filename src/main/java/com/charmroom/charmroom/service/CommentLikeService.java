@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service;
 
 import com.charmroom.charmroom.dto.business.CommentLikeDto;
 import com.charmroom.charmroom.dto.business.CommentLikeMapper;
-import com.charmroom.charmroom.dto.business.CommentMapper;
 import com.charmroom.charmroom.entity.Comment;
 import com.charmroom.charmroom.entity.CommentLike;
 import com.charmroom.charmroom.entity.User;
