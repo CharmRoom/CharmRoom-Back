@@ -52,8 +52,9 @@ public class Article {
     @Builder.Default
     private Integer view = 0;
     
+    @Builder.Default
     @OneToMany(mappedBy = "article")
-    private List<Comment> commentList;
+    private List<Comment> commentList = new ArrayList<>();
     
     @Builder.Default
     @OneToMany(mappedBy = "article")

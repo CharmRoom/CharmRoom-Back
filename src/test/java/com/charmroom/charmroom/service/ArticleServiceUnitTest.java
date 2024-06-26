@@ -11,7 +11,6 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 import java.util.Optional;
 
-import com.charmroom.charmroom.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -30,6 +29,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.charmroom.charmroom.dto.business.ArticleDto;
 import com.charmroom.charmroom.entity.Article;
 import com.charmroom.charmroom.entity.Attachment;
 import com.charmroom.charmroom.entity.Board;
@@ -40,6 +40,7 @@ import com.charmroom.charmroom.exception.BusinessLogicError;
 import com.charmroom.charmroom.exception.BusinessLogicException;
 import com.charmroom.charmroom.repository.ArticleRepository;
 import com.charmroom.charmroom.repository.AttachmentRepository;
+import com.charmroom.charmroom.repository.UserRepository;
 import com.charmroom.charmroom.util.CharmroomUtil;
 
 @ExtendWith(MockitoExtension.class)
@@ -149,7 +150,7 @@ public class ArticleServiceUnitTest {
             doReturn(article).when(articleRepository).save(any(Article.class));
 
             // when
-            Article saved = articleService.createArticle(user, board, title, body, fileList);
+            ArticleDto saved = articleService.createArticle(user, board, title, body, fileList);
 
             // then
             verify(articleRepository).save(any(Article.class));
@@ -171,12 +172,12 @@ public class ArticleServiceUnitTest {
             doReturn(articlePage).when(articleRepository).findAll(pageRequest);
 
             // when
-            Page<Article> articles = articleService.getAllArticlesByPageable(pageRequest);
+            Page<ArticleDto> articles = articleService.getAllArticlesByPageable(pageRequest);
 
             // then
             verify(articleRepository).findAll(pageRequest);
             assertThat(articles).hasSize(3);
-            assertThat(articles.stream().toList().get(0)).isEqualTo(articleList.get(0));
+            assertThat(articles.stream().toList().get(0).getBody()).isEqualTo(articleList.get(0).getBody());
         }
 
         @Test
@@ -188,7 +189,7 @@ public class ArticleServiceUnitTest {
             doReturn(articlePage).when(articleRepository).findAll(pageRequest);
 
             // when
-            Page<Article> articles = articleService.getAllArticlesByPageable(pageRequest);
+            Page<ArticleDto> articles = articleService.getAllArticlesByPageable(pageRequest);
 
             // then
             verify(articleRepository).findAll(pageRequest);
@@ -205,7 +206,7 @@ public class ArticleServiceUnitTest {
             when(articleRepository.findById(article.getId())).thenReturn(Optional.of(article));
 
             // when
-            Article found = articleService.getOneArticle(article.getId());
+            ArticleDto found = articleService.getOneArticle(article.getId());
 
             // then
             verify(articleRepository).findById(article.getId());
@@ -241,7 +242,7 @@ public class ArticleServiceUnitTest {
             String newBody = "new body";
 
             // when
-            Article updatedArticle = articleService.updateArticle(article.getId(), user.getUsername(), newTitle, newBody);
+            ArticleDto updatedArticle = articleService.updateArticle(article.getId(), user.getUsername(), newTitle, newBody);
 
             // then
             verify(articleRepository).findById(article.getId());

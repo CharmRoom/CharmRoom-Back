@@ -1,7 +1,6 @@
 package com.charmroom.charmroom.dto.presentation;
 
 import com.charmroom.charmroom.dto.validation.ValidUser;
-import com.charmroom.charmroom.entity.User;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
@@ -53,16 +52,5 @@ public class SignupDto {
 		private String email;
 		private String nickname;
 		private String role;
-		
-		public static SignupResponseDto fromEntity(User user) {
-			return SignupResponseDto.builder()
-					.username(user.getUsername())
-					.email(user.getEmail())
-					.nickname(user.getNickname())
-					.role(user.getLevel().getValue())
-					.build();
-		}
 	}
-	
-	
 }

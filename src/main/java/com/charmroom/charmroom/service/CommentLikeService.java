@@ -2,6 +2,8 @@ package com.charmroom.charmroom.service;
 
 import org.springframework.stereotype.Service;
 
+import com.charmroom.charmroom.dto.business.CommentLikeDto;
+import com.charmroom.charmroom.dto.business.CommentLikeMapper;
 import com.charmroom.charmroom.entity.Comment;
 import com.charmroom.charmroom.entity.CommentLike;
 import com.charmroom.charmroom.entity.User;
@@ -22,7 +24,7 @@ public class CommentLikeService {
 	private final CommentLikeRepository commentLikeRepository;
 	
 	@Transactional
-	public CommentLike likeOrDislike(String username, Integer commentId, Boolean type) {
+	public CommentLikeDto likeOrDislike(String username, Integer commentId, Boolean type) {
 		User user = userRepository.findByUsername(username)
 				.orElseThrow(() -> new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "username: " + username));
 		Comment comment = commentRepository.findById(commentId)
@@ -38,7 +40,7 @@ public class CommentLikeService {
 			}
 			
 			commentLike.updateType(type);
-			return commentLike;	
+			return CommentLikeMapper.toDto(commentLike);
 		}
 		
 		CommentLike commentLike = CommentLike.builder()
@@ -46,14 +48,15 @@ public class CommentLikeService {
 				.comment(comment)
 				.type(type)
 				.build();
-		return commentLikeRepository.save(commentLike);
+		CommentLike saved = commentLikeRepository.save(commentLike);
+		return CommentLikeMapper.toDto(saved);
 	}
 	
-	public CommentLike like(String username, Integer commentId) {
+	public CommentLikeDto like(String username, Integer commentId) {
 		return likeOrDislike(username, commentId, true);
 	}
 	
-	public CommentLike dislike(String username, Integer commentId) {
+	public CommentLikeDto dislike(String username, Integer commentId) {
 		return likeOrDislike(username, commentId, false);
 	}
 	
