@@ -24,6 +24,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.mock.web.MockMultipartFile;
 
+import com.charmroom.charmroom.dto.business.ClubDto;
+import com.charmroom.charmroom.dto.business.ClubMapper;
 import com.charmroom.charmroom.entity.Club;
 import com.charmroom.charmroom.entity.Image;
 import com.charmroom.charmroom.exception.BusinessLogicError;
@@ -47,6 +49,7 @@ public class ClubServiceUnitTest {
     ClubService clubService;
 
     private Club club;
+    private ClubDto clubDto;
     private String clubName;
     private String description;
     private String contact;
@@ -68,6 +71,7 @@ public class ClubServiceUnitTest {
         description = "club description";
         contact = "club contact";
         club = createClub("");
+        clubDto = ClubMapper.toDto(club);
     }
 
     @Nested
@@ -89,7 +93,7 @@ public class ClubServiceUnitTest {
             doReturn(image).when(uploadUtil).buildImage(imageFile);
 
             // when
-            Club created = clubService.createClub(clubName, description, contact, imageFile);
+            ClubDto created = clubService.createClub(clubDto, imageFile);
 
             // then
             verify(clubRepository).save(any(Club.class));
@@ -102,13 +106,8 @@ public class ClubServiceUnitTest {
             doReturn(club).when(clubRepository).save(any(Club.class));
             doReturn(false).when(clubRepository).existsByName(clubName);
 
-            Image image = Image.builder()
-                    .path("")
-                    .originalName("")
-                    .build();
-
             // when
-            Club created = clubService.createClub(clubName, description, contact);
+            ClubDto created = clubService.createClub(clubDto);
 
             // then
             verify(clubRepository).save(any(Club.class));
@@ -124,7 +123,7 @@ public class ClubServiceUnitTest {
 
             // when
             BusinessLogicException thrown = assertThrows(BusinessLogicException.class, () ->
-                    clubService.createClub(clubName, description, contact, imageFile));
+                    clubService.createClub(clubDto, imageFile));
 
             // then
             assertThat(thrown.getError()).isEqualTo(BusinessLogicError.DUPLICATED_CLUBNAME);
@@ -144,7 +143,7 @@ public class ClubServiceUnitTest {
             doReturn(clubPage).when(clubRepository).findAll(pageRequest);
 
             // when
-            Page<Club> allClubsByPageable = clubService.getAllClubsByPageable(pageRequest);
+            Page<ClubDto> allClubsByPageable = clubService.getAllClubsByPageable(pageRequest);
 
             // then
             assertThat(allClubsByPageable).hasSize(3);
@@ -160,7 +159,7 @@ public class ClubServiceUnitTest {
             doReturn(Optional.of(club)).when(clubRepository).findById(club.getId());
 
             // when
-            Club found = clubService.getClub(club.getId());
+            ClubDto found = clubService.getClub(club.getId());
 
             // then
             assertThat(found).isNotNull();
@@ -189,7 +188,7 @@ public class ClubServiceUnitTest {
             doReturn(Optional.of(club)).when(clubRepository).findById(club.getId());
 
             // when
-            Club updated = clubService.updateClubName(club.getId(), "new club name");
+            ClubDto updated = clubService.updateClubName(club.getId(), "new club name");
 
             // then
             assertThat(updated).isNotNull();
@@ -219,7 +218,7 @@ public class ClubServiceUnitTest {
             doReturn(Optional.of(club)).when(clubRepository).findById(club.getId());
 
             // when
-            Club updated = clubService.updateDescription(club.getId(), "new club description");
+            ClubDto updated = clubService.updateDescription(club.getId(), "new club description");
 
             // then
             assertThat(updated).isNotNull();
@@ -249,7 +248,7 @@ public class ClubServiceUnitTest {
             doReturn(Optional.of(club)).when(clubRepository).findById(club.getId());
 
             // when
-            Club updated = clubService.updateContact(club.getId(), "new club contact");
+            ClubDto updated = clubService.updateContact(club.getId(), "new club contact");
 
             // then
             assertThat(updated).isNotNull();
@@ -318,11 +317,11 @@ public class ClubServiceUnitTest {
             doReturn(image).when(imageRepository).save(image);
 
             // when
-            Club updated = clubService.setImage(club.getName(), imageFile);
+            ClubDto updated = clubService.setImage(club.getName(), imageFile);
 
             // then
             assertThat(updated).isNotNull();
-            assertThat(updated.getImage()).isEqualTo(image);
+            assertThat(updated.getImage().getPath()).isEqualTo(image.getPath());
         }
 
         @Test
@@ -360,11 +359,11 @@ public class ClubServiceUnitTest {
             doReturn(image).when(imageRepository).save(image);
 
             // when
-            Club updated = clubService.setImage(club.getName(), imageFile);
+            ClubDto updated = clubService.setImage(club.getName(), imageFile);
 
             // then
             verify(uploadUtil).deleteImageFile(club.getImage());
-            assertThat(updated.getImage()).isEqualTo(image);
+            assertThat(updated.getImage().getPath()).isEqualTo(image.getPath());
         }
     }
 }
