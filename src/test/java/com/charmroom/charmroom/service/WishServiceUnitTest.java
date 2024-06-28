@@ -1,5 +1,6 @@
 package com.charmroom.charmroom.service;
 
+import com.charmroom.charmroom.dto.business.WishDto;
 import com.charmroom.charmroom.entity.Article;
 import com.charmroom.charmroom.entity.Board;
 import com.charmroom.charmroom.entity.Market;
@@ -47,10 +48,15 @@ public class WishServiceUnitTest {
 
     User cresteUser() {
         return User.builder()
+                .id(1)
                 .username(username)
                 .nickname("nickname")
                 .email("email@example.com")
                 .build();
+    }
+
+    Board createBoard() {
+        return Board.builder().build();
     }
 
     Article createArticle() {
@@ -84,6 +90,7 @@ public class WishServiceUnitTest {
         username = "username";
         marketId = 1;
         user = cresteUser();
+        board = createBoard();
         article = createArticle();
         market = createMarket();
         wish = createWish();
@@ -97,15 +104,15 @@ public class WishServiceUnitTest {
             // given
             doReturn(Optional.of(user)).when(userRepository).findByUsername(username);
             doReturn(Optional.of(market)).when(marketRepository).findById(marketId);
-            doReturn(wish).when(wishRepository).save(any(Wish.class));
             doReturn(Optional.empty()).when(wishRepository).findByUserAndMarket(user, market);
+            doReturn(wish).when(wishRepository).save(any(Wish.class));
 
             // when
-            Wish created = wishService.create(username, marketId);
+            WishDto created = wishService.create(username, marketId);
 
             // then
             assertThat(created).isNotNull();
-            assertThat(created.getUser()).isEqualTo(user);
+            assertThat(created.getUser().getId()).isEqualTo(user.getId());
         }
 
         @Test
@@ -116,7 +123,7 @@ public class WishServiceUnitTest {
             doReturn(Optional.of(wish)).when(wishRepository).findByUserAndMarket(user, market);
 
             // when
-            Wish created = wishService.create(username, marketId);
+            WishDto created = wishService.create(username, marketId);
 
             // then
             verify(wishRepository).delete(any(Wish.class));

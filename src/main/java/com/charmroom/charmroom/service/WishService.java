@@ -1,5 +1,7 @@
 package com.charmroom.charmroom.service;
 
+import com.charmroom.charmroom.dto.business.WishDto;
+import com.charmroom.charmroom.dto.business.WishMapper;
 import com.charmroom.charmroom.entity.Market;
 import com.charmroom.charmroom.entity.User;
 import com.charmroom.charmroom.entity.Wish;
@@ -20,7 +22,7 @@ public class WishService {
     private final UserRepository userRepository;
     private final MarketRepository marketRepository;
 
-    public Wish create(String username, Integer marketId) {
+    public WishDto create(String username, Integer marketId) {
         User user = userRepository.findByUsername(username).orElseThrow(() ->
                 new BusinessLogicException(BusinessLogicError.NOTFOUND_USER));
         Market market = marketRepository.findById(marketId).orElseThrow(() ->
@@ -33,12 +35,12 @@ public class WishService {
             wishRepository.delete(wish);
             return null; // 찜하기 취소
         } else {
-            return wishRepository.save(
-                    Wish.builder()
-                            .user(user)
-                            .market(market)
-                            .build()
-            );
+            Wish wish = Wish.builder()
+                    .user(user)
+                    .market(market)
+                    .build();
+            Wish saved = wishRepository.save(wish);
+            return WishMapper.doDto(saved);
         }
     }
 }
