@@ -45,7 +45,7 @@ public class User {
 	
 	@Builder.Default
 	@Column(nullable = false)
-	private Boolean withdraw = false;
+	private boolean withdraw = false;
 	
 	@Builder.Default
 	@Enumerated(EnumType.STRING)

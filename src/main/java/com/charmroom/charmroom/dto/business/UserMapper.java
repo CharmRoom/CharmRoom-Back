@@ -15,7 +15,7 @@ public class UserMapper {
 				.email(entity.getEmail())
 				.nickname(entity.getNickname())
 				.password(entity.getPassword())
-				.withdraw(entity.getWithdraw())
+				.withdraw(entity.isWithdraw())
 				.level(entity.getLevel())
 				.build();
 		
