@@ -3,8 +3,10 @@ package com.charmroom.charmroom.controller;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -25,6 +27,8 @@ import com.charmroom.charmroom.controller.api.AuthController;
 import com.charmroom.charmroom.dto.business.UserDto;
 import com.charmroom.charmroom.dto.business.UserMapper;
 import com.charmroom.charmroom.entity.User;
+import com.charmroom.charmroom.exception.BusinessLogicError;
+import com.charmroom.charmroom.exception.BusinessLogicException;
 import com.charmroom.charmroom.exception.ExceptionHandlerAdvice;
 import com.charmroom.charmroom.service.UserService;
 
@@ -115,6 +119,26 @@ public class AuthControllerUnitTest {
 					jsonPath("$.data.email").value(mockedUser.getEmail())
 					)
 			;
+		}
+		
+		@Test
+		void fail() throws Exception {
+			doThrow(new BusinessLogicException(BusinessLogicError.DUPLICATED_USERNAME))
+				.when(userService)
+				.create(any(UserDto.class),eq(null));
+			mockMvc.perform(
+					multipart("/api/auth/signup")
+					
+					.param("username", mockedUser.getUsername())
+					.param("password", mockedUser.getPassword())
+					.param("rePassword", mockedUser.getPassword())
+					.param("email", mockedUser.getEmail())
+					.param("nickname", mockedUser.getNickname())
+					)
+			.andExpectAll(
+					status().isBadRequest(),
+					jsonPath("$.code").value("12000")
+					);
 		}
 	}
 }
