@@ -1,5 +1,7 @@
 package com.charmroom.charmroom.service;
 
+import com.charmroom.charmroom.dto.business.AdDto;
+import com.charmroom.charmroom.dto.business.AdMapper;
 import com.charmroom.charmroom.entity.Ad;
 import com.charmroom.charmroom.entity.Image;
 import com.charmroom.charmroom.exception.BusinessLogicError;
@@ -23,47 +25,49 @@ public class AdService {
     private final ImageRepository imageRepository;
     private final CharmroomUtil.Upload uploadUtil;
 
-    public Ad create(String title, String link, MultipartFile imageFile, LocalDateTime startTime, LocalDateTime endTime) {
+    public AdDto create(String title, String link, MultipartFile imageFile, LocalDateTime startTime, LocalDateTime endTime) {
         Image image = uploadUtil.buildImage(imageFile);
         Image savedImage = imageRepository.save(image);
 
         Ad ad = Ad.builder()
                 .title(title)
                 .link(link)
-                .image(savedImage)
                 .start(startTime)
                 .end(endTime)
+                .image(savedImage)
                 .build();
 
-        return adRepository.save(ad);
+        Ad saved = adRepository.save(ad);
+        return AdMapper.toDto(saved);
     }
 
-    public Page<Ad> getAllAdsByPageable(Pageable pageable) {
-        return adRepository.findAll(pageable);
+    public Page<AdDto> getAllAdsByPageable(Pageable pageable) {
+        Page<Ad> ads = adRepository.findAll(pageable);
+        return ads.map(AdMapper::toDto);
     }
 
     @Transactional
-    public Ad updateTitle(Integer adId, String newAdTitle) {
+    public AdDto updateTitle(Integer adId, String newAdTitle) {
         Ad ad = adRepository.findById(adId)
                 .orElseThrow(() ->
                         new BusinessLogicException(BusinessLogicError.NOTFOUND_AD, "adId: " + adId));
 
         ad.updateTitle(newAdTitle);
-        return ad;
+        return AdMapper.toDto(ad);
     }
 
     @Transactional
-    public Ad updateLink(Integer adId, String newAdLink) {
+    public AdDto updateLink(Integer adId, String newAdLink) {
         Ad ad = adRepository.findById(adId)
                 .orElseThrow(() ->
                         new BusinessLogicException(BusinessLogicError.NOTFOUND_AD, "adId: " + adId));
 
         ad.updateLink(newAdLink);
-        return ad;
+        return AdMapper.toDto(ad);
     }
 
     @Transactional
-    public Ad setImage(Integer adId, MultipartFile imageFile) {
+    public AdDto setImage(Integer adId, MultipartFile imageFile) {
         Ad ad = adRepository.findById(adId).orElseThrow(() ->
                 new BusinessLogicException(BusinessLogicError.NOTFOUND_AD, "adId: " + adId));
 
@@ -76,25 +80,25 @@ public class AdService {
         adImage = imageRepository.save(image);
 
         ad.updateImage(adImage);
-        return ad;
+        return AdMapper.toDto(ad);
     }
 
     @Transactional
-    public Ad updateStartTime(Integer adId, LocalDateTime newStartTime) {
+    public AdDto updateStartTime(Integer adId, LocalDateTime newStartTime) {
         Ad ad = adRepository.findById(adId).orElseThrow(() ->
                 new BusinessLogicException(BusinessLogicError.NOTFOUND_AD, "adId: " + adId));
 
         ad.updateStart(newStartTime);
-        return ad;
+        return AdMapper.toDto(ad);
     }
 
     @Transactional
-    public Ad updateEndTime(Integer adId, LocalDateTime newEndTime) {
+    public AdDto updateEndTime(Integer adId, LocalDateTime newEndTime) {
         Ad ad = adRepository.findById(adId).orElseThrow(() ->
                 new BusinessLogicException(BusinessLogicError.NOTFOUND_AD, "adId: " + adId));
 
         ad.updateEnd(newEndTime);
-        return ad;
+        return AdMapper.toDto(ad);
     }
 
     public void deleteAd(Integer adId) {
