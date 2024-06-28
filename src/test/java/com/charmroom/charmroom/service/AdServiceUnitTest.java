@@ -1,5 +1,6 @@
 package com.charmroom.charmroom.service;
 
+import com.charmroom.charmroom.dto.business.AdDto;
 import com.charmroom.charmroom.entity.Ad;
 import com.charmroom.charmroom.entity.Image;
 import com.charmroom.charmroom.exception.BusinessLogicException;
@@ -93,7 +94,7 @@ public class AdServiceUnitTest {
             doReturn(ad).when(adRepository).save(any(Ad.class));
 
             // when
-            Ad created = adService.create(title, link, imageFile, startTime, endTime);
+            AdDto created = adService.create(title, link, imageFile, startTime, endTime);
 
             // then
             assertThat(created).isNotNull();
@@ -113,7 +114,7 @@ public class AdServiceUnitTest {
             doReturn(adPage).when(adRepository).findAll(pageRequest);
 
             // when
-            Page<Ad> allAdsByPageable = adService.getAllAdsByPageable(pageRequest);
+            Page<AdDto> allAdsByPageable = adService.getAllAdsByPageable(pageRequest);
 
             // then
             assertThat(allAdsByPageable).hasSize(3);
@@ -129,7 +130,7 @@ public class AdServiceUnitTest {
             doReturn(Optional.of(ad)).when(adRepository).findById(ad.getId());
 
             // when
-            Ad updated = adService.updateTitle(ad.getId(), "new ad title");
+            AdDto updated = adService.updateTitle(ad.getId(), "new ad title");
 
             // then
             assertThat(updated.getTitle()).isEqualTo("new ad title");
@@ -159,7 +160,7 @@ public class AdServiceUnitTest {
             doReturn(Optional.of(ad)).when(adRepository).findById(adId);
 
             // when
-            Ad updated = adService.updateLink(adId, "new ad link");
+            AdDto updated = adService.updateLink(adId, "new ad link");
 
             // then
             assertThat(updated.getLink()).isEqualTo("new ad link");
@@ -187,18 +188,21 @@ public class AdServiceUnitTest {
         void success() {
             // given
             MultipartFile imageFile = new MockMultipartFile("new file", "test.png", "image/png", "test".getBytes());
-            Image image = Image.builder().build();
+            Image image = Image.builder()
+                    .path("")
+                    .originalName("")
+                    .build();
 
             doReturn(image).when(uploadUtil).buildImage(imageFile);
             doReturn(image).when(imageRepository).save(image);
             doReturn(Optional.of(ad)).when(adRepository).findById(adId);
 
             // when
-            Ad updated = adService.setImage(adId, imageFile);
+            AdDto updated = adService.setImage(adId, imageFile);
 
             // then
             assertThat(updated).isNotNull();
-            assertThat(updated.getImage()).isEqualTo(image);
+            assertThat(updated.getImage().getOriginalName()).isEqualTo(image.getOriginalName());
         }
 
         @Test
@@ -237,11 +241,11 @@ public class AdServiceUnitTest {
             doReturn(image).when(imageRepository).save(image);
 
             // when
-            Ad updated = adService.setImage(ad.getId(), imageFile);
+            AdDto updated = adService.setImage(ad.getId(), imageFile);
 
             // then
             verify(imageRepository).delete(ad.getImage());
-            assertThat(updated.getImage()).isEqualTo(image);
+            assertThat(updated.getImage().getOriginalName()).isEqualTo(image.getOriginalName());
         }
     }
 
@@ -255,7 +259,7 @@ public class AdServiceUnitTest {
             LocalDateTime newStartTime = LocalDateTime.of(2024, 1, 6, 0, 0);
 
             // when
-            Ad updated = adService.updateStartTime(adId, newStartTime);
+            AdDto updated = adService.updateStartTime(adId, newStartTime);
 
             // then
             assertThat(updated).isNotNull();
@@ -269,7 +273,7 @@ public class AdServiceUnitTest {
             LocalDateTime newEndTime = LocalDateTime.of(2024, 12, 1, 0, 0);
 
             // when
-            Ad updated = adService.updateEndTime(adId, newEndTime);
+            AdDto updated = adService.updateEndTime(adId, newEndTime);
 
             // then
             assertThat(updated).isNotNull();
