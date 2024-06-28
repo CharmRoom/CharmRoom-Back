@@ -26,7 +26,7 @@ public class ArticleRepositoryUnitTest {
     @Autowired
     UserRepository userRepository;
     @Autowired
-    BoardReposiory boardRepository;
+    BoardRepository boardRepository;
 
     Article article;
 

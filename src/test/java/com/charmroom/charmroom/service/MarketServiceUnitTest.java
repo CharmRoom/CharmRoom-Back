@@ -1,6 +1,8 @@
 package com.charmroom.charmroom.service;
 
+import com.charmroom.charmroom.dto.business.MarketDto;
 import com.charmroom.charmroom.entity.Article;
+import com.charmroom.charmroom.entity.Attachment;
 import com.charmroom.charmroom.entity.Board;
 import com.charmroom.charmroom.entity.Market;
 import com.charmroom.charmroom.entity.User;
@@ -8,7 +10,11 @@ import com.charmroom.charmroom.entity.enums.MarketArticleState;
 import com.charmroom.charmroom.exception.BusinessLogicError;
 import com.charmroom.charmroom.exception.BusinessLogicException;
 import com.charmroom.charmroom.repository.ArticleRepository;
+import com.charmroom.charmroom.repository.AttachmentRepository;
+import com.charmroom.charmroom.repository.BoardRepository;
 import com.charmroom.charmroom.repository.MarketRepository;
+import com.charmroom.charmroom.repository.UserRepository;
+import com.charmroom.charmroom.util.CharmroomUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -21,13 +27,17 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
@@ -37,6 +47,14 @@ public class MarketServiceUnitTest {
     MarketRepository marketRepository;
     @Mock
     ArticleRepository articleRepository;
+    @Mock
+    AttachmentRepository attachmentRepository;
+    @Mock
+    UserRepository userRepository;
+    @Mock
+    BoardRepository boardRepository;
+    @Mock
+    CharmroomUtil.Upload uploadUtils;
     @InjectMocks
     MarketService marketService;
 
@@ -48,6 +66,18 @@ public class MarketServiceUnitTest {
     private String tag;
     private int marketId;
     private MarketArticleState state;
+
+    Board createBoard() {
+        return Board.builder()
+                .id(1)
+                .build();
+    }
+
+    User createUser() {
+        return User.builder()
+                .username("")
+                .build();
+    }
 
     Article createArticle() {
         return Article.builder()
@@ -74,6 +104,8 @@ public class MarketServiceUnitTest {
         tag = "new product";
         marketId = 0;
         state = MarketArticleState.SALE;
+        board = createBoard();
+        user = createUser();
         article = createArticle();
         market = createMarket(0);
     }
@@ -84,10 +116,66 @@ public class MarketServiceUnitTest {
         @Test
         void success() {
             // given
+            doReturn(Optional.of(user)).when(userRepository).findByUsername(user.getUsername());
+            doReturn(Optional.of(board)).when(boardRepository).findById(board.getId());
+            doReturn(article).when(articleRepository).save(any(Article.class));
+
+            MarketDto marketDto = MarketDto.builder()
+                    .username(user.getUsername())
+                    .boardId(board.getId())
+                    .title("")
+                    .body("")
+                    .price(price)
+                    .tag(tag)
+                    .state(state)
+                    .build();
+
             doReturn(market).when(marketRepository).save(any(Market.class));
 
             // when
-            Market created = marketService.create(article, price, tag, state);
+            Market created = marketService.create(marketDto);
+
+            // then
+            assertThat(created).isNotNull();
+        }
+
+        @Test
+        void whenFilesExists() {
+            // given
+            doReturn(Optional.of(user)).when(userRepository).findByUsername(user.getUsername());
+            doReturn(Optional.of(board)).when(boardRepository).findById(board.getId());
+            doReturn(article).when(articleRepository).save(any(Article.class));
+
+            MarketDto marketDto = MarketDto.builder()
+                    .username(user.getUsername())
+                    .boardId(board.getId())
+                    .title("")
+                    .body("")
+                    .price(price)
+                    .tag(tag)
+                    .state(state)
+                    .build();
+
+            Attachment attachment = Attachment.builder()
+                    .build();
+
+            List<MultipartFile> files = new ArrayList<>();
+
+            MockMultipartFile file1 = new MockMultipartFile("test", "test.png", "image/png", "test".getBytes());
+            MockMultipartFile file2 = new MockMultipartFile("test", "test.png", "image/png", "test".getBytes());
+
+            files.add(file1);
+            files.add(file2);
+
+            doReturn(market).when(marketRepository).save(any(Market.class));
+
+            doReturn(attachment).when(uploadUtils).buildAttachment(eq(file1), any(Article.class));
+            doReturn(attachment).when(uploadUtils).buildAttachment(eq(file2), any(Article.class));
+
+            doReturn(attachment).when(attachmentRepository).save(attachment);
+
+            // when
+            Market created = marketService.create(marketDto, files);
 
             // then
             assertThat(created).isNotNull();

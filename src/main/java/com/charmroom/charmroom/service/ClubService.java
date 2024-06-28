@@ -1,5 +1,7 @@
 package com.charmroom.charmroom.service;
 
+import com.charmroom.charmroom.dto.business.ClubDto;
+import com.charmroom.charmroom.dto.business.ClubMapper;
 import com.charmroom.charmroom.entity.Club;
 import com.charmroom.charmroom.entity.Image;
 import com.charmroom.charmroom.exception.BusinessLogicError;
@@ -21,58 +23,72 @@ public class ClubService {
     private final ImageRepository imageRepository;
     private final CharmroomUtil.Upload uploadUtil;
 
-    public Club createClub(String clubName, String description, String contact) {
-        if(isDuplicateClubName(clubName)) throw new BusinessLogicException(BusinessLogicError.DUPLICATED_CLUBNAME);
+    public ClubDto createClub(ClubDto clubDto, MultipartFile imageFile) {
+        if(isDuplicateClubName(clubDto.getName())) throw new BusinessLogicException(BusinessLogicError.DUPLICATED_CLUBNAME);
+
+        Image clubImage = null;
+        if (imageFile != null) {
+            Image image = uploadUtil.buildImage(imageFile);
+            clubImage = imageRepository.save(image);
+        }
 
         Club club = Club.builder()
-                .name(clubName)
-                .description(description)
-                .contact(contact)
+                .name(clubDto.getName())
+                .description(clubDto.getDescription())
+                .contact(clubDto.getContact())
+                .image(clubImage)
                 .build();
 
-        return clubRepository.save(club);
+        Club saved = clubRepository.save(club);
+        return ClubMapper.toDto(saved);
+    }
+
+    public ClubDto createClub(ClubDto clubDto) {
+        return createClub(clubDto, null);
     }
 
     public boolean isDuplicateClubName(String clubName) {
         return clubRepository.existsByName(clubName);
     }
 
-    public Page<Club> getAllClubsByPageable(PageRequest pageRequest) {
-        return clubRepository.findAll(pageRequest);
+    public Page<ClubDto> getAllClubsByPageable(PageRequest pageRequest) {
+        Page<Club> clubs = clubRepository.findAll(pageRequest);
+        return clubs.map(club -> ClubMapper.toDto(club));
     }
 
-    public Club getClub(Integer clubId) {
-        return clubRepository.findById(clubId)
+    public ClubDto getClub(Integer clubId) {
+        Club found = clubRepository.findById(clubId)
                 .orElseThrow(() ->
                         new BusinessLogicException(BusinessLogicError.NOTFOUND_CLUB, "clubId: " + clubId)
                 );
+        return ClubMapper.toDto(found);
     }
 
     @Transactional
-    public Club updateClubName(Integer clubId, String newClubName) {
+    public ClubDto updateClubName(Integer clubId, String newClubName) {
         Club club = clubRepository.findById(clubId).orElseThrow(() ->
                 new BusinessLogicException(BusinessLogicError.NOTFOUND_CLUB, "clubId: " + clubId)
         );
 
         club.updateName(newClubName);
-        return club;
+        return ClubMapper.toDto(club);
     }
 
     @Transactional
-    public Club updateDescription(Integer clubId, String newClubDescription) {
+    public ClubDto updateDescription(Integer clubId, String newClubDescription) {
         Club club = clubRepository.findById(clubId).orElseThrow(() ->
                 new BusinessLogicException(BusinessLogicError.NOTFOUND_CLUB, "clubId: " + clubId));
 
         club.updateDescription(newClubDescription);
-        return club;
+        return ClubMapper.toDto(club);
     }
 
-    public Club updateContact(Integer clubId, String newClubContact) {
+    public ClubDto updateContact(Integer clubId, String newClubContact) {
         Club club = clubRepository.findById(clubId).orElseThrow(() ->
                 new BusinessLogicException(BusinessLogicError.NOTFOUND_CLUB, "clubId: " + clubId));
 
         club.updateContact(newClubContact);
-        return club;
+        return ClubMapper.toDto(club);
     }
 
     public void deleteClub(Integer clubId) {
@@ -82,14 +98,19 @@ public class ClubService {
         clubRepository.delete(club);
     }
 
-    public Club setImage(String clubName, MultipartFile imageFile) {
+    @Transactional
+    public ClubDto setImage(String clubName, MultipartFile imageFile) {
         Club club = clubRepository.findByName(clubName).orElseThrow(() ->
                 new BusinessLogicException(BusinessLogicError.NOTFOUND_CLUB, "clubName: " + clubName));
+
+        if (club.getImage() != null) {
+            uploadUtil.deleteImageFile(club.getImage());
+        }
 
         Image image = uploadUtil.buildImage(imageFile);
         Image saved = imageRepository.save(image);
 
         club.updateImage(saved);
-        return club;
+        return ClubMapper.toDto(club);
     }
 }

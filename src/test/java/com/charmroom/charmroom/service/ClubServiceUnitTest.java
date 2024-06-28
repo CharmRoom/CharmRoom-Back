@@ -3,6 +3,7 @@ package com.charmroom.charmroom.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
@@ -23,6 +24,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.mock.web.MockMultipartFile;
 
+import com.charmroom.charmroom.dto.business.ClubDto;
+import com.charmroom.charmroom.dto.business.ClubMapper;
 import com.charmroom.charmroom.entity.Club;
 import com.charmroom.charmroom.entity.Image;
 import com.charmroom.charmroom.exception.BusinessLogicError;
@@ -46,11 +49,12 @@ public class ClubServiceUnitTest {
     ClubService clubService;
 
     private Club club;
+    private ClubDto clubDto;
     private String clubName;
     private String description;
     private String contact;
     private int clubId;
-    
+
     private Club createClub(String prefix) {
         return Club.builder()
                 .id(clubId)
@@ -67,19 +71,43 @@ public class ClubServiceUnitTest {
         description = "club description";
         contact = "club contact";
         club = createClub("");
+        clubDto = ClubMapper.toDto(club);
     }
 
     @Nested
     @DisplayName("Create Club")
     class CreateClub {
         @Test
-        void success() {
+        void success_whenImageFileExists() {
+            // given
+            doReturn(club).when(clubRepository).save(any(Club.class));
+            doReturn(false).when(clubRepository).existsByName(clubName);
+
+            MockMultipartFile imageFile = new MockMultipartFile("file", "test.png", "image/png", "test".getBytes());
+
+            Image image = Image.builder()
+                    .path("")
+                    .originalName("")
+                    .build();
+
+            doReturn(image).when(uploadUtil).buildImage(imageFile);
+
+            // when
+            ClubDto created = clubService.createClub(clubDto, imageFile);
+
+            // then
+            verify(clubRepository).save(any(Club.class));
+            assertThat(created).isNotNull();
+        }
+
+        @Test
+        void success_whenImageFileNotExists() {
             // given
             doReturn(club).when(clubRepository).save(any(Club.class));
             doReturn(false).when(clubRepository).existsByName(clubName);
 
             // when
-            Club created = clubService.createClub(clubName, description, contact);
+            ClubDto created = clubService.createClub(clubDto);
 
             // then
             verify(clubRepository).save(any(Club.class));
@@ -90,9 +118,13 @@ public class ClubServiceUnitTest {
         void fail_ClubNameDuplicated() {
             // given
             doReturn(true).when(clubRepository).existsByName(clubName);
+
+            MockMultipartFile imageFile = new MockMultipartFile("file", "test.png", "image/png", "test".getBytes());
+
             // when
             BusinessLogicException thrown = assertThrows(BusinessLogicException.class, () ->
-                    clubService.createClub(clubName, description, contact));
+                    clubService.createClub(clubDto, imageFile));
+
             // then
             assertThat(thrown.getError()).isEqualTo(BusinessLogicError.DUPLICATED_CLUBNAME);
         }
@@ -111,7 +143,7 @@ public class ClubServiceUnitTest {
             doReturn(clubPage).when(clubRepository).findAll(pageRequest);
 
             // when
-            Page<Club> allClubsByPageable = clubService.getAllClubsByPageable(pageRequest);
+            Page<ClubDto> allClubsByPageable = clubService.getAllClubsByPageable(pageRequest);
 
             // then
             assertThat(allClubsByPageable).hasSize(3);
@@ -127,7 +159,7 @@ public class ClubServiceUnitTest {
             doReturn(Optional.of(club)).when(clubRepository).findById(club.getId());
 
             // when
-            Club found = clubService.getClub(club.getId());
+            ClubDto found = clubService.getClub(club.getId());
 
             // then
             assertThat(found).isNotNull();
@@ -156,7 +188,7 @@ public class ClubServiceUnitTest {
             doReturn(Optional.of(club)).when(clubRepository).findById(club.getId());
 
             // when
-            Club updated = clubService.updateClubName(club.getId(), "new club name");
+            ClubDto updated = clubService.updateClubName(club.getId(), "new club name");
 
             // then
             assertThat(updated).isNotNull();
@@ -186,7 +218,7 @@ public class ClubServiceUnitTest {
             doReturn(Optional.of(club)).when(clubRepository).findById(club.getId());
 
             // when
-            Club updated = clubService.updateDescription(club.getId(), "new club description");
+            ClubDto updated = clubService.updateDescription(club.getId(), "new club description");
 
             // then
             assertThat(updated).isNotNull();
@@ -216,7 +248,7 @@ public class ClubServiceUnitTest {
             doReturn(Optional.of(club)).when(clubRepository).findById(club.getId());
 
             // when
-            Club updated = clubService.updateContact(club.getId(), "new club contact");
+            ClubDto updated = clubService.updateContact(club.getId(), "new club contact");
 
             // then
             assertThat(updated).isNotNull();
@@ -285,11 +317,11 @@ public class ClubServiceUnitTest {
             doReturn(image).when(imageRepository).save(image);
 
             // when
-            Club updated = clubService.setImage(club.getName(), imageFile);
+            ClubDto updated = clubService.setImage(club.getName(), imageFile);
 
             // then
             assertThat(updated).isNotNull();
-            assertThat(updated.getImage()).isEqualTo(image);
+            assertThat(updated.getImage().getPath()).isEqualTo(image.getPath());
         }
 
         @Test
@@ -306,5 +338,34 @@ public class ClubServiceUnitTest {
             // then
             assertThat(thrown.getError()).isEqualTo(BusinessLogicError.NOTFOUND_CLUB);
         }
+
+        @Test
+        void whenClubImageAlreadyExists() {
+            // given
+            MockMultipartFile imageFile = new MockMultipartFile("file", "test.png", "image/png", "test".getBytes());
+
+            Image image = Image.builder()
+                    .path("")
+                    .originalName("")
+                    .build();
+
+            Club club = Club.builder()
+                    .image(image)
+                    .build();
+
+            doReturn(Optional.of(club)).when(clubRepository).findByName(club.getName());
+            doNothing().when(uploadUtil).deleteImageFile(club.getImage());
+            doReturn(image).when(uploadUtil).buildImage(imageFile);
+            doReturn(image).when(imageRepository).save(image);
+
+            // when
+            ClubDto updated = clubService.setImage(club.getName(), imageFile);
+
+            // then
+            verify(uploadUtil).deleteImageFile(club.getImage());
+            assertThat(updated.getImage().getPath()).isEqualTo(image.getPath());
+        }
     }
 }
+
+

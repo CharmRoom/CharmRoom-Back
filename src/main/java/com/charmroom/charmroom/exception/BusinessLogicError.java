@@ -19,6 +19,7 @@ public enum BusinessLogicError {
   
 	// Article
 	NOTFOUND_ARTICLE(HttpStatus.NOT_FOUND, "01100", "Article not found"),
+	UNAUTHORIZED_ARTICLE(HttpStatus.UNAUTHORIZED, "01200", "Don't have permission on article"),
 	// end Article
   
   // Attachment

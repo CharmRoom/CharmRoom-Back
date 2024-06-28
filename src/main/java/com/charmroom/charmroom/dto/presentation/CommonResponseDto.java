@@ -1,4 +1,4 @@
-package com.charmroom.charmroom.dto;
+package com.charmroom.charmroom.dto.presentation;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

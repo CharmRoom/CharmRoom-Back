@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.charmroom.charmroom.dto.BusinessLogicErrorResponseDto;
-import com.charmroom.charmroom.dto.CommonResponseDto;
+import com.charmroom.charmroom.dto.presentation.CommonResponseDto;
 
 @RestControllerAdvice(annotations = RestController.class)
 public class ExceptionHandlerAdvice {

@@ -75,7 +75,8 @@ public class CommentLikeServiceUnitTest {
 			var result = commentLikeService.like(user.getUsername(), comment.getId());
 			
 			// then
-			assertThat(result).isEqualTo(commentLike);
+			assertThat(result.getUser().getUsername()).isEqualTo(commentLike.getUser().getUsername());
+			assertThat(result.getType()).isTrue();
 		}
 		
 		@Test
@@ -90,7 +91,8 @@ public class CommentLikeServiceUnitTest {
 			var result = commentLikeService.dislike(user.getUsername(), comment.getId());
 			
 			// then
-			assertThat(result).isEqualTo(commentDislike);
+			assertThat(result.getUser().getUsername()).isEqualTo(commentLike.getUser().getUsername());
+			assertThat(result.getType()).isFalse();
 		}
 		
 		@Test

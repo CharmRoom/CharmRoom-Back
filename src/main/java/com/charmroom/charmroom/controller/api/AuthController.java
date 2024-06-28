@@ -6,10 +6,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.charmroom.charmroom.dto.CommonResponseDto;
-import com.charmroom.charmroom.dto.SignupDto.SignupRequestDto;
-import com.charmroom.charmroom.dto.SignupDto.SignupResponseDto;
-import com.charmroom.charmroom.entity.User;
+import com.charmroom.charmroom.dto.business.UserDto;
+import com.charmroom.charmroom.dto.presentation.CommonResponseDto;
+import com.charmroom.charmroom.dto.presentation.SignupDto.SignupRequestDto;
+import com.charmroom.charmroom.dto.presentation.SignupDto.SignupResponseDto;
 import com.charmroom.charmroom.service.UserService;
 
 import jakarta.validation.Valid;
@@ -24,12 +24,20 @@ public class AuthController {
 	@PostMapping("/signup")
 	public ResponseEntity<?> signup(
 			@ModelAttribute @Valid SignupRequestDto signupRequestDto) {
-		User created = userService.create(
-				signupRequestDto.getUsername(),
-				signupRequestDto.getEmail(), 
-				signupRequestDto.getNickname(),
-				signupRequestDto.getPassword(),
-				signupRequestDto.getImage());
-		return CommonResponseDto.created(SignupResponseDto.fromEntity(created)).toResponse();
+		UserDto userDto = UserDto.builder()
+				.username(signupRequestDto.getUsername())
+				.email(signupRequestDto.getEmail())
+				.nickname(signupRequestDto.getNickname())
+				.password(signupRequestDto.getPassword())
+				.build();
+		UserDto created = userService.create(userDto);
+		SignupResponseDto result = SignupResponseDto.builder()
+				.username(created.getUsername())
+				.email(created.getEmail())
+				.nickname(created.getNickname())
+				.role(created.getLevel().getValue())
+				.build();
+		return CommonResponseDto.ok(result).toResponse();
+
 	}
 }
