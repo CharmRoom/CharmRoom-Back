@@ -1,5 +1,7 @@
 package com.charmroom.charmroom.dto.presentation;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.charmroom.charmroom.dto.validation.ValidUser;
 
 import jakarta.validation.constraints.Email;
@@ -41,6 +43,8 @@ public class SignupDto {
 		@NotEmpty(message = "닉네임은 필수항목입니다.")
 		@ValidUser.Unique.Nickname
 		private String nickname;
+		
+		MultipartFile image;
 	}
 	
 	@Data

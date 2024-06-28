@@ -30,14 +30,14 @@ public class AuthController {
 				.nickname(signupRequestDto.getNickname())
 				.password(signupRequestDto.getPassword())
 				.build();
-		UserDto created = userService.create(userDto);
+		UserDto created = userService.create(userDto, signupRequestDto.getImage());
 		SignupResponseDto result = SignupResponseDto.builder()
 				.username(created.getUsername())
 				.email(created.getEmail())
 				.nickname(created.getNickname())
 				.role(created.getLevel().getValue())
 				.build();
-		return CommonResponseDto.ok(result).toResponse();
+		return CommonResponseDto.created(result).toResponse();
 
 	}
 }
