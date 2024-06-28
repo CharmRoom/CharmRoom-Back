@@ -1,5 +1,7 @@
 package com.charmroom.charmroom.service;
 
+import com.charmroom.charmroom.dto.business.SubscribeDto;
+import com.charmroom.charmroom.dto.business.SubscribeMapper;
 import com.charmroom.charmroom.entity.Subscribe;
 import com.charmroom.charmroom.entity.User;
 import com.charmroom.charmroom.exception.BusinessLogicError;
@@ -17,7 +19,7 @@ public class SubscribeService {
     private final SubscribeRepository subscribeRepository;
     private final UserRepository userRepository;
 
-    public Subscribe create(String subscriberName, String targetName) {
+    public SubscribeDto create(String subscriberName, String targetName) {
         User subscriber = userRepository.findByUsername(subscriberName).orElseThrow(() ->
                 new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "subscriberName: " + subscriberName));
         User target = userRepository.findByUsername(targetName).orElseThrow(() ->
@@ -30,12 +32,12 @@ public class SubscribeService {
             subscribeRepository.delete(subscribe);
             return null; // 구독 취소
         } else {
-            return subscribeRepository.save(
-                    Subscribe.builder()
-                            .subscriber(subscriber)
-                            .target(target)
-                            .build()
-            );
+            Subscribe subscribe = Subscribe.builder()
+                    .subscriber(subscriber)
+                    .target(target)
+                    .build();
+            Subscribe saved = subscribeRepository.save(subscribe);
+            return SubscribeMapper.toDto(saved);
         }
     }
 }
