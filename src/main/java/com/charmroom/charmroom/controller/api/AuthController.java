@@ -7,9 +7,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.charmroom.charmroom.dto.business.UserDto;
+import com.charmroom.charmroom.dto.business.UserMapper;
 import com.charmroom.charmroom.dto.presentation.CommonResponseDto;
-import com.charmroom.charmroom.dto.presentation.SignupDto.SignupRequestDto;
-import com.charmroom.charmroom.dto.presentation.SignupDto.SignupResponseDto;
+import com.charmroom.charmroom.dto.presentation.UserDto.SignupRequestDto;
+import com.charmroom.charmroom.dto.presentation.UserDto.UserResponseDto;
 import com.charmroom.charmroom.service.UserService;
 
 import jakarta.validation.Valid;
@@ -31,13 +32,8 @@ public class AuthController {
 				.password(signupRequestDto.getPassword())
 				.build();
 		UserDto created = userService.create(userDto, signupRequestDto.getImage());
-		SignupResponseDto result = SignupResponseDto.builder()
-				.username(created.getUsername())
-				.email(created.getEmail())
-				.nickname(created.getNickname())
-				.role(created.getLevel().getValue())
-				.build();
-		return CommonResponseDto.created(result).toResponse();
+		UserResponseDto result = UserMapper.toResponse(created);
+		return CommonResponseDto.created(result).toResponseEntity();
 
 	}
 }

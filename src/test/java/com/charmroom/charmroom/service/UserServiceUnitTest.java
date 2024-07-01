@@ -15,6 +15,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.platform.commons.annotation.Testable;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -31,6 +32,7 @@ import com.charmroom.charmroom.dto.business.UserMapper;
 import com.charmroom.charmroom.entity.Club;
 import com.charmroom.charmroom.entity.Image;
 import com.charmroom.charmroom.entity.User;
+import com.charmroom.charmroom.entity.enums.UserLevel;
 import com.charmroom.charmroom.exception.BusinessLogicError;
 import com.charmroom.charmroom.exception.BusinessLogicException;
 import com.charmroom.charmroom.repository.ClubRepository;
@@ -169,6 +171,35 @@ public class UserServiceUnitTest {
 	}
 	
 	@Nested
+	class GetUserByUsername {
+		@Test
+		void success() {
+			// given
+			doReturn(Optional.of(mockedUser)).when(userRepository).findByUsername(username);
+			
+			// when
+			UserDto found = userService.getUserByUsername(username);
+			
+			// then
+			assertThat(found).isNotNull();
+		}
+		@Test
+		void fail() {
+			// given
+			doReturn(Optional.empty()).when(userRepository).findByUsername(username);
+			
+			// when
+			var thrown = assertThrows(BusinessLogicException.class, () -> {
+				userService.getUserByUsername(username);
+			});
+			
+			// then
+			assertThat(thrown.getError()).isEqualTo(BusinessLogicError.NOTFOUND_USER);
+			assertThat(thrown.getMessage()).isEqualTo("username: " + username);
+		}
+	}
+	
+	@Nested
 	class GetUserList{
 		@Test
 		void success() {
@@ -282,7 +313,7 @@ public class UserServiceUnitTest {
 			UserDto changed = userService.changeWithdraw(username, true);
 			
 			// then
-			assertThat(changed.getWithdraw()).isTrue();
+			assertThat(changed.isWithdraw()).isTrue();
 		}
 		@Test
 		void fail() {
@@ -295,6 +326,20 @@ public class UserServiceUnitTest {
 			});
 			assertThat(thrown.getError()).isEqualTo(BusinessLogicError.NOTFOUND_USER);
 			assertThat(thrown.getMessage()).isEqualTo("username: " + username);
+		}
+	}
+	@Nested
+	class ChangeLevel{
+		@Test
+		void success() {
+			// given
+			doReturn(Optional.of(mockedUser)).when(userRepository).findByUsername(username);
+			
+			// when
+			UserDto changed = userService.changeLevel(username, UserLevel.ROLE_ADMIN.getValue());
+			
+			// then
+			assertThat(changed.getLevel()).isEqualTo(UserLevel.ROLE_ADMIN);
 		}
 	}
 	

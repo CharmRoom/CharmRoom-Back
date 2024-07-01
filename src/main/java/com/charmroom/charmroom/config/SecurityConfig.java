@@ -15,6 +15,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import com.charmroom.charmroom.security.JWTFilter;
 import com.charmroom.charmroom.security.JWTUtil;
 import com.charmroom.charmroom.security.LoginFilter;
+import com.charmroom.charmroom.service.CustomUserDetailsService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -25,6 +26,7 @@ public class SecurityConfig {
 	
 	private final AuthenticationConfiguration authenticationConfiguration;
 	private final JWTUtil jwtUtil;
+	private final CustomUserDetailsService customUserDetailsService;
 	
 	@Bean
 	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -48,7 +50,9 @@ public class SecurityConfig {
 				);
 		
 		// JWTFilter 등록
-		http.addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
+		http.addFilterBefore(
+				new JWTFilter(jwtUtil, customUserDetailsService),
+				LoginFilter.class);
 		
 		// 로그인 필터 추가
 		LoginFilter loginFilter = new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil);

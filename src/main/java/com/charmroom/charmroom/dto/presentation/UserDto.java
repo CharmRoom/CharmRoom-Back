@@ -2,6 +2,7 @@ package com.charmroom.charmroom.dto.presentation;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import com.charmroom.charmroom.dto.presentation.ImageDto.ImageResponseDto;
 import com.charmroom.charmroom.dto.validation.ValidUser;
 
 import jakarta.validation.constraints.Email;
@@ -12,8 +13,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
-public class SignupDto {
+public class UserDto {
 	@Data
 	@NoArgsConstructor
 	@AllArgsConstructor
@@ -48,13 +48,22 @@ public class SignupDto {
 	}
 	
 	@Data
+	@AllArgsConstructor
 	@NoArgsConstructor
+	@Builder
+	public static class UserUpdateRequest{
+		private String nickname;
+	}
+	
+	@Data
 	@AllArgsConstructor
 	@Builder
-	public static class SignupResponseDto {
+	public static class UserResponseDto{
 		private String username;
 		private String email;
 		private String nickname;
-		private String role;
+		private Boolean withdraw;
+		private String level;
+		private ImageResponseDto image;
 	}
 }

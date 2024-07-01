@@ -1,4 +1,4 @@
-package com.charmroom.charmroom.controller;
+package com.charmroom.charmroom.controller.unit;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -6,7 +6,6 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -35,7 +34,7 @@ import com.charmroom.charmroom.service.UserService;
 
 
 @ExtendWith(MockitoExtension.class)
-public class AuthControllerUnitTest {
+public class AuthControllerUnitTestDy {
 	@Mock
 	UserService userService;
 	@InjectMocks

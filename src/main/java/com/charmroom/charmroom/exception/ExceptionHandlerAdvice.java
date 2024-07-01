@@ -24,7 +24,7 @@ public class ExceptionHandlerAdvice {
 				key = ((FieldError)err).getField();
 			errors.put(key, err.getDefaultMessage());
 		});
-		return CommonResponseDto.invalid(errors).toResponse();
+		return CommonResponseDto.invalid(errors).toResponseEntity();
 	}
 	
 	@ExceptionHandler(BusinessLogicException.class)

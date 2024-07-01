@@ -27,9 +27,10 @@ public class CharmroomUtil {
 	@Component
 	@Getter
 	public class Upload {
-		private String imageUploadPath;
-		private String attachmentUploadPath;
-		
+		private final String imageUploadPath;
+		private final String attachmentUploadPath;
+		private final String imageResourceUrl;
+		private final String attachmentResourceUrl;
 		public Upload(
 				@Value("${charmroom.upload.image.path}") String imageUploadPath,
 				@Value("${charmroom.upload.attachment.path}") String attachmentUploadPath
@@ -38,23 +39,27 @@ public class CharmroomUtil {
 			this.attachmentUploadPath = attachmentUploadPath;
 			setPathReady(this.imageUploadPath);
 			setPathReady(this.attachmentUploadPath);
+			imageResourceUrl = "/image/";
+			attachmentResourceUrl = "/attachment/";
 		}
 		
 		public Image buildImage(MultipartFile image) {
 			if (!Objects.requireNonNull(image.getContentType()).startsWith("image"))
 				throw new BusinessLogicException(BusinessLogicError.FILE_NOT_IMAGE);
 			String originalName = image.getOriginalFilename();
-			String fullPath = newFileName(imageUploadPath, image);
+			String newName = newFileName(image);
+			String fullPath = imageUploadPath + File.separator + newName;
 			uploadFile(fullPath, image);
 			return Image.builder()
-					.path(fullPath)
+					.path(imageResourceUrl + newName)
 					.originalName(originalName)
 					.build();
 		}
 		
 		public Attachment buildAttachment(MultipartFile attachment, Article article) {
 			String originalName = attachment.getOriginalFilename();
-			String fullPath = newFileName(attachmentUploadPath, attachment);
+			String newName = newFileName(attachment);
+			String fullPath = attachmentUploadPath + File.separator + newName;
 			uploadFile(fullPath, attachment);
 			AttachmentType type = AttachmentType.ETC;
 			if (attachment.getContentType().startsWith("image"))
@@ -64,7 +69,7 @@ public class CharmroomUtil {
 			
 			return Attachment.builder()
 					.article(article)
-					.path(fullPath)
+					.path(attachmentResourceUrl + newName)
 					.originalName(originalName)
 					.type(type)
 					.build();
@@ -83,12 +88,12 @@ public class CharmroomUtil {
 				throw new BusinessLogicException(BusinessLogicError.DELETE_FAIL);
 		}
 		
-		private String newFileName(String path, MultipartFile file) {
+		private String newFileName(MultipartFile file) {
 			String original = file.getOriginalFilename();
 			String ext = original.substring(original.lastIndexOf("."));
 			String uuid = UUID.randomUUID().toString();
 			
-			return path + File.separator + uuid + ext;
+			return uuid + ext;
 		}
 		private void uploadFile(String path, MultipartFile file) {
 			try {
