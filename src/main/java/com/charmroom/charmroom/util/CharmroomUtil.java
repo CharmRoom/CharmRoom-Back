@@ -75,12 +75,20 @@ public class CharmroomUtil {
 					.build();
 		}
 		
-		public void deleteImageFile(Image image) {
-			unlinkFile(image.getPath());
+		public String getRealPath(Image image) {
+			return image.getPath().replace(imageResourceUrl, imageUploadPath + File.separator);
 		}
 		
-		public void deleteAttachmentFile(Attachment attachment) {
-			unlinkFile(attachment.getPath());
+		public String getRealPath(Attachment attachment) {
+			return attachment.getPath().replace(attachmentResourceUrl, attachmentUploadPath + File.separator);
+		}
+		
+		public void deleteFile(Image image) {
+			unlinkFile(getRealPath(image));
+		}
+		
+		public void deleteFile(Attachment attachment) {
+			unlinkFile(getRealPath(attachment));
 		}
 		
 		private void unlinkFile(String path) {

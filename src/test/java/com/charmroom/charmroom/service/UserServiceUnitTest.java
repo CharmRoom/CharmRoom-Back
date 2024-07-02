@@ -430,7 +430,7 @@ public class UserServiceUnitTest {
 					.build();
 			doReturn(Optional.of(user)).when(userRepository).findByUsername(username);
 			
-			doNothing().when(uploadUtil).deleteImageFile(user.getImage());
+			doNothing().when(uploadUtil).deleteFile(user.getImage());
 			
 			doReturn(image).when(uploadUtil).buildImage(imageFile);
 			doReturn(image).when(imageRepository).save(image);
@@ -439,7 +439,7 @@ public class UserServiceUnitTest {
 			UserDto changed = userService.setImage(username, imageFile);
 			
 			// then
-			verify(uploadUtil).deleteImageFile(user.getImage());
+			verify(uploadUtil).deleteFile(user.getImage());
 			assertThat(changed.getImage().getPath()).isEqualTo(image.getPath());
 		}
 		@Test

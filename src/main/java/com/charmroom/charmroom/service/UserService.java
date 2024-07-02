@@ -140,7 +140,7 @@ public class UserService {
 		User user = userRepository.findByUsername(username)
 				.orElseThrow(() -> new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "username: " + username));
 		if (user.getImage() != null) {
-			uploadUtil.deleteImageFile(user.getImage());
+			uploadUtil.deleteFile(user.getImage());
 		}
 		Image image = uploadUtil.buildImage(imageFile);
 		Image saved = imageRepository.save(image);
