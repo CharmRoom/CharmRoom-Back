@@ -104,7 +104,7 @@ public class ClubService {
                 new BusinessLogicException(BusinessLogicError.NOTFOUND_CLUB, "clubName: " + clubName));
 
         if (club.getImage() != null) {
-            uploadUtil.deleteImageFile(club.getImage());
+            uploadUtil.deleteFile(club.getImage());
         }
 
         Image image = uploadUtil.buildImage(imageFile);

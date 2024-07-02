@@ -17,7 +17,7 @@ public class UserDto {
 	private String email;
 	private String nickname;
 	private String password;
-	private Boolean withdraw;
+	private boolean withdraw;
 	private UserLevel level;
 	private ImageDto image;
 	private ClubDto club;

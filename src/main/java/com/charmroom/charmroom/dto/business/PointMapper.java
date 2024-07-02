@@ -1,5 +1,6 @@
 package com.charmroom.charmroom.dto.business;
 
+import com.charmroom.charmroom.dto.presentation.PointDto.PointResponseDto;
 import com.charmroom.charmroom.entity.Point;
 
 public class PointMapper {
@@ -19,5 +20,15 @@ public class PointMapper {
 			dto.setUser(user);
 		}
 		return dto;
+	}
+	
+	public static PointResponseDto toResponse(PointDto dto) {
+		return PointResponseDto.builder()
+				.id(dto.getId())
+				.username(dto.getUser().getUsername())
+				.updatedAt(dto.getUpdatedAt())
+				.type(dto.getType().name())
+				.diff(dto.getDiff())
+				.build();
 	}
 }

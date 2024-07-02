@@ -7,9 +7,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.charmroom.charmroom.dto.CustomUserDetails;
-import com.charmroom.charmroom.entity.User;
-import com.charmroom.charmroom.entity.enums.UserLevel;
+import com.charmroom.charmroom.service.CustomUserDetailsService;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -21,7 +19,7 @@ import lombok.RequiredArgsConstructor;
 public class JWTFilter extends OncePerRequestFilter {
 
 	private final JWTUtil jwtUtil;
-	
+	private final CustomUserDetailsService customUserDetailsService;
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
@@ -42,20 +40,18 @@ public class JWTFilter extends OncePerRequestFilter {
 		}
 		
 		String username = jwtUtil.getUsername(token);
-		String role = jwtUtil.getRole(token);
 		
 		// User 엔티티 생성
-		User user = User.builder()
-				.username(username)
-				.password("fake_password")
-				.level(UserLevel.valueOf(role))
-				.build();
-		// UserDetails에 담기
-		CustomUserDetails customUserDetails = new CustomUserDetails(user);
-		
+		var user = customUserDetailsService.loadUserByUsername(username);
+//		User user = User.builder()
+//				.username(username)
+//				.password("fake_password")
+//				.level(UserLevel.valueOf(role))
+//				.build();
+//		
 		// Spring Security 인증 토큰 생성
 		Authentication authToken = new UsernamePasswordAuthenticationToken(
-				customUserDetails, null, customUserDetails.getAuthorities());
+				user, null, user.getAuthorities());
 		// 세션에 사용자 등록
 		SecurityContextHolder.getContext().setAuthentication(authToken);
 		// 다음 필터로

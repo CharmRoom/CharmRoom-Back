@@ -22,7 +22,7 @@ public class CommonResponseDto<D> {
 	@RequiredArgsConstructor
 	public enum Code{
 		BAD_REQUEST(HttpStatus.BAD_REQUEST, "BAD_REQUEST"),
-		OKAY(HttpStatus.OK, "OKAY"),
+		OK(HttpStatus.OK, "OK"),
 		NOT_FOUND(HttpStatus.NOT_FOUND, "NOT_FOUND"),
 		CREATED(HttpStatus.CREATED, "CREATED"),
 		INVALID(HttpStatus.NOT_ACCEPTABLE, "NOT_VALID")
@@ -32,21 +32,21 @@ public class CommonResponseDto<D> {
 		private final String code;
 	}
 	
-	public ResponseEntity<CommonResponseDto<D>> toResponse() {
+	public ResponseEntity<CommonResponseDto<D>> toResponseEntity() {
 		return ResponseEntity.status(code.status).body(this);
 	}
 	
 	public static <D> CommonResponseDto<D> ok(){
-		return new CommonResponseDto<>(Code.OKAY, null, null); 
+		return new CommonResponseDto<>(Code.OK, null, null); 
 	}
 	public static <D> CommonResponseDto<D> ok(D data){ 
-		return new CommonResponseDto<>(Code.OKAY, null, data); 
+		return new CommonResponseDto<>(Code.OK, null, data); 
 	}
 	public static <D> CommonResponseDto<D> ok(String message){
-		return new CommonResponseDto<>(Code.OKAY, message, null);
+		return new CommonResponseDto<>(Code.OK, message, null);
 	}
 	public static <D> CommonResponseDto<D> ok(String message, D data){
-		return new CommonResponseDto<>(Code.OKAY, message, data);
+		return new CommonResponseDto<>(Code.OK, message, data);
 	}
 	public static <D> CommonResponseDto<D> badRequest(){
 		return new CommonResponseDto<>(Code.BAD_REQUEST, null, null); 
