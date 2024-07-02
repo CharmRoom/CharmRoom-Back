@@ -8,7 +8,7 @@ public class BoardMapper {
 				.id(entity.getId())
 				.name(entity.getName())
 				.type(entity.getType())
-				.exposed(entity.getExposed())
+				.exposed(entity.isExposed())
 				.build();
 	}
 }
