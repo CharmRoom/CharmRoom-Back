@@ -30,6 +30,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.Validator;
 
 import com.charmroom.charmroom.controller.api.UserController;
+import com.charmroom.charmroom.dto.business.CommentDto;
 import com.charmroom.charmroom.dto.business.PointMapper;
 import com.charmroom.charmroom.dto.business.UserDto;
 import com.charmroom.charmroom.dto.business.UserMapper;
@@ -40,6 +41,7 @@ import com.charmroom.charmroom.entity.enums.PointType;
 import com.charmroom.charmroom.exception.BusinessLogicError;
 import com.charmroom.charmroom.exception.BusinessLogicException;
 import com.charmroom.charmroom.exception.ExceptionHandlerAdvice;
+import com.charmroom.charmroom.service.CommentService;
 import com.charmroom.charmroom.service.PointService;
 import com.charmroom.charmroom.service.UserService;
 import com.google.gson.Gson;
@@ -50,6 +52,8 @@ public class UserControllerUnitTestDy {
 	UserService userService;
 	@Mock
 	PointService pointService;
+	@Mock
+	CommentService commentService;
 	
 	@InjectMocks
 	UserController userController;
@@ -210,6 +214,34 @@ public class UserControllerUnitTestDy {
 					)
 			;
 			
+		}
+	}
+	
+	@Nested
+	class GetMyComments {
+		@Test
+		void success() throws Exception {
+			var dto = CommentDto.builder()
+					.body("test")
+					.build();
+			var dtoList = List.of(dto, dto, dto);
+			var pageRequest = PageRequest.of(0, 10, Sort.by("id").descending());
+			var dtoPage = new PageImpl<>(dtoList, pageRequest, 3);
+			
+			doReturn(dtoPage).when(commentService).getCommentsByUsername(any(), eq(pageRequest));
+			
+			// when
+			mockMvc.perform(get("/api/user/comment"))
+			
+			// then
+			.andExpectAll(
+					status().isOk(),
+					jsonPath("$.data.totalElements").value(3),
+					jsonPath("$.data.content").isArray(),
+					jsonPath("$.data.content.size()").value(3),
+					jsonPath("$.data.content[0].body").value("test")
+					)
+			;
 		}
 	}
 	

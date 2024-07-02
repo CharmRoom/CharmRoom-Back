@@ -69,7 +69,7 @@ public class BoardControllerUnitTestDy {
 			doReturn(dtoList).when(boardService).getBoardsExposed();
 			
 			// when
-			mockMvc.perform(get("/board"))
+			mockMvc.perform(get("/api/board"))
 			// then
 			.andExpectAll(status().isOk(),
 					jsonPath("$.data").isArray(),
@@ -91,7 +91,7 @@ public class BoardControllerUnitTestDy {
 			doReturn(dtoPage).when(boardService).getBoards(pageRequest);
 			
 			// when
-			mockMvc.perform(get("/board/all"))
+			mockMvc.perform(get("/api/board/all"))
 			
 			// then
 			.andExpectAll(
@@ -119,7 +119,7 @@ public class BoardControllerUnitTestDy {
 			doReturn(dtoPage).when(boardService).getArticlesByBoardId(mockedBoardDto.getId(), pageRequest);
 			
 			// when
-			mockMvc.perform(get("/board/" + mockedBoardDto.getId()))
+			mockMvc.perform(get("/api/board/" + mockedBoardDto.getId()))
 			.andExpectAll(
 					status().isOk(),
 					jsonPath("$.data.totalElements").value(6),

@@ -10,7 +10,7 @@ public class BoardDto {
 	@AllArgsConstructor
 	@NoArgsConstructor
 	@Builder
-	public static class CreateBoardRequestDto{
+	public static class BoardCreateRequestDto{
 		private String name;
 		private String type;
 	}
@@ -19,7 +19,7 @@ public class BoardDto {
 	@AllArgsConstructor
 	@NoArgsConstructor
 	@Builder
-	public static class UpdateBoardRequestDto{
+	public static class BoardUpdateRequestDto{
 		private String name;
 		private String type;
 	}

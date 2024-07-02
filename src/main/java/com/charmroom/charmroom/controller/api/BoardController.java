@@ -19,7 +19,7 @@ import com.charmroom.charmroom.service.BoardService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/board")
+@RequestMapping("/api/board")
 @RequiredArgsConstructor
 public class BoardController {
 	private final BoardService boardService;
