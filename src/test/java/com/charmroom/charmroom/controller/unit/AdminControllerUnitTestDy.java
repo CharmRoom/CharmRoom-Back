@@ -32,17 +32,21 @@ import org.springframework.validation.Validator;
 
 import com.charmroom.charmroom.controller.api.AdminController;
 import com.charmroom.charmroom.dto.business.BoardDto;
+import com.charmroom.charmroom.dto.business.PointDto;
 import com.charmroom.charmroom.dto.business.UserDto;
 import com.charmroom.charmroom.dto.business.UserMapper;
 import com.charmroom.charmroom.dto.presentation.BoardDto.BoardCreateRequestDto;
 import com.charmroom.charmroom.dto.presentation.BoardDto.BoardUpdateRequestDto;
+import com.charmroom.charmroom.dto.presentation.PointDto.PointCreateRequestDto;
 import com.charmroom.charmroom.entity.User;
 import com.charmroom.charmroom.entity.enums.BoardType;
+import com.charmroom.charmroom.entity.enums.PointType;
 import com.charmroom.charmroom.entity.enums.UserLevel;
 import com.charmroom.charmroom.exception.BusinessLogicError;
 import com.charmroom.charmroom.exception.BusinessLogicException;
 import com.charmroom.charmroom.exception.ExceptionHandlerAdvice;
 import com.charmroom.charmroom.service.BoardService;
+import com.charmroom.charmroom.service.PointService;
 import com.charmroom.charmroom.service.UserService;
 import com.google.gson.Gson;
 
@@ -52,6 +56,8 @@ public class AdminControllerUnitTestDy {
 	UserService userService;
 	@Mock
 	BoardService boardService;
+	@Mock
+	PointService pointService;
 	
 	@InjectMocks
 	AdminController adminController;
@@ -157,7 +163,39 @@ public class AdminControllerUnitTestDy {
 			// when
 			mockMvc.perform(patch("/api/admin/user/withdraw")
 					.param("username", mockedUserDto.getUsername()))
+			// then
 			.andExpect(status().isOk());
+		}
+	}
+	
+	@Nested
+	class GivePoint{
+		@Test
+		void success() throws Exception{
+			// given
+			PointDto dto = PointDto.builder()
+					.id(1)
+					.type(PointType.EARN)
+					.diff(400)
+					.build();
+			doReturn(dto).when(pointService).create("test", "EARN", 500);
+			
+			var request = PointCreateRequestDto.builder()
+					.type("EARN")
+					.diff(500)
+					.build();
+			// when
+			mockMvc.perform(post("/api/admin/point/test")
+					.content(gson.toJson(request))
+					.contentType(MediaType.APPLICATION_JSON))
+			// then
+			.andExpectAll(
+					status().isOk()
+					,jsonPath("$.data.type").value("EARN")
+					,jsonPath("$.data.diff").value(400)
+					)
+			;
+			
 		}
 	}
 	

@@ -23,12 +23,14 @@ public class PointMapper {
 	}
 	
 	public static PointResponseDto toResponse(PointDto dto) {
-		return PointResponseDto.builder()
+		var response = PointResponseDto.builder()
 				.id(dto.getId())
-				.username(dto.getUser().getUsername())
 				.updatedAt(dto.getUpdatedAt())
 				.type(dto.getType().name())
 				.diff(dto.getDiff())
 				.build();
+		if (dto.getUser() != null)
+			response.setUsername(dto.getUser().getUsername());
+		return response;
 	}
 }
