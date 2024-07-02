@@ -11,15 +11,19 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.charmroom.charmroom.dto.business.BoardMapper;
+import com.charmroom.charmroom.dto.business.PointMapper;
 import com.charmroom.charmroom.dto.business.UserMapper;
 import com.charmroom.charmroom.dto.presentation.BoardDto.BoardCreateRequestDto;
 import com.charmroom.charmroom.dto.presentation.BoardDto.BoardUpdateRequestDto;
 import com.charmroom.charmroom.dto.presentation.CommonResponseDto;
+import com.charmroom.charmroom.dto.presentation.PointDto.PointCreateRequestDto;
 import com.charmroom.charmroom.service.BoardService;
+import com.charmroom.charmroom.service.PointService;
 import com.charmroom.charmroom.service.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -30,6 +34,7 @@ import lombok.RequiredArgsConstructor;
 public class AdminController {
 	private final UserService userService;
 	private final BoardService boardService;
+	private final PointService pointService;
 	
 	@GetMapping("/user")
 	public ResponseEntity<?> users(
@@ -59,6 +64,16 @@ public class AdminController {
 		return CommonResponseDto.ok(response).toResponseEntity();
 	}
 	
+	@PostMapping("/point/{username}")
+	public ResponseEntity<?> givePoint(
+			@PathVariable("username") String username,
+			@RequestBody PointCreateRequestDto request
+			){
+		var dto = pointService.create(username, request.getType(), request.getDiff());
+		var response = PointMapper.toResponse(dto);
+		return CommonResponseDto.ok(response).toResponseEntity();
+		
+	}
 	@PostMapping("/board")
 	public ResponseEntity<?> createBoard(
 			@RequestBody BoardCreateRequestDto request
