@@ -86,7 +86,7 @@ public class BoardRepositoryUnitTest {
 			var foundBoard = boardRepository.findById(board.getId()).get();
 			assertThat(foundBoard).isNotNull();
 			assertThat(foundBoard.getType()).isEqualTo(BoardType.GALLERY);
-			assertThat(foundBoard.getExposed()).isEqualTo(true);
+			assertThat(foundBoard.isExposed()).isEqualTo(true);
 		}
 	}
 	

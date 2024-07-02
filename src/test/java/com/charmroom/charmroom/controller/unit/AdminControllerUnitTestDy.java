@@ -1,11 +1,14 @@
 package com.charmroom.charmroom.controller.unit;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -22,31 +25,44 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.Validator;
 
 import com.charmroom.charmroom.controller.api.AdminController;
+import com.charmroom.charmroom.dto.business.BoardDto;
 import com.charmroom.charmroom.dto.business.UserDto;
 import com.charmroom.charmroom.dto.business.UserMapper;
+import com.charmroom.charmroom.dto.presentation.BoardDto.CreateBoardRequestDto;
+import com.charmroom.charmroom.dto.presentation.BoardDto.UpdateBoardRequestDto;
 import com.charmroom.charmroom.entity.User;
+import com.charmroom.charmroom.entity.enums.BoardType;
 import com.charmroom.charmroom.entity.enums.UserLevel;
 import com.charmroom.charmroom.exception.BusinessLogicError;
 import com.charmroom.charmroom.exception.BusinessLogicException;
 import com.charmroom.charmroom.exception.ExceptionHandlerAdvice;
+import com.charmroom.charmroom.service.BoardService;
 import com.charmroom.charmroom.service.UserService;
+import com.google.gson.Gson;
 
 @ExtendWith(MockitoExtension.class)
 public class AdminControllerUnitTestDy {
 	@Mock
 	UserService userService;
+	@Mock
+	BoardService boardService;
+	
 	@InjectMocks
 	AdminController adminController;
 	
 	MockMvc mockMvc;
-	User mockedUser;
-	UserDto mockedDto;
-
+	
+	UserDto mockedUserDto;
+	BoardDto mockedBoardDto;
+	
+	Gson gson;
+	
 	@BeforeEach
 	void setup() {
 		mockMvc = MockMvcBuilders
@@ -55,13 +71,20 @@ public class AdminControllerUnitTestDy {
 				.setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
 				.setValidator(mock(Validator.class))
 				.build();
-		mockedUser = User.builder()
+		
+		mockedUserDto = UserMapper.toDto(User.builder()
 				.username("test")
 				.password("password")
 				.email("test@test.com")
 				.nickname("nickname")
+				.build());
+		mockedBoardDto = BoardDto.builder()
+				.id(1)
+				.name("board")
+				.type(BoardType.LIST)
+				.exposed(false)
 				.build();
-		mockedDto = UserMapper.toDto(mockedUser);
+		gson = new Gson();
 	}
 	
 	@Nested
@@ -69,7 +92,7 @@ public class AdminControllerUnitTestDy {
 		@Test
 		void success() throws Exception {
 			// given
-			var dtoList = List.of(mockedDto, mockedDto, mockedDto);
+			var dtoList = List.of(mockedUserDto, mockedUserDto, mockedUserDto);
 			var pageRequest = PageRequest.of(0, 10, Sort.by("id").descending());
 			var dtoPage = new PageImpl<>(dtoList, pageRequest, 3);
 			
@@ -82,7 +105,7 @@ public class AdminControllerUnitTestDy {
 			.andExpectAll(status().isOk(),
 					jsonPath("$.data.totalElements").value(3),
 					jsonPath("$.data.content").isArray(),
-					jsonPath("$.data.content[0].username").value(mockedDto.getUsername()),
+					jsonPath("$.data.content[0].username").value(mockedUserDto.getUsername()),
 					jsonPath("$.data.content[0].password").doesNotExist()
 					)
 			;
@@ -95,12 +118,12 @@ public class AdminControllerUnitTestDy {
 		@Test
 		void success() throws Exception{
 			// given
-			mockedDto.setLevel(UserLevel.ROLE_ADMIN);
-			doReturn(mockedDto).when(userService).changeLevel(mockedDto.getUsername(), UserLevel.ROLE_ADMIN.getValue());
+			mockedUserDto.setLevel(UserLevel.ROLE_ADMIN);
+			doReturn(mockedUserDto).when(userService).changeLevel(mockedUserDto.getUsername(), UserLevel.ROLE_ADMIN.getValue());
 			
 			// when
 			mockMvc.perform(patch("/api/admin/user/grade")
-					.param("username", mockedDto.getUsername())
+					.param("username", mockedUserDto.getUsername())
 					.param("grade", UserLevel.ROLE_ADMIN.getValue())
 					)
 			.andExpectAll(status().isOk(),
@@ -115,7 +138,7 @@ public class AdminControllerUnitTestDy {
 			
 			// when
 			mockMvc.perform(patch("/api/admin/user/grade")
-					.param("username", mockedDto.getUsername())
+					.param("username", mockedUserDto.getUsername())
 					.param("grade", UserLevel.ROLE_ADMIN.getValue())
 					)
 			.andExpect(status().isNotFound())
@@ -128,14 +151,107 @@ public class AdminControllerUnitTestDy {
 		@Test
 		void success() throws Exception{
 			// given
-			mockedDto.setWithdraw(true);
-			doReturn(mockedDto).when(userService).changeWithdraw(mockedDto.getUsername(), true);
+			mockedUserDto.setWithdraw(true);
+			doReturn(mockedUserDto).when(userService).changeWithdraw(mockedUserDto.getUsername(), true);
 			
 			// when
 			mockMvc.perform(patch("/api/admin/user/withdraw")
-					.param("username", mockedDto.getUsername()))
+					.param("username", mockedUserDto.getUsername()))
 			.andExpect(status().isOk());
 		}
 	}
 	
+	@Nested
+	class CreateBoard{
+		@Test
+		void success() throws Exception{
+			// given
+			doReturn(mockedBoardDto).when(boardService)
+			.create(mockedBoardDto.getName(), mockedBoardDto.getType().toString());
+			
+			CreateBoardRequestDto dto = CreateBoardRequestDto.builder()
+					.name(mockedBoardDto.getName())
+					.type(mockedBoardDto.getType().toString())
+					.build();
+			// when
+			mockMvc.perform(
+					post("/api/admin/board")
+					.content(gson.toJson(dto))
+					.contentType(MediaType.APPLICATION_JSON)
+					)
+			// then
+			.andExpectAll(
+					status().isCreated(),
+					jsonPath("$.data.name").value(mockedBoardDto.getName()) ,
+					jsonPath("$.data.type").value(mockedBoardDto.getType().toString()),
+					jsonPath("$.data.exposed").value(mockedBoardDto.isExposed())
+					)
+			;
+		}
+	}
+	
+	@Nested
+	class UpdateBoard{
+		@Test
+		void success() throws Exception{
+			// given
+			doReturn(mockedBoardDto).when(boardService)
+			.update(mockedBoardDto.getId(),
+					mockedBoardDto.getName(),
+					mockedBoardDto.getType().toString());
+			
+			UpdateBoardRequestDto dto = UpdateBoardRequestDto.builder()
+					.name(mockedBoardDto.getName())
+					.type(mockedBoardDto.getType().toString())
+					.build();
+			
+			// when
+			mockMvc.perform(post("/api/admin/board/" + mockedBoardDto.getId())
+					.content(gson.toJson(dto))
+					.contentType(MediaType.APPLICATION_JSON)
+					)
+			// then
+			.andExpectAll(
+					status().isOk(),
+					jsonPath("$.data.name").value(mockedBoardDto.getName()) ,
+					jsonPath("$.data.type").value(mockedBoardDto.getType().toString()),
+					jsonPath("$.data.exposed").value(mockedBoardDto.isExposed())
+					)
+			;	
+		}
+	}
+	@Nested
+	class ExposeBoard{
+		@Test
+		void success() throws Exception{
+			// given
+			mockedBoardDto.setExposed(true);
+			doReturn(mockedBoardDto).when(boardService).changeExpose(mockedBoardDto.getId(), true);
+			
+			// when
+			mockMvc.perform(patch("/api/admin/board/"+mockedBoardDto.getId())
+					.param("exposed", "true")
+					)
+			// then
+			.andExpectAll(
+					status().isOk(),
+					jsonPath("$.data.exposed").value(true)
+					)
+			;
+		}
+	}
+	@Nested
+	class DeleteBoard{
+		@Test
+		void success() throws Exception{
+			// given
+			doNothing().when(boardService).delete(mockedBoardDto.getId());
+			
+			// when
+			mockMvc.perform(delete("/api/admin/board/"+mockedBoardDto.getId()))
+
+			// then
+			.andExpect(status().isOk());
+		}
+	}
 }

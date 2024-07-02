@@ -32,7 +32,11 @@ public class Board {
 	
 	@Column(nullable = false)
 	@Builder.Default
-	private Boolean exposed = false;
+	private boolean exposed = false;
+	
+	public void updateName(String name) {
+		this.name = name;
+	}
 	
 	public void updateType(BoardType type) {
 		this.type = type;

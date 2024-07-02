@@ -13,5 +13,5 @@ public class BoardDto {
 	private Integer id;
 	private String name;
 	private BoardType type;
-	private Boolean exposed;
+	private boolean exposed;
 }
