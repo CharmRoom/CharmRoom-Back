@@ -1,6 +1,5 @@
 package com.charmroom.charmroom.dto.business;
 
-import com.charmroom.charmroom.entity.Article;
 import com.charmroom.charmroom.entity.Market;
 
 public class MarketMapper {

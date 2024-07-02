@@ -63,6 +63,9 @@ public enum BusinessLogicError {
 	MKDIR_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "MKDIR_FAIL", "mkdir failed"),
 	CHMOD_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "CHMOD_FAIL", "chmod failed"), 
 	DELETE_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "DELETE_FAIL", "file delete failed"),
+	
+	NOTFOUND_FILE(HttpStatus.NOT_FOUND, "NOTFOUND_FILE", "File not found"),
+	BADPATH_FILE(HttpStatus.BAD_REQUEST, "BADPATH_FILE", "File path is malformed")
 	// end ETC
 	;
   

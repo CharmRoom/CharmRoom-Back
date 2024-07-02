@@ -1,5 +1,7 @@
 package com.charmroom.charmroom.dto.business;
 
+import org.springframework.core.io.Resource;
+
 import com.charmroom.charmroom.entity.enums.AttachmentType;
 
 import lombok.AllArgsConstructor;
@@ -14,4 +16,5 @@ public class AttachmentDto {
 	private AttachmentType type;
 	private String path;
 	private String originalName;
+	private Resource resource;
 }
