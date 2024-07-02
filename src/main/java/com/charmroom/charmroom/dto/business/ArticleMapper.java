@@ -3,6 +3,7 @@ package com.charmroom.charmroom.dto.business;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.charmroom.charmroom.dto.presentation.ArticleDto.ArticleResponseDto;
 import com.charmroom.charmroom.entity.Article;
 
 public class ArticleMapper {
@@ -43,6 +44,12 @@ public class ArticleMapper {
 			dto.setAttachmentList(attachmentDtoList);
 		}
 		return dto;
+	}
+	
+	public static ArticleResponseDto toResponse(ArticleDto dto) {
+		return ArticleResponseDto.builder()
+				.id(dto.getId())
+				.build();
 	}
 
 }

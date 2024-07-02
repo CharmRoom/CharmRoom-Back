@@ -34,6 +34,10 @@ public class Board {
 	@Builder.Default
 	private boolean exposed = false;
 	
+	public void updateName(String name) {
+		this.name = name;
+	}
+	
 	public void updateType(BoardType type) {
 		this.type = type;
 	}

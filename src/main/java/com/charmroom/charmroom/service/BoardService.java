@@ -1,5 +1,8 @@
 package com.charmroom.charmroom.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,12 +27,12 @@ public class BoardService {
 	private final BoardRepository boardRepository;
 	private final ArticleRepository articleRepository;
 	
-	public BoardDto create(String name, BoardType type) {
+	public BoardDto create(String name, String type) {
 		if (boardRepository.existsByName(name))
 			throw new BusinessLogicException(BusinessLogicError.DUPLICATED_BOARD_NAME);
 		Board board = Board.builder()
 				.name(name)
-				.type(type)
+				.type(BoardType.valueOf(type))
 				.build();
 		Board saved = boardRepository.save(board);
 		return BoardMapper.toDto(saved);
@@ -37,6 +40,11 @@ public class BoardService {
 	
 	public Page<BoardDto> getBoards(Pageable pageable){
 		return boardRepository.findAll(pageable).map(board -> BoardMapper.toDto(board));
+	}
+	
+	public List<BoardDto> getBoardsExposed(){
+		List<Board> boards = boardRepository.findAllByExposed(true);
+		return boards.stream().map(dto -> BoardMapper.toDto(dto)).collect(Collectors.toList());
 	}
 	
 	public Page<ArticleDto> getArticlesByBoardId(Integer boardId, Pageable pageable){
@@ -48,19 +56,34 @@ public class BoardService {
 		return boardRepository.findById(id)
 				.orElseThrow(() -> new BusinessLogicException(BusinessLogicError.NOTFOUND_BOARD, "id: " + id));
 	}
-	@Transactional
-	public BoardDto changeType(Integer id, BoardType type) {
+	
+	public BoardDto changeName(Integer id, String name) {
 		Board board = loadById(id);
-		
-		board.updateType(type);
+		board.updateName(name);
 		return BoardMapper.toDto(board);
 	}
 	
 	@Transactional
-	public BoardDto changeExpose(Integer id, Boolean expose) {
+	public BoardDto changeType(Integer id, String type) {
 		Board board = loadById(id);
 		
-		board.updateExposed(expose);
+		board.updateType(BoardType.valueOf(type));
+		return BoardMapper.toDto(board);
+	}
+	
+	@Transactional
+	public BoardDto changeExpose(Integer id, boolean exposed) {
+		Board board = loadById(id);
+		
+		board.updateExposed(exposed);
+		return BoardMapper.toDto(board);
+	}
+	
+	@Transactional 
+	public BoardDto update(Integer id, String name, String type) {
+		Board board = loadById(id);
+		board.updateName(name);
+		board.updateType(BoardType.valueOf(type));
 		return BoardMapper.toDto(board);
 	}
 	
