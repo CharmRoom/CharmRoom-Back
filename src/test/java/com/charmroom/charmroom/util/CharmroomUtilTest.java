@@ -16,6 +16,7 @@ import org.junit.jupiter.api.TestClassOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.io.Resource;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.TestPropertySource;
 
@@ -179,6 +180,56 @@ public class CharmroomUtilTest {
 				
 				// then
 				assertThat(thrown.getError()).isEqualTo(BusinessLogicError.DELETE_FAIL);
+			}
+		}
+		
+		@Nested
+		@Order(5)
+		class GetRealPath{
+			@Test
+			void success() {
+				// given
+				MockMultipartFile imageFile = new MockMultipartFile("file", "test1.png", "image/png", "test".getBytes());
+				MockMultipartFile attachmentFile = new MockMultipartFile("file", "test3.html", "text/html", "test".getBytes());
+				
+				Image image = uploadUtil.buildImage(imageFile);
+				Article article = Article.builder()
+						.build();
+				Attachment attachment = uploadUtil.buildAttachment(attachmentFile, article);
+				
+				// when
+				String imagePath = uploadUtil.getRealPath(image);
+				String attachPath = uploadUtil.getRealPath(attachment);
+				
+				// then
+				System.out.println(imagePath);
+				System.out.println(attachPath);
+				assertThat(imagePath.endsWith(image.getPath()));
+				assertThat(attachPath.endsWith(attachment.getPath()));
+			}
+		}
+		
+		@Nested
+		@Order(6)
+		class toResource{
+			@Test
+			void success() {
+				// given
+				MockMultipartFile imageFile = new MockMultipartFile("file", "test1.png", "image/png", "test".getBytes());
+				MockMultipartFile attachmentFile = new MockMultipartFile("file", "test3.html", "text/html", "test".getBytes());
+				
+				Image image = uploadUtil.buildImage(imageFile);
+				Article article = Article.builder()
+						.build();
+				Attachment attachment = uploadUtil.buildAttachment(attachmentFile, article);
+				
+				// when
+				Resource imageResource = uploadUtil.toResource(image);
+				Resource attachResource = uploadUtil.toResource(attachment);
+				
+				// then
+				assertThat(imageResource.exists()).isTrue();
+				assertThat(attachResource.exists()).isTrue();
 			}
 		}
 	}

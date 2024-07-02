@@ -13,20 +13,25 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.core.io.Resource;
 
 import com.charmroom.charmroom.entity.Image;
 import com.charmroom.charmroom.exception.BusinessLogicError;
 import com.charmroom.charmroom.exception.BusinessLogicException;
 import com.charmroom.charmroom.repository.ImageRepository;
+import com.charmroom.charmroom.util.CharmroomUtil;
 
 @ExtendWith(MockitoExtension.class)
 public class ImageServiceUnitTest {
 	@Mock
 	private ImageRepository imageRepository;
+	@Mock
+	private CharmroomUtil.Upload uploadUtil;
 	@InjectMocks
 	private ImageService imageService;
 	
 	private Image image;
+	private Resource mockedResource;
 	
 	@BeforeEach
 	void setup() {
@@ -41,7 +46,7 @@ public class ImageServiceUnitTest {
 		void success() {
 			// given
 			doReturn(Optional.of(image)).when(imageRepository).findById(image.getId());
-			
+			doReturn(mockedResource).when(uploadUtil).toResource(image);
 			// when
 			var loaded = imageService.loadById(image.getId());
 			

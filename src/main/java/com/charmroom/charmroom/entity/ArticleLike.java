@@ -29,7 +29,7 @@ public class ArticleLike {
     private User user;
 
     @Column(nullable = false)
-    private boolean type;
+    private Boolean type;
 
     public ArticleLike(ArticleLikeId id, Article article, User user, boolean type) {
         this.id = new ArticleLikeId(article.getId(), user.getId());

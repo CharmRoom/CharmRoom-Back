@@ -1,5 +1,6 @@
 package com.charmroom.charmroom.service;
 
+import com.charmroom.charmroom.dto.business.SubscribeDto;
 import com.charmroom.charmroom.entity.Subscribe;
 import com.charmroom.charmroom.entity.User;
 import com.charmroom.charmroom.repository.SubscribeRepository;
@@ -69,11 +70,12 @@ public class SubscribeServiceUnitTest {
             doReturn(subscribe).when(subscribeRepository).save(any(Subscribe.class));
 
             // when
-            Subscribe created =  subscribeService.create(subscriber.getUsername(), target.getUsername());
+            SubscribeDto created =  subscribeService.create(subscriber.getUsername(), target.getUsername());
 
             // then
             assertThat(created).isNotNull();
-            assertThat(created.getSubscriber()).isEqualTo(subscriber);
+            assertThat(created.getSubscriber().getUsername()).isEqualTo(subscriber.getUsername());
+            assertThat(created.getTarget().getUsername()).isEqualTo(target.getUsername());
         }
 
         @Test
@@ -85,7 +87,7 @@ public class SubscribeServiceUnitTest {
             doReturn(Optional.of(subscribe)).when(subscribeRepository).findBySubscriberAndTarget(subscriber, target);
 
             // when
-            Subscribe result = subscribeService.create(subscriber.getUsername(), target.getUsername());
+            SubscribeDto result = subscribeService.create(subscriber.getUsername(), target.getUsername());
 
             // then
             assertNull(result);

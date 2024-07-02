@@ -8,16 +8,21 @@ import com.charmroom.charmroom.entity.Attachment;
 import com.charmroom.charmroom.exception.BusinessLogicError;
 import com.charmroom.charmroom.exception.BusinessLogicException;
 import com.charmroom.charmroom.repository.AttachmentRepository;
+import com.charmroom.charmroom.util.CharmroomUtil;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class AttachmentService {
-private final AttachmentRepository attachmentRepository;
+	private final AttachmentRepository attachmentRepository;
+	private final CharmroomUtil.Upload uploadUtil;
+	
 	public AttachmentDto loadById(Integer id) {
 		Attachment attachment = attachmentRepository.findById(id)
 				.orElseThrow(() ->new BusinessLogicException(BusinessLogicError.NOTFOUND_ATTACHMENT, "id: " + id));
-		return AttachmentMapper.toDto(attachment);
+		AttachmentDto dto = AttachmentMapper.toDto(attachment);
+		dto.setResource(uploadUtil.toResource(attachment));
+		return dto;
 	}
 }
