@@ -29,6 +29,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.charmroom.charmroom.dto.business.ArticleDto;
 import com.charmroom.charmroom.entity.Article;
 import com.charmroom.charmroom.entity.Attachment;
 import com.charmroom.charmroom.entity.Board;
@@ -39,6 +40,7 @@ import com.charmroom.charmroom.exception.BusinessLogicError;
 import com.charmroom.charmroom.exception.BusinessLogicException;
 import com.charmroom.charmroom.repository.ArticleRepository;
 import com.charmroom.charmroom.repository.AttachmentRepository;
+import com.charmroom.charmroom.repository.UserRepository;
 import com.charmroom.charmroom.util.CharmroomUtil;
 
 @ExtendWith(MockitoExtension.class)
@@ -49,6 +51,8 @@ public class ArticleServiceUnitTest {
     private AttachmentRepository attachmentRepository;
     @Mock
     private CharmroomUtil.Upload uploadUtil;
+    @Mock
+    private UserRepository userRepository;
     @Spy
     private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     @InjectMocks
@@ -146,7 +150,7 @@ public class ArticleServiceUnitTest {
             doReturn(article).when(articleRepository).save(any(Article.class));
 
             // when
-            Article saved = articleService.createArticle(user, board, title, body, fileList);
+            ArticleDto saved = articleService.createArticle(user, board, title, body, fileList);
 
             // then
             verify(articleRepository).save(any(Article.class));
@@ -168,12 +172,12 @@ public class ArticleServiceUnitTest {
             doReturn(articlePage).when(articleRepository).findAll(pageRequest);
 
             // when
-            Page<Article> articles = articleService.getAllArticlesByPageable(pageRequest);
+            Page<ArticleDto> articles = articleService.getAllArticlesByPageable(pageRequest);
 
             // then
             verify(articleRepository).findAll(pageRequest);
             assertThat(articles).hasSize(3);
-            assertThat(articles.stream().toList().get(0)).isEqualTo(articleList.get(0));
+            assertThat(articles.stream().toList().get(0).getBody()).isEqualTo(articleList.get(0).getBody());
         }
 
         @Test
@@ -185,7 +189,7 @@ public class ArticleServiceUnitTest {
             doReturn(articlePage).when(articleRepository).findAll(pageRequest);
 
             // when
-            Page<Article> articles = articleService.getAllArticlesByPageable(pageRequest);
+            Page<ArticleDto> articles = articleService.getAllArticlesByPageable(pageRequest);
 
             // then
             verify(articleRepository).findAll(pageRequest);
@@ -202,7 +206,7 @@ public class ArticleServiceUnitTest {
             when(articleRepository.findById(article.getId())).thenReturn(Optional.of(article));
 
             // when
-            Article found = articleService.getOneArticle(article.getId());
+            ArticleDto found = articleService.getOneArticle(article.getId());
 
             // then
             verify(articleRepository).findById(article.getId());
@@ -231,41 +235,53 @@ public class ArticleServiceUnitTest {
         @Test
         void success() {
             // given
-            Article updated = Article.builder()
-                    .title("updated")
-                    .body("updated")
-                    .build();
-
+            doReturn(Optional.of(user)).when(userRepository).findByUsername(user.getUsername());
             doReturn(Optional.of(article)).when(articleRepository).findById(article.getId());
 
+            String newTitle = "new title";
+            String newBody = "new body";
+
             // when
-            Article updatedArticle = articleService.updateArticle(article.getId(), updated);
+            ArticleDto updatedArticle = articleService.updateArticle(article.getId(), user.getUsername(), newTitle, newBody);
 
             // then
             verify(articleRepository).findById(article.getId());
-            assertThat(updatedArticle.getTitle()).isEqualTo(updated.getTitle());
-            assertThat(updatedArticle.getBody()).isEqualTo(updated.getBody());
+            assertThat(updatedArticle.getTitle()).isEqualTo(newTitle);
+            assertThat(updatedArticle.getBody()).isEqualTo(newBody);
         }
 
         @Test
         void fail_noArticleFound() {
             // given
-            Article updated = Article.builder()
-                    .title("updated")
-                    .body("updated")
-                    .build();
-
+            doReturn(Optional.of(user)).when(userRepository).findByUsername(user.getUsername());
             doReturn(Optional.empty()).when(articleRepository).findById(article.getId());
 
             // when
             BusinessLogicException thrown = assertThrows(BusinessLogicException.class, () ->
-                    articleService.updateArticle(article.getId(), updated)
+                    articleService.updateArticle(article.getId(), user.getUsername(), "", "")
             );
 
             // then
             verify(articleRepository).findById(article.getId());
             assertThat(thrown.getError()).isEqualTo(BusinessLogicError.NOTFOUND_ARTICLE);
             assertThat(thrown.getMessage()).isEqualTo("articleId: " + article.getId());
+        }
+
+        @Test
+        void fail_unauthorizedUserUpdateArticle() {
+            // given
+            User unauthorized = User.builder()
+                    .username("unauthorized")
+                    .build();
+            doReturn(Optional.of(unauthorized)).when(userRepository).findByUsername(unauthorized.getUsername());
+            doReturn(Optional.of(article)).when(articleRepository).findById(article.getId());
+
+            // when
+            BusinessLogicException thrown = assertThrows(BusinessLogicException.class, () ->
+                    articleService.updateArticle(article.getId(), unauthorized.getUsername(), "", ""));
+
+            // then
+            assertThat(thrown.getError()).isEqualTo(BusinessLogicError.UNAUTHORIZED_ARTICLE);
         }
     }
 

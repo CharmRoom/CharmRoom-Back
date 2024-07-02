@@ -1,6 +1,9 @@
-package com.charmroom.charmroom.controller;
+package com.charmroom.charmroom.controller.unit;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -20,14 +23,18 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.Validator;
 
 import com.charmroom.charmroom.controller.api.AuthController;
+import com.charmroom.charmroom.dto.business.UserDto;
+import com.charmroom.charmroom.dto.business.UserMapper;
 import com.charmroom.charmroom.entity.User;
+import com.charmroom.charmroom.exception.BusinessLogicError;
+import com.charmroom.charmroom.exception.BusinessLogicException;
 import com.charmroom.charmroom.exception.ExceptionHandlerAdvice;
 import com.charmroom.charmroom.service.UserService;
 
 
 
 @ExtendWith(MockitoExtension.class)
-public class AuthControllerUnitTest {
+public class AuthControllerUnitTestDy {
 	@Mock
 	UserService userService;
 	@InjectMocks
@@ -35,6 +42,7 @@ public class AuthControllerUnitTest {
 	
 	MockMvc mockMvc;
 	User mockedUser;
+	UserDto mockedDto;
 	
 	@BeforeEach
 	void setup() {
@@ -49,6 +57,7 @@ public class AuthControllerUnitTest {
 				.email("test@test.com")
 				.nickname("nickname")
 				.build();
+		mockedDto = UserMapper.toDto(mockedUser);
 	}
 	
 	@Nested
@@ -57,12 +66,9 @@ public class AuthControllerUnitTest {
 		void success() throws Exception {
 			// given
 			MockMultipartFile imageFile = new MockMultipartFile("image", "test.png", MediaType.IMAGE_PNG_VALUE, "test".getBytes());
-			doReturn(mockedUser).when(userService).create(
-					mockedUser.getUsername(),
-					mockedUser.getEmail(),
-					mockedUser.getNickname(),
-					mockedUser.getPassword(),
-					imageFile);
+			doReturn(mockedDto).when(userService).create(
+					any(UserDto.class),
+					eq(imageFile));
 			
 			// when
 			mockMvc.perform(
@@ -88,12 +94,9 @@ public class AuthControllerUnitTest {
 		@Test
 		void successWithoutImage() throws Exception {
 			// given
-			doReturn(mockedUser).when(userService).create(
-					mockedUser.getUsername(),
-					mockedUser.getEmail(),
-					mockedUser.getNickname(),
-					mockedUser.getPassword(),
-					null
+			doReturn(mockedDto).when(userService).create(
+					any(UserDto.class),
+					eq(null)
 					);
 			
 			// when
@@ -115,6 +118,26 @@ public class AuthControllerUnitTest {
 					jsonPath("$.data.email").value(mockedUser.getEmail())
 					)
 			;
+		}
+		
+		@Test
+		void fail() throws Exception {
+			doThrow(new BusinessLogicException(BusinessLogicError.DUPLICATED_USERNAME))
+				.when(userService)
+				.create(any(UserDto.class),eq(null));
+			mockMvc.perform(
+					multipart("/api/auth/signup")
+					
+					.param("username", mockedUser.getUsername())
+					.param("password", mockedUser.getPassword())
+					.param("rePassword", mockedUser.getPassword())
+					.param("email", mockedUser.getEmail())
+					.param("nickname", mockedUser.getNickname())
+					)
+			.andExpectAll(
+					status().isBadRequest(),
+					jsonPath("$.code").value("12000")
+					);
 		}
 	}
 }

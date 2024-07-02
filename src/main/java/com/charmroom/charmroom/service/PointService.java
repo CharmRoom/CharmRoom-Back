@@ -4,6 +4,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.charmroom.charmroom.dto.business.PointDto;
+import com.charmroom.charmroom.dto.business.PointMapper;
 import com.charmroom.charmroom.entity.Point;
 import com.charmroom.charmroom.entity.User;
 import com.charmroom.charmroom.entity.enums.PointType;
@@ -19,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 public class PointService {
 	private final PointRepository pointRepository;
 	private final UserRepository userRepository;
-	public Point create(String username, PointType type, int diff) {
+	public PointDto create(String username, PointType type, int diff) {
 		User user = userRepository.findByUsername(username)
 				.orElseThrow(() -> new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "username: " + username));
 		Point point = Point.builder()
@@ -27,13 +29,15 @@ public class PointService {
 				.type(type)
 				.diff(diff)
 				.build();
-		return pointRepository.save(point);
+		Point saved = pointRepository.save(point);
+		return PointMapper.toDto(saved);
 	}
 	
-	public Page<Point> pointsByUsername(String username, Pageable pageable){
+	public Page<PointDto> pointsByUsername(String username, Pageable pageable){
 		User user = userRepository.findByUsername(username)
 				.orElseThrow(() -> new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "username: " + username));
-		return pointRepository.findAllByUser(user, pageable);
+		Page<Point> points = pointRepository.findAllByUser(user, pageable);
+		return points.map(point -> PointMapper.toDto(point));
 	}
 	
 	public void delete(Integer id) {

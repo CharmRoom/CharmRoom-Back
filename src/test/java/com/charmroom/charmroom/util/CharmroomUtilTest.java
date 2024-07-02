@@ -83,7 +83,7 @@ public class CharmroomUtilTest {
 				// then
 				assertThat(image).isNotNull();
 				assertThat(image.getOriginalName()).isEqualTo("test.png");
-				String path = image.getPath();
+				String path = uploadUtil.getRealPath(image);
 				File savedFile = new File(path);
 				assertThat(savedFile.exists()).isTrue();
 				assertThat(savedFile.isFile()).isTrue();
@@ -128,13 +128,13 @@ public class CharmroomUtilTest {
 				assertThat(video.getType()).isEqualTo(AttachmentType.VIDEO);
 				assertThat(etc.getType()).isEqualTo(AttachmentType.ETC);
 				
-				File savedImage = new File(image.getPath());
+				File savedImage = new File(uploadUtil.getRealPath(image));
 				assertThat(savedImage.exists()).isTrue();
 				assertThat(savedImage.isFile()).isTrue();
-				File savedVideo = new File(video.getPath());
+				File savedVideo = new File(uploadUtil.getRealPath(video));
 				assertThat(savedVideo.exists()).isTrue();
 				assertThat(savedVideo.isFile()).isTrue();
-				File savedEtc = new File(etc.getPath());
+				File savedEtc = new File(uploadUtil.getRealPath(etc));
 				assertThat(savedEtc.exists()).isTrue();
 				assertThat(savedEtc.isFile()).isTrue();
 			}
@@ -155,13 +155,13 @@ public class CharmroomUtilTest {
 				Attachment attachment = uploadUtil.buildAttachment(attachmentFile, article);
 				
 				// when
-				uploadUtil.deleteImageFile(image);
-				uploadUtil.deleteAttachmentFile(attachment);
+				uploadUtil.deleteFile(image);
+				uploadUtil.deleteFile(attachment);
 				
 				// then
-				File deletedImage = new File(image.getPath());
+				File deletedImage = new File(uploadUtil.getRealPath(image));
 				assertThat(deletedImage.exists()).isFalse();
-				File deletedAttachment = new File(attachment.getPath());
+				File deletedAttachment = new File(uploadUtil.getRealPath(attachment));
 				assertThat(deletedAttachment.exists()).isFalse();
 			}
 			
@@ -172,9 +172,9 @@ public class CharmroomUtilTest {
 				Image image = uploadUtil.buildImage(imageFile);
 				
 				// when
-				uploadUtil.deleteImageFile(image);
+				uploadUtil.deleteFile(image);
 				var thrown = assertThrows(BusinessLogicException.class, () -> {
-					uploadUtil.deleteImageFile(image);
+					uploadUtil.deleteFile(image);
 				});
 				
 				// then

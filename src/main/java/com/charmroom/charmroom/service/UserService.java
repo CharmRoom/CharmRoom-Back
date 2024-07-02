@@ -6,9 +6,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.charmroom.charmroom.dto.business.UserDto;
+import com.charmroom.charmroom.dto.business.UserMapper;
 import com.charmroom.charmroom.entity.Club;
 import com.charmroom.charmroom.entity.Image;
 import com.charmroom.charmroom.entity.User;
+import com.charmroom.charmroom.entity.enums.UserLevel;
 import com.charmroom.charmroom.exception.BusinessLogicError;
 import com.charmroom.charmroom.exception.BusinessLogicException;
 import com.charmroom.charmroom.repository.ClubRepository;
@@ -29,10 +32,13 @@ public class UserService {
 	private final PasswordEncoder passwordEncoder;
 	private final CharmroomUtil.Upload uploadUtil;
 	
-	public User create(String username, String email, String nickname, String password, MultipartFile imageFile) {
-		if (isDuplicatedUsername(username)) throw new BusinessLogicException(BusinessLogicError.DUPLICATED_USERNAME);
-		if (isDuplicatedEmail(email)) throw new BusinessLogicException(BusinessLogicError.DUPLICATED_EMAIL);
-		if (isDuplicatedNickname(nickname)) throw new BusinessLogicException(BusinessLogicError.DUPLICATED_NICKNAME);
+	public UserDto create(UserDto userDto, MultipartFile imageFile) {
+		if (isDuplicatedUsername(userDto.getUsername()))
+			throw new BusinessLogicException(BusinessLogicError.DUPLICATED_USERNAME);
+		if (isDuplicatedEmail(userDto.getEmail()))
+			throw new BusinessLogicException(BusinessLogicError.DUPLICATED_EMAIL);
+		if (isDuplicatedNickname(userDto.getNickname()))
+			throw new BusinessLogicException(BusinessLogicError.DUPLICATED_NICKNAME);
 		
 		Image userImage = null;
 		if (imageFile != null) {
@@ -41,23 +47,29 @@ public class UserService {
 		}
 		
 		User user = User.builder()
-				.username(username)
-				.email(email)
-				.nickname(nickname)
-				.password(passwordEncoder.encode(password))
-				.withdraw(false)
+				.username(userDto.getUsername())
+				.email(userDto.getEmail())
+				.nickname(userDto.getNickname())
+				.password(passwordEncoder.encode(userDto.getPassword()))
 				.image(userImage)
 				.build();
-		return userRepository.save(user);
+		User saved = userRepository.save(user);
+		return UserMapper.toDto(saved);
 	}
 	
-	public User create(String username, String email, String nickname, String password) {
-		return create(username, email, nickname, password, null);
+	public UserDto create(UserDto userDto) {
+		return create(userDto, null);
 	}
 	
+	public UserDto getUserByUsername(String username) {
+		User user = userRepository.findByUsername(username)
+				.orElseThrow(() -> new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "username: " + username));
+		return UserMapper.toDto(user);
+	}
 	
-	public Page<User> getAllUsersByPageable(Pageable pageable){
-		return userRepository.findAll(pageable);
+	public Page<UserDto> getAllUsersByPageable(Pageable pageable){
+		Page<User> users = userRepository.findAll(pageable);
+		return users.map(user -> UserMapper.toDto(user));
 	}
 	
 	public Boolean isDuplicatedUsername(String username) {
@@ -79,49 +91,60 @@ public class UserService {
 	}
 	
 	@Transactional
-	public User changePassword(String username, String password) {
+	public UserDto changePassword(String username, String password) {
 		User user = userRepository.findByUsername(username)
 				.orElseThrow(() -> new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "username: " + username));
 		user.updatePassword(passwordEncoder.encode(password));
-		return user;
+		
+		return UserMapper.toDto(user);
 	}
 	
 	@Transactional
-	public User changeNickname(String username, String nickname) {
+	public UserDto changeNickname(String username, String nickname) {
 		User user = userRepository.findByUsername(username)
 				.orElseThrow(() -> new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "username: " + username));
+		if (isDuplicatedNickname(nickname))
+			throw new BusinessLogicException(BusinessLogicError.DUPLICATED_NICKNAME);
 		user.updateNickname(nickname);
-		return user;
+		return UserMapper.toDto(user);
 	}
 	
 	@Transactional
-	public User changeWithdraw(String username, Boolean withdraw) {
+	public UserDto changeWithdraw(String username, Boolean withdraw) {
 		User user = userRepository.findByUsername(username)
 				.orElseThrow(() -> new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "username: " + username));
 		user.updateWithdraw(withdraw);
-		return user;
+		return UserMapper.toDto(user);
 	}
 	
 	@Transactional
-	public User setClub(String username, Integer clubId) {
+	public UserDto changeLevel(String username, String level) {
+		User user = userRepository.findByUsername(username)
+				.orElseThrow(() -> new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "username: " + username));
+		user.updateLevel(UserLevel.valueOf(level));
+		return UserMapper.toDto(user);
+	}
+	
+	@Transactional
+	public UserDto setClub(String username, Integer clubId) {
 		User user = userRepository.findByUsername(username)
 				.orElseThrow(() -> new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "username: " + username));
 		Club club = clubRepository.findById(clubId)
 				.orElseThrow(() -> new BusinessLogicException(BusinessLogicError.NOTFOUND_CLUB, "id: " + clubId));
 		user.updateClub(club);
-		return user;
+		return UserMapper.toDto(user);
 	}
 	
 	@Transactional
-	public User setImage(String username, MultipartFile imageFile) {
+	public UserDto setImage(String username, MultipartFile imageFile) {
 		User user = userRepository.findByUsername(username)
 				.orElseThrow(() -> new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "username: " + username));
 		if (user.getImage() != null) {
-			uploadUtil.deleteImageFile(user.getImage());
+			uploadUtil.deleteFile(user.getImage());
 		}
 		Image image = uploadUtil.buildImage(imageFile);
 		Image saved = imageRepository.save(image);
 		user.updateImage(saved);
-		return user;
+		return UserMapper.toDto(user);
 	}
 }

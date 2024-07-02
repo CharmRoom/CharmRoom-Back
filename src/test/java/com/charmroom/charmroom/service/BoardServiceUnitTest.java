@@ -124,36 +124,6 @@ public class BoardServiceUnitTest {
 	}
 	
 	@Nested
-	class LoadById{
-		@Test
-		void success() {
-			// given
-			doReturn(Optional.of(board)).when(boardRepository).findById(board.getId());
-			
-			// when
-			var result = boardService.loadById(board.getId());
-			
-			// then
-			assertThat(result).isNotNull();
-		}
-		
-		@Test
-		void fail() {
-			// given
-			doReturn(Optional.empty()).when(boardRepository).findById(board.getId());
-			
-			// when
-			var thrown = assertThrows(BusinessLogicException.class, ()->{
-				boardService.loadById(board.getId());
-			});
-			
-			// then
-			assertThat(thrown.getError()).isEqualTo(BusinessLogicError.NOTFOUND_BOARD);
-			assertThat(thrown.getMessage()).isEqualTo("id: " + board.getId());
-		}
-	}
-	
-	@Nested
 	class ChangeType{
 		@Test
 		void success() {

@@ -15,6 +15,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.platform.commons.annotation.Testable;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -26,9 +27,12 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import com.charmroom.charmroom.dto.business.UserDto;
+import com.charmroom.charmroom.dto.business.UserMapper;
 import com.charmroom.charmroom.entity.Club;
 import com.charmroom.charmroom.entity.Image;
 import com.charmroom.charmroom.entity.User;
+import com.charmroom.charmroom.entity.enums.UserLevel;
 import com.charmroom.charmroom.exception.BusinessLogicError;
 import com.charmroom.charmroom.exception.BusinessLogicException;
 import com.charmroom.charmroom.repository.ClubRepository;
@@ -57,6 +61,7 @@ public class UserServiceUnitTest {
 	private String email;
 	private String password;
 	private String encryptedPassword;
+	private UserDto userDto;
 	
 	User buildUser(String prefix) {
 		return User.builder()
@@ -74,6 +79,7 @@ public class UserServiceUnitTest {
 		password = "password";
 		encryptedPassword = passwordEncoder.encode(password);
 		mockedUser = buildUser("");
+		userDto = UserMapper.toDto(mockedUser);
 	}
 	
 	@Nested
@@ -87,7 +93,7 @@ public class UserServiceUnitTest {
 			doReturn(false).when(userRepository).existsByNickname(nickname);
 			
 			// when
-			User created = userService.create(username, email, nickname, password);
+			UserDto created = userService.create(userDto);
 			// then
 			assertThat(created).isNotNull();
 			assertThat(created.getPassword()).isEqualTo(mockedUser.getPassword());
@@ -110,7 +116,7 @@ public class UserServiceUnitTest {
 			doReturn(image).when(imageRepository).save(image);
 			
 			// when
-			User created = userService.create(username, email, nickname, password, imageFile);
+			UserDto created = userService.create(userDto, imageFile);
 			
 			// then
 			assertThat(created).isNotNull();
@@ -124,7 +130,7 @@ public class UserServiceUnitTest {
 			
 			var thrown = assertThrows(BusinessLogicException.class, () -> {
 				// when
-				userService.create(username, email, nickname, password);	
+				userService.create(userDto);	
 			});
 			
 			// then
@@ -139,7 +145,7 @@ public class UserServiceUnitTest {
 			
 			var thrown = assertThrows(BusinessLogicException.class, () -> {
 				// when
-				userService.create(username, email, nickname, password);	
+				userService.create(userDto);	
 			});
 			
 			// then
@@ -156,11 +162,40 @@ public class UserServiceUnitTest {
 			
 			var thrown = assertThrows(BusinessLogicException.class, () -> {
 				// when
-				userService.create(username, email, nickname, password);	
+				userService.create(userDto);	
 			});
 			
 			// then
 			assertThat(thrown.getError()).isEqualTo(BusinessLogicError.DUPLICATED_NICKNAME);
+		}
+	}
+	
+	@Nested
+	class GetUserByUsername {
+		@Test
+		void success() {
+			// given
+			doReturn(Optional.of(mockedUser)).when(userRepository).findByUsername(username);
+			
+			// when
+			UserDto found = userService.getUserByUsername(username);
+			
+			// then
+			assertThat(found).isNotNull();
+		}
+		@Test
+		void fail() {
+			// given
+			doReturn(Optional.empty()).when(userRepository).findByUsername(username);
+			
+			// when
+			var thrown = assertThrows(BusinessLogicException.class, () -> {
+				userService.getUserByUsername(username);
+			});
+			
+			// then
+			assertThat(thrown.getError()).isEqualTo(BusinessLogicError.NOTFOUND_USER);
+			assertThat(thrown.getMessage()).isEqualTo("username: " + username);
 		}
 	}
 	
@@ -219,7 +254,7 @@ public class UserServiceUnitTest {
 			doReturn(Optional.of(mockedUser)).when(userRepository).findByUsername(username);
 			
 			// when
-			User changed = userService.changePassword(username, "1234");
+			UserDto changed = userService.changePassword(username, "1234");
 			
 			// then
 			assertThat(passwordEncoder.matches(password, changed.getPassword())).isFalse();
@@ -247,7 +282,7 @@ public class UserServiceUnitTest {
 			doReturn(Optional.of(mockedUser)).when(userRepository).findByUsername(username);
 			
 			// when
-			User changed = userService.changeNickname(username, "1234");
+			UserDto changed = userService.changeNickname(username, "1234");
 			
 			// then
 			assertThat(changed.getNickname()).isNotEqualTo(nickname);
@@ -275,10 +310,10 @@ public class UserServiceUnitTest {
 			doReturn(Optional.of(mockedUser)).when(userRepository).findByUsername(username);
 			
 			// when
-			User changed = userService.changeWithdraw(username, true);
+			UserDto changed = userService.changeWithdraw(username, true);
 			
 			// then
-			assertThat(changed.getWithdraw()).isTrue();
+			assertThat(changed.isWithdraw()).isTrue();
 		}
 		@Test
 		void fail() {
@@ -291,6 +326,20 @@ public class UserServiceUnitTest {
 			});
 			assertThat(thrown.getError()).isEqualTo(BusinessLogicError.NOTFOUND_USER);
 			assertThat(thrown.getMessage()).isEqualTo("username: " + username);
+		}
+	}
+	@Nested
+	class ChangeLevel{
+		@Test
+		void success() {
+			// given
+			doReturn(Optional.of(mockedUser)).when(userRepository).findByUsername(username);
+			
+			// when
+			UserDto changed = userService.changeLevel(username, UserLevel.ROLE_ADMIN.getValue());
+			
+			// then
+			assertThat(changed.getLevel()).isEqualTo(UserLevel.ROLE_ADMIN);
 		}
 	}
 	
@@ -309,10 +358,10 @@ public class UserServiceUnitTest {
 			doReturn(Optional.of(club)).when(clubRepository).findById(1);
 			
 			// when
-			User changed = userService.setClub(username, 1);
+			UserDto changed = userService.setClub(username, 1);
 			
 			// then
-			assertThat(changed.getClub()).isEqualTo(club);
+			assertThat(changed.getClub().getId()).isEqualTo(club.getId());
 		}
 		@Test
 		void failByNotfoundUser() {
@@ -362,10 +411,10 @@ public class UserServiceUnitTest {
 			
 			
 			// when
-			User changed = userService.setImage(username, imageFile);
+			UserDto changed = userService.setImage(username, imageFile);
 			
 			// then
-			assertThat(changed.getImage()).isEqualTo(image);
+			assertThat(changed.getImage().getPath()).isEqualTo(image.getPath());
 		}
 		
 		@Test
@@ -381,17 +430,17 @@ public class UserServiceUnitTest {
 					.build();
 			doReturn(Optional.of(user)).when(userRepository).findByUsername(username);
 			
-			doNothing().when(uploadUtil).deleteImageFile(user.getImage());
+			doNothing().when(uploadUtil).deleteFile(user.getImage());
 			
 			doReturn(image).when(uploadUtil).buildImage(imageFile);
 			doReturn(image).when(imageRepository).save(image);
 			
 			// when
-			User changed = userService.setImage(username, imageFile);
+			UserDto changed = userService.setImage(username, imageFile);
 			
 			// then
-			verify(uploadUtil).deleteImageFile(user.getImage());
-			assertThat(changed.getImage()).isEqualTo(image);
+			verify(uploadUtil).deleteFile(user.getImage());
+			assertThat(changed.getImage().getPath()).isEqualTo(image.getPath());
 		}
 		@Test
 		void failByNotFoundUser() {
