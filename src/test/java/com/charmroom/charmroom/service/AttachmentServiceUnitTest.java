@@ -13,20 +13,25 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.core.io.Resource;
 
 import com.charmroom.charmroom.entity.Attachment;
 import com.charmroom.charmroom.exception.BusinessLogicError;
 import com.charmroom.charmroom.exception.BusinessLogicException;
 import com.charmroom.charmroom.repository.AttachmentRepository;
+import com.charmroom.charmroom.util.CharmroomUtil;
 
 @ExtendWith(MockitoExtension.class)
 public class AttachmentServiceUnitTest {
 	@Mock
 	private AttachmentRepository attachmentRepository;
+	@Mock
+	private CharmroomUtil.Upload uploadUtil;
 	@InjectMocks
 	private AttachmentService attachmentService;
 	
 	private Attachment attachment;
+	private Resource mockedResource;
 	
 	@BeforeEach
 	void setup() {
@@ -41,7 +46,7 @@ public class AttachmentServiceUnitTest {
 		void success() {
 			// given
 			doReturn(Optional.of(attachment)).when(attachmentRepository).findById(attachment.getId());
-			
+			doReturn(mockedResource).when(uploadUtil).toResource(attachment);
 			// when
 			var loaded = attachmentService.loadById(attachment.getId());
 			

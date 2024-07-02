@@ -34,8 +34,8 @@ import com.charmroom.charmroom.controller.api.AdminController;
 import com.charmroom.charmroom.dto.business.BoardDto;
 import com.charmroom.charmroom.dto.business.UserDto;
 import com.charmroom.charmroom.dto.business.UserMapper;
-import com.charmroom.charmroom.dto.presentation.BoardDto.CreateBoardRequestDto;
-import com.charmroom.charmroom.dto.presentation.BoardDto.UpdateBoardRequestDto;
+import com.charmroom.charmroom.dto.presentation.BoardDto.BoardCreateRequestDto;
+import com.charmroom.charmroom.dto.presentation.BoardDto.BoardUpdateRequestDto;
 import com.charmroom.charmroom.entity.User;
 import com.charmroom.charmroom.entity.enums.BoardType;
 import com.charmroom.charmroom.entity.enums.UserLevel;
@@ -169,7 +169,7 @@ public class AdminControllerUnitTestDy {
 			doReturn(mockedBoardDto).when(boardService)
 			.create(mockedBoardDto.getName(), mockedBoardDto.getType().toString());
 			
-			CreateBoardRequestDto dto = CreateBoardRequestDto.builder()
+			BoardCreateRequestDto dto = BoardCreateRequestDto.builder()
 					.name(mockedBoardDto.getName())
 					.type(mockedBoardDto.getType().toString())
 					.build();
@@ -200,7 +200,7 @@ public class AdminControllerUnitTestDy {
 					mockedBoardDto.getName(),
 					mockedBoardDto.getType().toString());
 			
-			UpdateBoardRequestDto dto = UpdateBoardRequestDto.builder()
+			BoardUpdateRequestDto dto = BoardUpdateRequestDto.builder()
 					.name(mockedBoardDto.getName())
 					.type(mockedBoardDto.getType().toString())
 					.build();

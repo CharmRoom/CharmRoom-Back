@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.charmroom.charmroom.dto.business.BoardMapper;
 import com.charmroom.charmroom.dto.business.UserMapper;
-import com.charmroom.charmroom.dto.presentation.BoardDto.CreateBoardRequestDto;
-import com.charmroom.charmroom.dto.presentation.BoardDto.UpdateBoardRequestDto;
+import com.charmroom.charmroom.dto.presentation.BoardDto.BoardCreateRequestDto;
+import com.charmroom.charmroom.dto.presentation.BoardDto.BoardUpdateRequestDto;
 import com.charmroom.charmroom.dto.presentation.CommonResponseDto;
 import com.charmroom.charmroom.service.BoardService;
 import com.charmroom.charmroom.service.UserService;
@@ -61,7 +61,7 @@ public class AdminController {
 	
 	@PostMapping("/board")
 	public ResponseEntity<?> createBoard(
-			@RequestBody CreateBoardRequestDto request
+			@RequestBody BoardCreateRequestDto request
 			){
 		var dto = boardService.create(request.getName(), request.getType());
 		var response = BoardMapper.toResponse(dto);
@@ -71,7 +71,7 @@ public class AdminController {
 	@PostMapping("/board/{boardId}")
 	public ResponseEntity<?> updateBoard(
 			@PathVariable("boardId") Integer boardId,
-			@RequestBody UpdateBoardRequestDto request
+			@RequestBody BoardUpdateRequestDto request
 			){
 		var dto = boardService.update(boardId, request.getName(), request.getType());
 		var response = BoardMapper.toResponse(dto);
