@@ -12,7 +12,6 @@ import com.charmroom.charmroom.dto.business.AttachmentDto;
 import com.charmroom.charmroom.dto.business.ImageDto;
 import com.charmroom.charmroom.service.AttachmentService;
 import com.charmroom.charmroom.service.ImageService;
-import com.charmroom.charmroom.util.CharmroomUtil;
 
 import lombok.RequiredArgsConstructor;
 
@@ -22,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 public class DownloadController {
 	private final ImageService imageService;
 	private final AttachmentService attachmentService;
-	private final CharmroomUtil.Upload uploadUtil;
 	
 	@GetMapping("/image/{imageId}")
 	public ResponseEntity<Resource> downloadImage(
