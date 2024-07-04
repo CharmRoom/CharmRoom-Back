@@ -7,10 +7,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.io.File;
+import java.io.IOException;
+
+import org.apache.tomcat.util.http.fileupload.FileUtils;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
@@ -20,6 +27,8 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.charmroom.charmroom.util.CharmroomUtil;
+
 @TestPropertySource(properties = {"spring.config.location = classpath:application-test.yml"})
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
@@ -27,12 +36,23 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthControllerIntegrationTestDy {
 	@Autowired
 	MockMvc mockMvc;
+	@Autowired
+	CharmroomUtil.Upload upload;
 	
 	MockMultipartFile imageFile = new MockMultipartFile("image", "test.png", MediaType.IMAGE_PNG_VALUE, "test".getBytes());
 	String username = "test";
 	String password = "password";
 	String email = "test@test.com";
 	String nickname = "nickname";
+	
+	@AfterAll
+	static void cleanUp(
+			@Value("${charmroom.upload.image.path}") String imageUploadPath,
+			@Value("${charmroom.upload.attachment.path}") String attachmentUploadPath) throws IOException {
+		FileUtils.cleanDirectory(new File(imageUploadPath));
+		FileUtils.cleanDirectory(new File(attachmentUploadPath));
+	}
+	
 	
 	@Nested
 	class Signup {
