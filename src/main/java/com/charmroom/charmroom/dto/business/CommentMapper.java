@@ -1,8 +1,5 @@
 package com.charmroom.charmroom.dto.business;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.charmroom.charmroom.dto.presentation.CommentDto.CommentResponseDto;
 import com.charmroom.charmroom.entity.Comment;
 
