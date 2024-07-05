@@ -1,12 +1,16 @@
 package com.charmroom.charmroom.dto.business;
 
+import java.util.List;
+
 import com.charmroom.charmroom.dto.presentation.PointDto.PointResponseDto;
 import com.charmroom.charmroom.entity.Point;
 
+import io.jsonwebtoken.lang.Arrays;
+
 public class PointMapper {
-	public static PointDto toDto(Point entity) {
+	public static PointDto toDto(Point entity, String... ignore) {
 		if (entity == null) return null;
-		
+		List<String> ignores = Arrays.asList(ignore);
 		PointDto dto =  PointDto.builder()
 				.id(entity.getId())
 				.updatedAt(entity.getUpdatedAt())
@@ -14,9 +18,8 @@ public class PointMapper {
 				.diff(entity.getDiff())
 				.build();
 		
-		if (entity.getUser() != null) {
-			UserDto user = UserMapper.toDto(entity.getUser());
-			user.setPointList(null);
+		if (entity.getUser() != null && !ignores.contains("user")) {
+			UserDto user = UserMapper.toDto(entity.getUser(), "pointList");
 			dto.setUser(user);
 		}
 		return dto;

@@ -52,6 +52,9 @@ public class UserDto {
 	@NoArgsConstructor
 	@Builder
 	public static class UserUpdateRequest{
+		@Size(min = 3, max = 30)
+		@NotEmpty
+		@ValidUser.Unique.Nickname
 		private String nickname;
 	}
 	
