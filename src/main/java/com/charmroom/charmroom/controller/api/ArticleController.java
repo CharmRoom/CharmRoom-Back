@@ -1,0 +1,43 @@
+package com.charmroom.charmroom.controller.api;
+
+import com.charmroom.charmroom.dto.business.ArticleDto;
+import com.charmroom.charmroom.dto.business.ArticleMapper;
+import com.charmroom.charmroom.dto.presentation.ArticleDto.ArticleCreateRequestDto;
+import com.charmroom.charmroom.dto.presentation.ArticleDto.ArticleResponseDto;
+import com.charmroom.charmroom.dto.presentation.CommonResponseDto;
+import com.charmroom.charmroom.entity.User;
+import com.charmroom.charmroom.service.ArticleService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/api/article")
+@RequiredArgsConstructor
+public class ArticleController {
+    private final ArticleService articleService;
+
+    @PostMapping("/{boardId}")
+    public ResponseEntity<?> addArticle(
+            @PathVariable(value = "boardId") Integer boardId,
+            @ModelAttribute ArticleCreateRequestDto requestDto,
+            @AuthenticationPrincipal User user) {
+
+        ArticleDto article;
+
+        if (requestDto.getFile() == null) {
+            article = articleService.createArticle(user.getUsername(), boardId, requestDto.getTitle(), requestDto.getBody());
+        } else {
+            article = articleService.createArticle(user.getUsername(), boardId, requestDto.getTitle(), requestDto.getBody(), requestDto.getFile());
+        }
+
+        ArticleResponseDto responseDto = ArticleMapper.toResponse(article);
+
+        return CommonResponseDto.created(responseDto).toResponseEntity();
+    }
+}

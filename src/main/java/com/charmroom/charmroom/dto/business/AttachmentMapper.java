@@ -1,10 +1,10 @@
 package com.charmroom.charmroom.dto.business;
 
+import java.util.Arrays;
 import java.util.List;
-
 import com.charmroom.charmroom.entity.Attachment;
-
-import io.jsonwebtoken.lang.Arrays;
+import com.charmroom.charmroom.dto.presentation.AttachmentDto.AttachmentResponseDto;
+import com.charmroom.charmroom.dto.presentation.ArticleDto.ArticleResponseDto;
 
 public class AttachmentMapper {
 	public static AttachmentDto toDto(Attachment entity, String... ignore) {
@@ -20,5 +20,21 @@ public class AttachmentMapper {
 			dto.setArticle(articleDto);
 		}
 		return dto;
+	}
+
+	public static AttachmentResponseDto toResponse(AttachmentDto dto) {
+		AttachmentResponseDto responseDto = AttachmentResponseDto.builder()
+				.id(dto.getId())
+				.type(dto.getType().toString())
+				.path(dto.getPath())
+				.originalName(dto.getOriginalName())
+				.build();
+
+		if (dto.getArticle() != null) {
+			ArticleResponseDto articleResponseDto = ArticleMapper.toResponse(dto.getArticle());
+			responseDto.setArticle(articleResponseDto);
+		}
+
+		return responseDto;
 	}
 }

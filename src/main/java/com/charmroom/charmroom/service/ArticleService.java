@@ -1,5 +1,6 @@
 package com.charmroom.charmroom.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.charmroom.charmroom.repository.BoardRepository;
@@ -32,6 +33,10 @@ public class ArticleService {
     private final CharmroomUtil.Upload uploadUtil;
     private final UserRepository userRepository;
     private final BoardRepository boardRepository;
+
+    public ArticleDto createArticle(String username, Integer boardId, String title, String body) {
+        return createArticle(username, boardId, title, body, new ArrayList<>());
+    }
 
     public ArticleDto createArticle(String username, Integer boardId, String title, String body, List<MultipartFile> fileList) {
         User user = userRepository.findByUsername(username)
