@@ -1,6 +1,7 @@
 package com.charmroom.charmroom.service;
 
 import com.charmroom.charmroom.dto.business.MarketDto;
+import com.charmroom.charmroom.dto.business.MarketMapper;
 import com.charmroom.charmroom.entity.Article;
 import com.charmroom.charmroom.entity.Attachment;
 import com.charmroom.charmroom.entity.Board;
@@ -35,11 +36,11 @@ public class MarketService {
     private final CharmroomUtil.Upload uploadUtils;
     private final AttachmentRepository attachmentRepository;
 
-    public Market create(MarketDto marketDto, List<MultipartFile> files) {
-        User user = userRepository.findByUsername(marketDto.getUsername()).orElseThrow(() ->
+    public MarketDto create(MarketDto marketDto, List<MultipartFile> files) {
+        User user = userRepository.findByUsername(marketDto.getUser().getUsername()).orElseThrow(() ->
                 new BusinessLogicException(BusinessLogicError.NOTFOUND_USER));
 
-        Board board = boardRepository.findById(marketDto.getBoardId()).orElseThrow(() -> new BusinessLogicException(BusinessLogicError.NOTFOUND_BOARD));
+        Board board = boardRepository.findById(marketDto.getBoard().getId()).orElseThrow(() -> new BusinessLogicException(BusinessLogicError.NOTFOUND_BOARD));
 
         Article article = Article.builder()
                 .user(user)
@@ -63,10 +64,11 @@ public class MarketService {
                 .tag(marketDto.getTag())
                 .build();
 
-        return marketRepository.save(market);
+        Market saved = marketRepository.save(market);
+        return MarketMapper.toDto(saved);
     }
 
-    public Market create(MarketDto marketDto) {
+    public MarketDto create(MarketDto marketDto) {
         return create(marketDto, new ArrayList<>());
     }
 
