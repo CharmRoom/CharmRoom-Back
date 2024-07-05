@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 import java.util.Optional;
 
+import com.charmroom.charmroom.repository.BoardRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -50,6 +51,8 @@ public class ArticleServiceUnitTest {
     @Mock
     private AttachmentRepository attachmentRepository;
     @Mock
+    private BoardRepository boardRepository;
+    @Mock
     private CharmroomUtil.Upload uploadUtil;
     @Mock
     private UserRepository userRepository;
@@ -82,6 +85,7 @@ public class ArticleServiceUnitTest {
 
     private Board createBoard() {
         return Board.builder()
+                .id(1)
                 .type(BoardType.LIST)
                 .exposed(false)
                 .build();
@@ -141,6 +145,9 @@ public class ArticleServiceUnitTest {
         @Test
         void success() {
             // given
+            doReturn(Optional.of(user)).when(userRepository).findByUsername(user.getUsername());
+            doReturn(Optional.of(board)).when(boardRepository).findById(board.getId());
+
             doReturn(attachment1).when(uploadUtil).buildAttachment(eq(multipartFile1), any(Article.class));
             doReturn(attachment2).when(uploadUtil).buildAttachment(eq(multipartFile2), any(Article.class));
             doReturn(attachment3).when(uploadUtil).buildAttachment(eq(multipartFile3), any(Article.class));
@@ -150,7 +157,7 @@ public class ArticleServiceUnitTest {
             doReturn(article).when(articleRepository).save(any(Article.class));
 
             // when
-            ArticleDto saved = articleService.createArticle(user, board, title, body, fileList);
+            ArticleDto saved = articleService.createArticle(user.getUsername(), board.getId(), title, body, fileList);
 
             // then
             verify(articleRepository).save(any(Article.class));
