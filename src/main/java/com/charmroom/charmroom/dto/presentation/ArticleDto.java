@@ -38,4 +38,13 @@ public class ArticleDto {
 		private String body;
 		private List<MultipartFile> file;
 	}
+
+	@Data
+	@AllArgsConstructor
+	@NoArgsConstructor
+	@Builder
+	public static class ArticleUpdateRequestDto{
+		private String title;
+		private String body;
+	}
 }

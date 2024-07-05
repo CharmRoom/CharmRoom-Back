@@ -2,7 +2,10 @@ package com.charmroom.charmroom.controller.unit;
 
 import com.charmroom.charmroom.controller.api.ArticleController;
 import com.charmroom.charmroom.dto.business.ArticleDto;
+import com.charmroom.charmroom.dto.business.ArticleLikeDto;
+import com.charmroom.charmroom.dto.presentation.ArticleDto.ArticleUpdateRequestDto;
 import com.charmroom.charmroom.exception.ExceptionHandlerAdvice;
+import com.charmroom.charmroom.service.ArticleLikeService;
 import com.charmroom.charmroom.service.ArticleService;
 import com.google.gson.Gson;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +19,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -26,10 +30,13 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -39,6 +46,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class ArticleControllerUnitTestCm {
     @Mock
     ArticleService articleService;
+    @Mock
+    ArticleLikeService articleLikeService;
 
     @InjectMocks
     ArticleController articleController;
@@ -142,6 +151,95 @@ public class ArticleControllerUnitTestCm {
                     jsonPath("$.data.content").isArray(),
                     jsonPath("$.data.content.size()").value(3),
                     jsonPath("$.data.content[0].body").value("test")
+            );
+        }
+    }
+
+    @Nested
+    class Update {
+        @Test
+        void success() throws Exception {
+            // given
+            doReturn(mockedArticleDto).when(articleService).updateArticle(eq(1), any(), eq(mockedArticleDto.getTitle()), eq(mockedArticleDto.getBody()));
+
+            ArticleUpdateRequestDto request = ArticleUpdateRequestDto.builder()
+                    .title(mockedArticleDto.getTitle())
+                    .body(mockedArticleDto.getBody())
+                    .build();
+
+            // when
+            ResultActions resultActions = mockMvc.perform(patch("/api/article/1")
+                    .content(gson.toJson(request))
+                    .contentType(MediaType.APPLICATION_JSON)
+            );
+
+            // then
+            resultActions.andExpectAll(
+                    status().isOk()
+                    , jsonPath("$.code").value("OK")
+                    , jsonPath("$.data.title").value(mockedArticleDto.getTitle())
+                    , jsonPath("$.data.body").value(mockedArticleDto.getBody())
+            );
+
+        }
+    }
+
+    @Nested
+    class Delete {
+        @Test
+        void success() throws Exception {
+            // given
+            doNothing().when(articleService).deleteArticle(1);
+
+            // when
+            ResultActions resultActions = mockMvc.perform(delete("/api/article/1"));
+
+            // then
+            resultActions.andExpect(status().isOk())
+                    .andExpect(jsonPath("$.data").doesNotExist());
+        }
+    }
+
+    @Nested
+    class Like {
+        @Test
+        void success() throws Exception {
+            // given
+            ArticleLikeDto mockedArticleLikeDto = ArticleLikeDto.builder()
+                    .type(true)
+                    .build();
+
+            doReturn(mockedArticleLikeDto).when(articleLikeService).like(any(), eq(1));
+
+            // when
+            ResultActions resultActions = mockMvc.perform(post("/api/article/like/1"));
+
+            // then
+            resultActions.andExpectAll(
+                    status().isOk()
+                    , jsonPath("$.data.type").value(true)
+            );
+        }
+    }
+
+    @Nested
+    class Dislike {
+        @Test
+        void success() throws Exception {
+            // given
+            ArticleLikeDto mockedArticleLikeDto = ArticleLikeDto.builder()
+                    .type(false)
+                    .build();
+
+            doReturn(mockedArticleLikeDto).when(articleLikeService).dislike(any(), eq(1));
+
+            // when
+            ResultActions resultActions = mockMvc.perform(post("/api/article/dislike/1"));
+
+            // then
+            resultActions.andExpectAll(
+                    status().isOk()
+                    , jsonPath("$.data.type").value(false)
             );
         }
     }
