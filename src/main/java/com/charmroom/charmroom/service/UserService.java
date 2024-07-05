@@ -11,6 +11,7 @@ import com.charmroom.charmroom.dto.business.UserMapper;
 import com.charmroom.charmroom.entity.Club;
 import com.charmroom.charmroom.entity.Image;
 import com.charmroom.charmroom.entity.User;
+import com.charmroom.charmroom.entity.enums.UserLevel;
 import com.charmroom.charmroom.exception.BusinessLogicError;
 import com.charmroom.charmroom.exception.BusinessLogicException;
 import com.charmroom.charmroom.repository.ClubRepository;
@@ -60,6 +61,11 @@ public class UserService {
 		return create(userDto, null);
 	}
 	
+	public UserDto getUserByUsername(String username) {
+		User user = userRepository.findByUsername(username)
+				.orElseThrow(() -> new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "username: " + username));
+		return UserMapper.toDto(user);
+	}
 	
 	public Page<UserDto> getAllUsersByPageable(Pageable pageable){
 		Page<User> users = userRepository.findAll(pageable);
@@ -97,6 +103,8 @@ public class UserService {
 	public UserDto changeNickname(String username, String nickname) {
 		User user = userRepository.findByUsername(username)
 				.orElseThrow(() -> new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "username: " + username));
+		if (isDuplicatedNickname(nickname))
+			throw new BusinessLogicException(BusinessLogicError.DUPLICATED_NICKNAME);
 		user.updateNickname(nickname);
 		return UserMapper.toDto(user);
 	}
@@ -106,6 +114,14 @@ public class UserService {
 		User user = userRepository.findByUsername(username)
 				.orElseThrow(() -> new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "username: " + username));
 		user.updateWithdraw(withdraw);
+		return UserMapper.toDto(user);
+	}
+	
+	@Transactional
+	public UserDto changeLevel(String username, String level) {
+		User user = userRepository.findByUsername(username)
+				.orElseThrow(() -> new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "username: " + username));
+		user.updateLevel(UserLevel.valueOf(level));
 		return UserMapper.toDto(user);
 	}
 	
@@ -124,7 +140,7 @@ public class UserService {
 		User user = userRepository.findByUsername(username)
 				.orElseThrow(() -> new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "username: " + username));
 		if (user.getImage() != null) {
-			uploadUtil.deleteImageFile(user.getImage());
+			uploadUtil.deleteFile(user.getImage());
 		}
 		Image image = uploadUtil.buildImage(imageFile);
 		Image saved = imageRepository.save(image);

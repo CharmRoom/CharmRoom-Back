@@ -1,5 +1,6 @@
 package com.charmroom.charmroom.dto.business;
 
+import com.charmroom.charmroom.dto.presentation.CommentLikeDto.CommentLikeResponseDto;
 import com.charmroom.charmroom.entity.CommentLike;
 
 public class CommentLikeMapper {
@@ -11,5 +12,10 @@ public class CommentLikeMapper {
 				.type(entity.getType())
 				.build();
 	}
-
+	
+	public static CommentLikeResponseDto toResponse(CommentLikeDto dto) {
+		return CommentLikeResponseDto.builder()
+				.type(dto.getType())
+				.build();
+	}
 }

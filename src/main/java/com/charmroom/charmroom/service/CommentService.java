@@ -1,5 +1,7 @@
 package com.charmroom.charmroom.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.charmroom.charmroom.dto.business.CommentDto;
@@ -50,6 +52,19 @@ public class CommentService {
 		return create(articleId, username, body, 0);
 	}
 
+	public Page<CommentDto> getComments(Integer articleId, Pageable pageable){
+		Article article = articleRepository.findById(articleId)
+				.orElseThrow(() -> new BusinessLogicException(BusinessLogicError.NOTFOUND_ARTICLE, "id: " + articleId));
+		Page<Comment> comments = commentRepository.findAllByArticle(article, pageable);
+		return comments.map(comment -> CommentMapper.toDto(comment));
+	}
+
+	public Page<CommentDto> getCommentsByUsername(String username, Pageable pageable) {
+		User user = userRepository.findByUsername(username)
+				.orElseThrow(() -> new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "username: " + username));
+		Page<Comment> comments = commentRepository.findAllByUser(user, pageable);
+		return comments.map(comment -> CommentMapper.toDto(comment));
+	}
 	@Transactional
 	public CommentDto update(Integer commentId, String username, String body) {
 		User user = userRepository.findByUsername(username)
@@ -70,6 +85,7 @@ public class CommentService {
 				.orElseThrow(() -> new BusinessLogicException(BusinessLogicError.NOTFOUND_COMMENT, "id: " + commentId));
 		if (!comment.getUser().equals(user))
 			throw new BusinessLogicException(BusinessLogicError.UNAUTHORIZED_COMMENT, "username: " + username);
+		comment.updateBody("");
 		comment.setDisabled(disabled);
 		return CommentMapper.toDto(comment);
 	}
@@ -81,4 +97,5 @@ public class CommentService {
 	public CommentDto enable(Integer commentId, String username) {
 		return setDisable(commentId, username, false);
 	}
+
 }

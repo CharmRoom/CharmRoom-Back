@@ -22,11 +22,11 @@ public enum BusinessLogicError {
 	UNAUTHORIZED_ARTICLE(HttpStatus.UNAUTHORIZED, "01200", "Don't have permission on article"),
 	// end Article
   
-  // Attachment
+	// Attachment
 	NOTFOUND_ATTACHMENT(HttpStatus.NOT_FOUND, "03100", "Attachment not found"),
 	// end Attachment
 
-  // Board
+	// Board
 	DUPLICATED_BOARD_NAME(HttpStatus.BAD_REQUEST, "04000", "Duplicated board name"),
 	NOTFOUND_BOARD(HttpStatus.NOT_FOUND, "04100", "Board not found"),
 	// end Board
@@ -37,7 +37,7 @@ public enum BusinessLogicError {
 	NOTFOUND_CLUB(HttpStatus.NOT_FOUND, "05100", "Club not found"),
 	// end Club
 
-  // Comment
+	// Comment
 	NOTFOUND_COMMENT(HttpStatus.NOT_FOUND, "06100", "Comment not found"),
 	UNAUTHORIZED_COMMENT(HttpStatus.UNAUTHORIZED, "06200", "Don't have permission on comment"),
 	// end Comment
@@ -63,6 +63,9 @@ public enum BusinessLogicError {
 	MKDIR_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "MKDIR_FAIL", "mkdir failed"),
 	CHMOD_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "CHMOD_FAIL", "chmod failed"), 
 	DELETE_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "DELETE_FAIL", "file delete failed"),
+	
+	NOTFOUND_FILE(HttpStatus.NOT_FOUND, "NOTFOUND_FILE", "File not found"),
+	BADPATH_FILE(HttpStatus.BAD_REQUEST, "BADPATH_FILE", "File path is malformed")
 	// end ETC
 	;
   

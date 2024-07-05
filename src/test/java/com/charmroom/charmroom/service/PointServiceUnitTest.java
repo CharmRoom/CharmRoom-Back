@@ -68,7 +68,7 @@ public class PointServiceUnitTest {
 			doReturn(Optional.of(user)).when(userRepository).findByUsername(user.getUsername());
 			doReturn(point).when(pointRepository).save(any(Point.class));
 			// when
-			var saved = pointService.create(user.getUsername(), point.getType(), point.getDiff());
+			var saved = pointService.create(user.getUsername(), point.getType().toString(), point.getDiff());
 			// then
 			assertThat(saved).isNotNull();
 		}
@@ -78,7 +78,7 @@ public class PointServiceUnitTest {
 			doReturn(Optional.empty()).when(userRepository).findByUsername(user.getUsername());
 			// when
 			var thrown = assertThrows(BusinessLogicException.class, () -> {
-				pointService.create(user.getUsername(), point.getType(), point.getDiff());
+				pointService.create(user.getUsername(), point.getType().toString(), point.getDiff());
 			});
 			// then
 			assertThat(thrown.getError()).isEqualTo(BusinessLogicError.NOTFOUND_USER);

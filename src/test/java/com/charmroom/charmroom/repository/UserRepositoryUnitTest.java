@@ -150,7 +150,7 @@ public class UserRepositoryUnitTest {
 			assertThat(foundUser).isNotNull();
 			assertThat(foundUser.getNickname()).isEqualTo(newNickname);
 			assertThat(foundUser.getPassword()).isEqualTo(newPassword);
-			assertThat(foundUser.getWithdraw()).isEqualTo(newWithdraw);
+			assertThat(foundUser.isWithdraw()).isEqualTo(newWithdraw);
 			assertThat(foundUser.getLevel()).isEqualTo(newLevel);
 			assertThat(foundUser.getImage()).isEqualTo(newImage);
 			assertThat(foundUser.getClub()).isEqualTo(newClub);

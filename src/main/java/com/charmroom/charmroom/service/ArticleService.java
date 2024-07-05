@@ -1,7 +1,9 @@
 package com.charmroom.charmroom.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import com.charmroom.charmroom.repository.BoardRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -30,9 +32,18 @@ public class ArticleService {
     private final AttachmentRepository attachmentRepository;
     private final CharmroomUtil.Upload uploadUtil;
     private final UserRepository userRepository;
+    private final BoardRepository boardRepository;
 
-    public ArticleDto createArticle(User user, Board board, String title, String body, List<MultipartFile> fileList) {
-        
+    public ArticleDto createArticle(String username, Integer boardId, String title, String body) {
+        return createArticle(username, boardId, title, body, new ArrayList<>());
+    }
+
+    public ArticleDto createArticle(String username, Integer boardId, String title, String body, List<MultipartFile> fileList) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "username: " + username));
+
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new BusinessLogicException(BusinessLogicError.NOTFOUND_BOARD, "boardId: " + boardId));
 
         Article article = Article.builder()
                 .title(title)
@@ -40,7 +51,6 @@ public class ArticleService {
                 .user(user)
                 .board(board)
                 .build();
-
 
         for (MultipartFile attachment : fileList) {
             Attachment attachmentEntity = uploadUtil.buildAttachment(attachment, article);
@@ -52,8 +62,13 @@ public class ArticleService {
         return ArticleMapper.toDto(saved);
     }
 
-    public Page<ArticleDto> getAllArticlesByPageable(Pageable pageable) {
-        return articleRepository.findAll(pageable).map(article -> ArticleMapper.toDto(article));
+    public Page<ArticleDto> getArticles(Integer boardId, Pageable pageable) {
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new BusinessLogicException(BusinessLogicError.NOTFOUND_BOARD, "boardId: " + boardId));
+
+        Page<Article> articles = articleRepository.findAllByBoard(board, pageable);
+
+        return articles.map(ArticleMapper::toDto);
     }
 
     public ArticleDto getOneArticle(Integer articleId) {

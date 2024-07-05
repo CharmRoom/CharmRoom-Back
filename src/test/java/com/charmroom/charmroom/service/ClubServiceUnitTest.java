@@ -354,7 +354,7 @@ public class ClubServiceUnitTest {
                     .build();
 
             doReturn(Optional.of(club)).when(clubRepository).findByName(club.getName());
-            doNothing().when(uploadUtil).deleteImageFile(club.getImage());
+            doNothing().when(uploadUtil).deleteFile(club.getImage());
             doReturn(image).when(uploadUtil).buildImage(imageFile);
             doReturn(image).when(imageRepository).save(image);
 
@@ -362,7 +362,7 @@ public class ClubServiceUnitTest {
             ClubDto updated = clubService.setImage(club.getName(), imageFile);
 
             // then
-            verify(uploadUtil).deleteImageFile(club.getImage());
+            verify(uploadUtil).deleteFile(club.getImage());
             assertThat(updated.getImage().getPath()).isEqualTo(image.getPath());
         }
     }

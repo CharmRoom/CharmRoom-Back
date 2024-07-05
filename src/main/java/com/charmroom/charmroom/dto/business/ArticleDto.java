@@ -1,6 +1,7 @@
 package com.charmroom.charmroom.dto.business;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -19,6 +20,8 @@ public class ArticleDto {
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
 	private Integer view;
-	private List<CommentDto> commentList;
-	private List<AttachmentDto> attachmentList;
+	@Builder.Default
+	private List<CommentDto> commentList = new ArrayList<>();
+	@Builder.Default
+	private List<AttachmentDto> attachmentList = new ArrayList<>();
 }
