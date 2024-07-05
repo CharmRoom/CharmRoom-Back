@@ -12,6 +12,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
@@ -19,10 +22,13 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.Validator;
 
+import java.util.List;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -96,6 +102,47 @@ public class ArticleControllerUnitTestCm {
             resultActions.andExpect(jsonPath("$.code").value("CREATED"))
                     .andExpect(status().isCreated())
                     .andDo(print());
+        }
+    }
+
+    @Nested
+    class GetArticle {
+        @Test
+        void success() throws Exception {
+            // given
+            doReturn(mockedArticleDto).when(articleService).getOneArticle(1);
+
+            // when
+            ResultActions resultActions = mockMvc.perform(get("/api/article/1"));
+
+            // then
+            resultActions.andExpect(jsonPath("$.code").value("OK"))
+                    .andExpect(status().isOk());
+        }
+    }
+
+    @Nested
+    class GetArticleList {
+        @Test
+        void success() throws Exception {
+            // given
+            List<ArticleDto> dtoList = List.of(mockedArticleDto, mockedArticleDto, mockedArticleDto);
+
+            PageRequest pageRequest = PageRequest.of(0, 10, Sort.by("id").descending());
+            PageImpl<ArticleDto> dtoPage = new PageImpl<>(dtoList, pageRequest, 3);
+
+            doReturn(dtoPage).when(articleService).getArticles(1, pageRequest);
+
+            // when
+            ResultActions resultActions = mockMvc.perform(get("/api/article/1/articles"));
+
+            // then
+            resultActions.andExpectAll(
+                    status().isOk(),
+                    jsonPath("$.data.content").isArray(),
+                    jsonPath("$.data.content.size()").value(3),
+                    jsonPath("$.data.content[0].body").value("test")
+            );
         }
     }
 }
