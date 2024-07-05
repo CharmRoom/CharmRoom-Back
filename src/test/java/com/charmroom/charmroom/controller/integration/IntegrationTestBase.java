@@ -36,7 +36,7 @@ import com.google.gson.Gson;
 @TestPropertySource(properties = {"spring.config.location = classpath:application-test.yml"})
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
-@Transactional(propagation = Propagation.SUPPORTS)
+@Transactional
 public class IntegrationTestBase {
 	@Autowired
 	MockMvc mockMvc;

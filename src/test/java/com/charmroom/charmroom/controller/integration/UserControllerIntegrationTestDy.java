@@ -15,6 +15,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.charmroom.charmroom.dto.presentation.UserDto.UserUpdateRequest;
 import com.charmroom.charmroom.entity.Article;
@@ -155,6 +157,8 @@ public class UserControllerIntegrationTestDy extends IntegrationTestBase {
 		@Autowired
 		CommentRepository commentRepository;
 		
+		
+		
 		@Test
 		@WithCharmroomUserDetails
 		void success() throws Exception {
@@ -179,14 +183,15 @@ public class UserControllerIntegrationTestDy extends IntegrationTestBase {
 								.body(Integer.toString(i))
 								.build())
 						);
-			for(var p : parents) {
+			for(var parent : parents) {
 				for (var j = 0; j < 2; j++) {
-					commentRepository.save(Comment.builder()
+					var child = commentRepository.save(Comment.builder()
 							.user(charmroomUser)
 							.article(article)
-							.parent(p)
+							.parent(parent)
 							.body(Integer.toString(j))
 							.build());
+					parent.getChildList().add(child);
 				}
 			}
 			
