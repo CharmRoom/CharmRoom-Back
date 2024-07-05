@@ -176,13 +176,14 @@ public class ArticleServiceUnitTest {
             PageRequest pageRequest = PageRequest.of(0, 3, Sort.Direction.ASC, "title");
             PageImpl<Article> articlePage = new PageImpl<>(articleList);
 
-            doReturn(articlePage).when(articleRepository).findAll(pageRequest);
+            doReturn(Optional.of(board)).when(boardRepository).findById(board.getId());
+            doReturn(articlePage).when(articleRepository).findAllByBoard(board, pageRequest);
 
             // when
-            Page<ArticleDto> articles = articleService.getAllArticlesByPageable(pageRequest);
+            Page<ArticleDto> articles = articleService.getArticles(board.getId(), pageRequest);
 
             // then
-            verify(articleRepository).findAll(pageRequest);
+            verify(articleRepository).findAllByBoard(board, pageRequest);
             assertThat(articles).hasSize(3);
             assertThat(articles.stream().toList().get(0).getBody()).isEqualTo(articleList.get(0).getBody());
         }
@@ -193,13 +194,14 @@ public class ArticleServiceUnitTest {
             PageRequest pageRequest = PageRequest.of(0, 3, Sort.Direction.ASC, "title");
             PageImpl<Article> articlePage = new PageImpl<>(List.of());
 
-            doReturn(articlePage).when(articleRepository).findAll(pageRequest);
+            doReturn(Optional.of(board)).when(boardRepository).findById(board.getId());
+            doReturn(articlePage).when(articleRepository).findAllByBoard(board, pageRequest);
 
             // when
-            Page<ArticleDto> articles = articleService.getAllArticlesByPageable(pageRequest);
+            Page<ArticleDto> articles = articleService.getArticles(board.getId(), pageRequest);
 
             // then
-            verify(articleRepository).findAll(pageRequest);
+            verify(articleRepository).findAllByBoard(board, pageRequest);
             assertThat(articles).isEmpty();
         }
     }

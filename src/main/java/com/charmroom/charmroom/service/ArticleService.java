@@ -62,8 +62,13 @@ public class ArticleService {
         return ArticleMapper.toDto(saved);
     }
 
-    public Page<ArticleDto> getAllArticlesByPageable(Pageable pageable) {
-        return articleRepository.findAll(pageable).map(ArticleMapper::toDto);
+    public Page<ArticleDto> getArticles(Integer boardId, Pageable pageable) {
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new BusinessLogicException(BusinessLogicError.NOTFOUND_BOARD, "boardId: " + boardId));
+
+        Page<Article> articles = articleRepository.findAllByBoard(board, pageable);
+
+        return articles.map(ArticleMapper::toDto);
     }
 
     public ArticleDto getOneArticle(Integer articleId) {
