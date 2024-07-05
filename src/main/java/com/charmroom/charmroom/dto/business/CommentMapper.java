@@ -1,13 +1,15 @@
 package com.charmroom.charmroom.dto.business;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.charmroom.charmroom.dto.presentation.CommentDto.CommentResponseDto;
 import com.charmroom.charmroom.entity.Comment;
 
+import io.jsonwebtoken.lang.Arrays;
+
 public class CommentMapper {
-	public static CommentDto toDto(Comment entity) {
+	
+	public static CommentDto toDto(Comment entity, String... ignore) {
 		CommentDto dto = CommentDto.builder()
 				.id(entity.getId())
 				.body(entity.getBody())
@@ -15,27 +17,26 @@ public class CommentMapper {
 				.updatedAt(entity.getUpdatedAt())
 				.disabled(entity.isDisabled())
 				.build();
-		if (entity.getUser() != null) {
+		List<String> ignores = Arrays.asList(ignore);
+		if (entity.getUser() != null && !ignores.contains("user")) {
 			UserDto userDto = UserMapper.toDto(entity.getUser());
 			dto.setUser(userDto);
 		}
-		if (entity.getArticle() != null) {
-			ArticleDto articleDto = ArticleMapper.toDto(entity.getArticle());
-			articleDto.setCommentList(null);
+		if (entity.getArticle() != null && !ignores.contains("article")) {
+			ArticleDto articleDto = ArticleMapper.toDto(entity.getArticle(), "commentList");
 			dto.setArticle(articleDto);
 		}
-		if (entity.getParent() != null) {
-			CommentDto parent = CommentMapper.toDto(entity.getParent());
-			parent.setChildList(null);
+		if (entity.getParent() != null && !ignores.contains("parent")) {
+			CommentDto parent = CommentMapper.toDto(entity.getParent(), "childList");
 			dto.setParent(parent);
 		}
 		
-		for(var child : entity.getChildList()) {
-			CommentDto childDto = CommentMapper.toDto(child);
-			childDto.setParent(null);
-			dto.getChildList().add(childDto);
+		if (!ignores.contains("childList")) {
+			for(var child : entity.getChildList()) {
+				CommentDto childDto = CommentMapper.toDto(child, "parent");
+				dto.getChildList().add(childDto);
+			}
 		}
-		
 		
 		Integer like = 0, dislike = 0;
 		for(var cl : entity.getCommentLike()) {
@@ -50,6 +51,7 @@ public class CommentMapper {
 		return dto;
 	}
 
+	
 	public static CommentResponseDto toResponse(CommentDto dto) {
 		var response = CommentResponseDto.builder()
 				.id(dto.getId())
@@ -66,10 +68,17 @@ public class CommentMapper {
 			response.setUser(UserMapper.toResponse(dto.getUser()));
 		if (dto.getArticle() != null)
 			response.setArticleId(dto.getArticle().getId());
-		if (dto.getParent() != null)
-			response.setParentId(dto.getParent().getId());
+		if (dto.getParent() != null) {
+			var parent = toResponse(dto.getParent());
+			parent.getChildList().clear();
+			response.setParent(parent);
+		}
 		if (dto.getChildList().size() > 0) {
-			var childList = dto.getChildList().stream().map(child -> toResponse(child)).toList();
+			var childList = dto.getChildList().stream()
+					.map(child -> toResponse(child))
+					.toList()
+					;
+			childList.forEach(child -> child.setParent(null));
 			response.setChildList(childList);
 		}
 		

@@ -6,10 +6,12 @@ import java.util.List;
 import com.charmroom.charmroom.entity.Club;
 import com.charmroom.charmroom.entity.User;
 
+import io.jsonwebtoken.lang.Arrays;
+
 public class ClubMapper {
-	public static ClubDto toDto(Club entity) {
+	public static ClubDto toDto(Club entity, String... ignore) {
 		if (entity == null) return null;
-		
+		var ignores = Arrays.asList(ignore);
 		ClubDto dto =  ClubDto.builder()
 				.id(entity.getId())
 				.name(entity.getName())
@@ -18,12 +20,11 @@ public class ClubMapper {
 				.image(ImageMapper.toDto(entity.getImage()))
 				.build();
 		
-		if (entity.getUserList().size() > 0) {
+		if (entity.getUserList().size() > 0 && !ignores.contains("userList")) {
 			List<User> userList = entity.getUserList();
 			List<UserDto> userDtoList = new ArrayList<>();
 			for (User user : userList) {
-				UserDto userDto = UserMapper.toDto(user);
-				userDto.setClub(null);
+				UserDto userDto = UserMapper.toDto(user, "club");
 				userDtoList.add(userDto);
 			}
 			dto.setUserList(userDtoList);
