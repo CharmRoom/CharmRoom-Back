@@ -21,6 +21,7 @@ import com.charmroom.charmroom.service.CommentService;
 import com.charmroom.charmroom.service.PointService;
 import com.charmroom.charmroom.service.UserService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -41,7 +42,7 @@ public class UserController {
 	@PatchMapping("")
 	public ResponseEntity<?> updateMyInfo(
 			@AuthenticationPrincipal User user,
-			@RequestBody UserUpdateRequest request){
+			@RequestBody @Valid UserUpdateRequest request){
 		var dto = userService.changeNickname(user.getUsername(), request.getNickname());
 		var response = UserMapper.toResponse(dto);
 		return CommonResponseDto.ok(response).toResponseEntity();

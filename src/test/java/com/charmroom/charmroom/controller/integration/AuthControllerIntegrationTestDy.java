@@ -12,7 +12,6 @@ import java.io.IOException;
 
 import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -27,8 +26,6 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.charmroom.charmroom.util.CharmroomUtil;
-
 @TestPropertySource(properties = {"spring.config.location = classpath:application-test.yml"})
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
@@ -36,8 +33,6 @@ import com.charmroom.charmroom.util.CharmroomUtil;
 public class AuthControllerIntegrationTestDy {
 	@Autowired
 	MockMvc mockMvc;
-	@Autowired
-	CharmroomUtil.Upload upload;
 	
 	MockMultipartFile imageFile = new MockMultipartFile("image", "test.png", MediaType.IMAGE_PNG_VALUE, "test".getBytes());
 	String username = "test";
