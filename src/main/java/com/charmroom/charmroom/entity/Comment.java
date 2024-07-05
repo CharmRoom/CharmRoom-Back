@@ -39,8 +39,9 @@ public class Comment {
 	@ManyToOne
 	private Comment parent;
 	
+	@Builder.Default
 	@OneToMany(mappedBy = "parent")
-	private List<Comment> childList;
+	private List<Comment> childList = new ArrayList<>();
 	
 	@Column(columnDefinition = "TEXT")
 	private String body;
@@ -53,7 +54,7 @@ public class Comment {
 	
 	@Builder.Default
 	@Column(nullable = false)
-	private Boolean disabled = false;
+	private boolean disabled = false;
 	
 	@Builder.Default
 	@OneToMany(mappedBy="comment")

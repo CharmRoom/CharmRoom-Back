@@ -8,7 +8,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.charmroom.charmroom.dto.CustomUserDetails;
+import com.charmroom.charmroom.entity.User;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -43,7 +43,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 			FilterChain chain,
 			Authentication authResult) 
 					throws IOException, ServletException {
-		CustomUserDetails customUserDetails = (CustomUserDetails) authResult.getPrincipal();
+		User customUserDetails = (User) authResult.getPrincipal();
 		String username = customUserDetails.getUsername();
 		
 		var authorities = authResult.getAuthorities();

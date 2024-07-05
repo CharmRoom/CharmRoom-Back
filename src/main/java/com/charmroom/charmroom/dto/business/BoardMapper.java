@@ -1,5 +1,6 @@
 package com.charmroom.charmroom.dto.business;
 
+import com.charmroom.charmroom.dto.presentation.BoardDto.BoardResponseDto;
 import com.charmroom.charmroom.entity.Board;
 
 public class BoardMapper {
@@ -8,7 +9,16 @@ public class BoardMapper {
 				.id(entity.getId())
 				.name(entity.getName())
 				.type(entity.getType())
-				.exposed(entity.getExposed())
+				.exposed(entity.isExposed())
+				.build();
+	}
+
+	public static BoardResponseDto toResponse(BoardDto dto) {
+		return BoardResponseDto.builder()
+				.id(dto.getId())
+				.name(dto.getName())
+				.type(dto.getType().toString())
+				.exposed(dto.isExposed())
 				.build();
 	}
 }

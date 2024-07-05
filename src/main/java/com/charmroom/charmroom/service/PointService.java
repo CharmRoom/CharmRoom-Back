@@ -21,12 +21,12 @@ import lombok.RequiredArgsConstructor;
 public class PointService {
 	private final PointRepository pointRepository;
 	private final UserRepository userRepository;
-	public PointDto create(String username, PointType type, int diff) {
+	public PointDto create(String username, String type, int diff) {
 		User user = userRepository.findByUsername(username)
 				.orElseThrow(() -> new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "username: " + username));
 		Point point = Point.builder()
 				.user(user)
-				.type(type)
+				.type(PointType.valueOf(type))
 				.diff(diff)
 				.build();
 		Point saved = pointRepository.save(point);

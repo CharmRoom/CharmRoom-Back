@@ -216,7 +216,7 @@ public class CommentServiceUnitTest {
 			var disabled = commentService.disable(comment.getId(), user.getUsername());
 			
 			// then
-			assertThat(disabled.getDisabled()).isTrue();
+			assertThat(disabled.isDisabled()).isTrue();
 		}
 		// 실패 상황은 Update와 동일
 	}

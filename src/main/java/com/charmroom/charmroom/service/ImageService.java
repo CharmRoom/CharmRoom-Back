@@ -8,6 +8,7 @@ import com.charmroom.charmroom.entity.Image;
 import com.charmroom.charmroom.exception.BusinessLogicError;
 import com.charmroom.charmroom.exception.BusinessLogicException;
 import com.charmroom.charmroom.repository.ImageRepository;
+import com.charmroom.charmroom.util.CharmroomUtil;
 
 import lombok.RequiredArgsConstructor;
 
@@ -15,9 +16,12 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ImageService {
 	private final ImageRepository imageRepository;
-	
+	private final CharmroomUtil.Upload uploadUtil;
 	public ImageDto loadById(Integer id) {
 		Image image = imageRepository.findById(id).orElseThrow(() ->new BusinessLogicException(BusinessLogicError.NOTFOUND_IMAGE, "id: " + id));
-		return ImageMapper.toDto(image);
+	
+		ImageDto dto = ImageMapper.toDto(image);
+		dto.setResource(uploadUtil.toResource(image));
+		return dto;
 	}
 }

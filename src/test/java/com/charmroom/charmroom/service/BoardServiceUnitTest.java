@@ -63,7 +63,7 @@ public class BoardServiceUnitTest {
 			doReturn(board).when(boardRepository).save(any(Board.class));
 			
 			// when
-			var saved = boardService.create(board.getName(), board.getType());
+			var saved = boardService.create(board.getName(), board.getType().toString());
 			
 			// then
 			assertThat(saved).isNotNull();
@@ -75,7 +75,7 @@ public class BoardServiceUnitTest {
 			
 			// when
 			var thrown = assertThrows(BusinessLogicException.class, () -> {
-				boardService.create(board.getName(), board.getType());
+				boardService.create(board.getName(), board.getType().toString());
 			});
 			
 			// then
@@ -131,7 +131,7 @@ public class BoardServiceUnitTest {
 			doReturn(Optional.of(board)).when(boardRepository).findById(board.getId());
 			
 			// when
-			var result = boardService.changeType(board.getId(), BoardType.GALLERY);
+			var result = boardService.changeType(board.getId(), BoardType.GALLERY.toString());
 			
 			// then
 			assertThat(result.getType()).isEqualTo(BoardType.GALLERY);
@@ -149,7 +149,7 @@ public class BoardServiceUnitTest {
 			var result = boardService.changeExpose(board.getId(), true);
 			
 			// then
-			assertThat(result.getExposed()).isTrue();
+			assertThat(result.isExposed()).isTrue();
 		}
 	}
 	

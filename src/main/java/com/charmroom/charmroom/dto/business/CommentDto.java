@@ -1,6 +1,7 @@
 package com.charmroom.charmroom.dto.business;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -15,10 +16,13 @@ public class CommentDto {
 	private UserDto user;
 	private ArticleDto article;
 	private CommentDto parent;
-	private List<CommentDto> childList;
+	@Builder.Default
+	private List<CommentDto> childList = new ArrayList<>();
 	private String body;
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
-	private Boolean disabled;
-	private List<CommentLikeDto> commentLike;
+	private boolean disabled;
+	private Integer like;
+	private Integer dislike;
+	private Boolean userLikeType;
 }
