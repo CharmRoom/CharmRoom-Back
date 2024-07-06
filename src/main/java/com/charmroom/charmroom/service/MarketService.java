@@ -72,40 +72,48 @@ public class MarketService {
         return create(marketDto, username, boardId, new ArrayList<>());
     }
 
-    public Page<Market> getAllMarketsByPageable(Pageable pageable) {
-        return marketRepository.findAll(pageable);
+    public Page<MarketDto> getMarkets(Integer boardId, Pageable pageable) {
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new BusinessLogicException
+                        (BusinessLogicError.NOTFOUND_BOARD, "boardId: " + boardId));
+
+        Page<Market> markets = marketRepository.findAllByBoard(board, pageable);
+
+        return markets.map(market -> MarketMapper.toDto(market));
     }
 
-    public Market getMarket(Integer marketId) {
-        return marketRepository.findById(marketId).orElseThrow(() ->
+    public MarketDto getMarket(Integer marketId) {
+        Market found =  marketRepository.findById(marketId).orElseThrow(() ->
                 new BusinessLogicException(BusinessLogicError.NOTFOUND_ARTICLE, "marketId: " + marketId));
+
+        return MarketMapper.toDto(found);
     }
 
     @Transactional
-    public Market updatePrice(Integer marketId, int price) {
+    public MarketDto updatePrice(Integer marketId, int price) {
         Market market = marketRepository.findById(marketId).orElseThrow(() ->
                 new BusinessLogicException(BusinessLogicError.NOTFOUND_ARTICLE, "marketId: " + marketId));
 
         market.updatePrice(price);
-        return market;
+        return MarketMapper.toDto(market);
     }
 
     @Transactional
-    public Market updateTag(Integer marketId, String newTag) {
+    public MarketDto updateTag(Integer marketId, String newTag) {
         Market market = marketRepository.findById(marketId).orElseThrow(() ->
                 new BusinessLogicException(BusinessLogicError.NOTFOUND_ARTICLE, "marketId: " + marketId));
 
         market.updateTag(newTag);
-        return market;
+        return MarketMapper.toDto(market);
     }
 
     @Transactional
-    public Market updateState(Integer marketId, MarketArticleState newState) {
+    public MarketDto updateState(Integer marketId, MarketArticleState newState) {
         Market market = marketRepository.findById(marketId).orElseThrow(() ->
                 new BusinessLogicException(BusinessLogicError.NOTFOUND_ARTICLE, "marketId: " + marketId));
 
         market.updateState(newState);
-        return market;
+        return MarketMapper.toDto(market);
     }
 
     public void delete(Integer marketId) {

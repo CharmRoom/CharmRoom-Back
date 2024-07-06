@@ -179,10 +179,11 @@ public class MarketServiceUnitTest {
             PageRequest pageRequest = PageRequest.of(0, 3, Sort.Direction.ASC, "id");
             var marketPage = new PageImpl<>(marketList);
 
-            doReturn(marketPage).when(marketRepository).findAll(pageRequest);
+            doReturn(Optional.of(board)).when(boardRepository).findById(board.getId());
+            doReturn(marketPage).when(marketRepository).findAllByBoard(board, pageRequest);
 
             // when
-            Page<Market> result = marketService.getAllMarketsByPageable(pageRequest);
+            Page<MarketDto> result = marketService.getMarkets(board.getId(), pageRequest);
 
             // then
             assertThat(result).hasSize(3);
@@ -198,11 +199,11 @@ public class MarketServiceUnitTest {
             doReturn(Optional.of(market)).when(marketRepository).findById(marketId);
 
             // when
-            Market found = marketService.getMarket(marketId);
+            MarketDto marketDto = marketService.getMarket(marketId);
 
             // then
-            assertThat(found).isNotNull();
-            assertThat(found.getId()).isEqualTo(marketId);
+            assertThat(marketDto).isNotNull();
+            assertThat(marketDto.getId()).isEqualTo(marketId);
         }
 
         @Test
@@ -227,11 +228,11 @@ public class MarketServiceUnitTest {
             doReturn(Optional.of(market)).when(marketRepository).findById(marketId);
 
             // when
-            Market updated = marketService.updatePrice(marketId, 20000);
+            MarketDto marketDto = marketService.updatePrice(marketId, 20000);
 
             // then
-            assertThat(updated).isNotNull();
-            assertThat(updated.getPrice()).isEqualTo(20000);
+            assertThat(marketDto).isNotNull();
+            assertThat(marketDto.getPrice()).isEqualTo(20000);
         }
     }
 
@@ -244,11 +245,11 @@ public class MarketServiceUnitTest {
             doReturn(Optional.of(market)).when(marketRepository).findById(marketId);
 
             // when
-            Market updated = marketService.updateTag(marketId, "new tag");
+            MarketDto marketDto = marketService.updateTag(marketId, "new tag");
 
             // then
-            assertThat(updated).isNotNull();
-            assertThat(updated.getTag()).isEqualTo("new tag");
+            assertThat(marketDto).isNotNull();
+            assertThat(marketDto.getTag()).isEqualTo("new tag");
         }
     }
 
@@ -262,11 +263,11 @@ public class MarketServiceUnitTest {
             MarketArticleState newState = MarketArticleState.RESERVED;
 
             // when
-            Market updated = marketService.updateState(marketId, newState);
+            MarketDto marketDto = marketService.updateState(marketId, newState);
 
             // then
-            assertThat(updated).isNotNull();
-            assertThat(updated.getState()).isEqualTo(newState);
+            assertThat(marketDto).isNotNull();
+            assertThat(marketDto.getState()).isEqualTo(newState);
         }
     }
 
