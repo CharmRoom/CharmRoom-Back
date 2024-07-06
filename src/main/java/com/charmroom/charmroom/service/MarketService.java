@@ -36,11 +36,11 @@ public class MarketService {
     private final CharmroomUtil.Upload uploadUtils;
     private final AttachmentRepository attachmentRepository;
 
-    public MarketDto create(MarketDto marketDto, List<MultipartFile> files) {
-        User user = userRepository.findByUsername(marketDto.getUser().getUsername()).orElseThrow(() ->
+    public MarketDto create(MarketDto marketDto, String username, Integer boardId, List<MultipartFile> files) {
+        User user = userRepository.findByUsername(username).orElseThrow(() ->
                 new BusinessLogicException(BusinessLogicError.NOTFOUND_USER));
 
-        Board board = boardRepository.findById(marketDto.getBoard().getId()).orElseThrow(() -> new BusinessLogicException(BusinessLogicError.NOTFOUND_BOARD));
+        Board board = boardRepository.findById(boardId).orElseThrow(() -> new BusinessLogicException(BusinessLogicError.NOTFOUND_BOARD));
 
         Article article = Article.builder()
                 .user(user)
@@ -68,8 +68,8 @@ public class MarketService {
         return MarketMapper.toDto(saved);
     }
 
-    public MarketDto create(MarketDto marketDto) {
-        return create(marketDto, new ArrayList<>());
+    public MarketDto create(MarketDto marketDto, String username, Integer boardId) {
+        return create(marketDto, username, boardId, new ArrayList<>());
     }
 
     public Page<Market> getAllMarketsByPageable(Pageable pageable) {

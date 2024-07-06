@@ -2,6 +2,7 @@ package com.charmroom.charmroom.service;
 
 import com.charmroom.charmroom.dto.business.BoardDto;
 import com.charmroom.charmroom.dto.business.MarketDto;
+import com.charmroom.charmroom.dto.business.MarketMapper;
 import com.charmroom.charmroom.dto.business.UserDto;
 import com.charmroom.charmroom.entity.Article;
 import com.charmroom.charmroom.entity.Attachment;
@@ -118,31 +119,16 @@ public class MarketServiceUnitTest {
         @Test
         void success() {
             // given
-            UserDto userDto = UserDto.builder()
-                    .username("")
-                    .build();
-            BoardDto boardDto = BoardDto.builder()
-                    .id(1)
-                    .build();
+            MarketDto dto = MarketMapper.toDto(market);
 
-            MarketDto marketDto = MarketDto.builder()
-                    .user(userDto)
-                    .board(boardDto)
-                    .title("")
-                    .body("")
-                    .price(price)
-                    .tag(tag)
-                    .state(state)
-                    .build();
-
-            doReturn(Optional.of(user)).when(userRepository).findByUsername(userDto.getUsername());
-            doReturn(Optional.of(board)).when(boardRepository).findById(boardDto.getId());
+            doReturn(Optional.of(user)).when(userRepository).findByUsername(user.getUsername());
+            doReturn(Optional.of(board)).when(boardRepository).findById(board.getId());
             doReturn(article).when(articleRepository).save(any(Article.class));
 
             doReturn(market).when(marketRepository).save(any(Market.class));
 
             // when
-            MarketDto created = marketService.create(marketDto);
+            MarketDto created = marketService.create(dto, user.getUsername(), board.getId());
 
             // then
             assertThat(created).isNotNull();
@@ -151,25 +137,10 @@ public class MarketServiceUnitTest {
         @Test
         void whenFilesExists() {
             // given
-            UserDto userDto = UserDto.builder()
-                    .username("")
-                    .build();
-            BoardDto boardDto = BoardDto.builder()
-                    .id(1)
-                    .build();
+            MarketDto dto = MarketMapper.toDto(market);
 
-            MarketDto marketDto = MarketDto.builder()
-                    .user(userDto)
-                    .board(boardDto)
-                    .title("")
-                    .body("")
-                    .price(price)
-                    .tag(tag)
-                    .state(state)
-                    .build();
-
-            doReturn(Optional.of(user)).when(userRepository).findByUsername(userDto.getUsername());
-            doReturn(Optional.of(board)).when(boardRepository).findById(boardDto.getId());
+            doReturn(Optional.of(user)).when(userRepository).findByUsername(user.getUsername());
+            doReturn(Optional.of(board)).when(boardRepository).findById(board.getId());
             doReturn(article).when(articleRepository).save(any(Article.class));
 
             Attachment attachment = Attachment.builder()
@@ -191,7 +162,7 @@ public class MarketServiceUnitTest {
             doReturn(attachment).when(attachmentRepository).save(attachment);
 
             // when
-            MarketDto created = marketService.create(marketDto, files);
+            MarketDto created = marketService.create(dto, user.getUsername(), board.getId(), files);
 
             // then
             assertThat(created).isNotNull();
