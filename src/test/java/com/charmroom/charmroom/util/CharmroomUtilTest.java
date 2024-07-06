@@ -46,8 +46,6 @@ public class CharmroomUtilTest {
 			File attachmentDir = new File(attachmentUploadPath);
 			FileUtils.cleanDirectory(imageDir);
 			FileUtils.cleanDirectory(attachmentDir);
-			FileUtils.deleteDirectory(imageDir);
-			FileUtils.deleteDirectory(attachmentDir);
 		}
 		@Nested
 		@Order(1)

@@ -39,8 +39,8 @@ import com.google.gson.Gson;
 @Transactional
 public class IntegrationTestBase {
 	@Autowired
-	MockMvc mockMvc;
-	Gson gson;
+	public MockMvc mockMvc;
+	public Gson gson;
 	
 	@Autowired
 	private UserRepository userRepository;
@@ -50,8 +50,8 @@ public class IntegrationTestBase {
 	@Autowired
 	private CharmroomUtil.Upload uploadUtil;
 	
-	User charmroomUser;
-	User charmroomAdmin;
+	public User charmroomUser;
+	public User charmroomAdmin;
 	@Target({ ElementType.METHOD, ElementType.TYPE })
 	@Retention(RetentionPolicy.RUNTIME)
 	@Inherited
@@ -59,7 +59,7 @@ public class IntegrationTestBase {
 			value = "test", 
 			setupBefore = TestExecutionEvent.TEST_EXECUTION,
 			userDetailsServiceBeanName = "customUserDetailsService") 
-	@interface WithCharmroomUserDetails {}
+	public static @interface WithCharmroomUserDetails {}
 	@Target({ ElementType.METHOD, ElementType.TYPE })
 	@Retention(RetentionPolicy.RUNTIME)
 	@Inherited
@@ -67,7 +67,7 @@ public class IntegrationTestBase {
 			value = "admin", 
 			setupBefore = TestExecutionEvent.TEST_EXECUTION,
 			userDetailsServiceBeanName = "customUserDetailsService")
-	@interface WithCharmroomAdminDetails{}
+	public static @interface WithCharmroomAdminDetails{}
 	
 	@AfterAll
 	static void cleanUp(
