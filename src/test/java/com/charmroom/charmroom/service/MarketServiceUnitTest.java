@@ -1,6 +1,9 @@
 package com.charmroom.charmroom.service;
 
+import com.charmroom.charmroom.dto.business.BoardDto;
 import com.charmroom.charmroom.dto.business.MarketDto;
+import com.charmroom.charmroom.dto.business.MarketMapper;
+import com.charmroom.charmroom.dto.business.UserDto;
 import com.charmroom.charmroom.entity.Article;
 import com.charmroom.charmroom.entity.Attachment;
 import com.charmroom.charmroom.entity.Board;
@@ -116,24 +119,16 @@ public class MarketServiceUnitTest {
         @Test
         void success() {
             // given
+            MarketDto dto = MarketMapper.toDto(market);
+
             doReturn(Optional.of(user)).when(userRepository).findByUsername(user.getUsername());
             doReturn(Optional.of(board)).when(boardRepository).findById(board.getId());
             doReturn(article).when(articleRepository).save(any(Article.class));
 
-            MarketDto marketDto = MarketDto.builder()
-                    .username(user.getUsername())
-                    .boardId(board.getId())
-                    .title("")
-                    .body("")
-                    .price(price)
-                    .tag(tag)
-                    .state(state)
-                    .build();
-
             doReturn(market).when(marketRepository).save(any(Market.class));
 
             // when
-            Market created = marketService.create(marketDto);
+            MarketDto created = marketService.create(dto, user.getUsername(), board.getId());
 
             // then
             assertThat(created).isNotNull();
@@ -142,19 +137,11 @@ public class MarketServiceUnitTest {
         @Test
         void whenFilesExists() {
             // given
+            MarketDto dto = MarketMapper.toDto(market);
+
             doReturn(Optional.of(user)).when(userRepository).findByUsername(user.getUsername());
             doReturn(Optional.of(board)).when(boardRepository).findById(board.getId());
             doReturn(article).when(articleRepository).save(any(Article.class));
-
-            MarketDto marketDto = MarketDto.builder()
-                    .username(user.getUsername())
-                    .boardId(board.getId())
-                    .title("")
-                    .body("")
-                    .price(price)
-                    .tag(tag)
-                    .state(state)
-                    .build();
 
             Attachment attachment = Attachment.builder()
                     .build();
@@ -175,7 +162,7 @@ public class MarketServiceUnitTest {
             doReturn(attachment).when(attachmentRepository).save(attachment);
 
             // when
-            Market created = marketService.create(marketDto, files);
+            MarketDto created = marketService.create(dto, user.getUsername(), board.getId(), files);
 
             // then
             assertThat(created).isNotNull();
@@ -192,10 +179,11 @@ public class MarketServiceUnitTest {
             PageRequest pageRequest = PageRequest.of(0, 3, Sort.Direction.ASC, "id");
             var marketPage = new PageImpl<>(marketList);
 
-            doReturn(marketPage).when(marketRepository).findAll(pageRequest);
+            doReturn(Optional.of(board)).when(boardRepository).findById(board.getId());
+            doReturn(marketPage).when(marketRepository).findAllByBoard(board, pageRequest);
 
             // when
-            Page<Market> result = marketService.getAllMarketsByPageable(pageRequest);
+            Page<MarketDto> result = marketService.getMarkets(board.getId(), pageRequest);
 
             // then
             assertThat(result).hasSize(3);
@@ -211,11 +199,11 @@ public class MarketServiceUnitTest {
             doReturn(Optional.of(market)).when(marketRepository).findById(marketId);
 
             // when
-            Market found = marketService.getMarket(marketId);
+            MarketDto marketDto = marketService.getMarket(marketId);
 
             // then
-            assertThat(found).isNotNull();
-            assertThat(found.getId()).isEqualTo(marketId);
+            assertThat(marketDto).isNotNull();
+            assertThat(marketDto.getId()).isEqualTo(marketId);
         }
 
         @Test
@@ -240,11 +228,11 @@ public class MarketServiceUnitTest {
             doReturn(Optional.of(market)).when(marketRepository).findById(marketId);
 
             // when
-            Market updated = marketService.updatePrice(marketId, 20000);
+            MarketDto marketDto = marketService.updatePrice(marketId, 20000);
 
             // then
-            assertThat(updated).isNotNull();
-            assertThat(updated.getPrice()).isEqualTo(20000);
+            assertThat(marketDto).isNotNull();
+            assertThat(marketDto.getPrice()).isEqualTo(20000);
         }
     }
 
@@ -257,11 +245,11 @@ public class MarketServiceUnitTest {
             doReturn(Optional.of(market)).when(marketRepository).findById(marketId);
 
             // when
-            Market updated = marketService.updateTag(marketId, "new tag");
+            MarketDto marketDto = marketService.updateTag(marketId, "new tag");
 
             // then
-            assertThat(updated).isNotNull();
-            assertThat(updated.getTag()).isEqualTo("new tag");
+            assertThat(marketDto).isNotNull();
+            assertThat(marketDto.getTag()).isEqualTo("new tag");
         }
     }
 
@@ -275,11 +263,11 @@ public class MarketServiceUnitTest {
             MarketArticleState newState = MarketArticleState.RESERVED;
 
             // when
-            Market updated = marketService.updateState(marketId, newState);
+            MarketDto marketDto = marketService.updateState(marketId, newState);
 
             // then
-            assertThat(updated).isNotNull();
-            assertThat(updated.getState()).isEqualTo(newState);
+            assertThat(marketDto).isNotNull();
+            assertThat(marketDto.getState()).isEqualTo(newState);
         }
     }
 
