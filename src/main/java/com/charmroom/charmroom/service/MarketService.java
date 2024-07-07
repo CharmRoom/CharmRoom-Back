@@ -45,8 +45,8 @@ public class MarketService {
         Article article = Article.builder()
                 .user(user)
                 .board(board)
-                .title(marketDto.getTitle())
-                .body(marketDto.getBody())
+                .title(marketDto.getArticle().getTitle())
+                .body(marketDto.getArticle().getBody())
                 .build();
 
         for (MultipartFile file : files) {
@@ -113,6 +113,29 @@ public class MarketService {
                 new BusinessLogicException(BusinessLogicError.NOTFOUND_ARTICLE, "marketId: " + marketId));
 
         market.updateState(newState);
+        return MarketMapper.toDto(market);
+    }
+
+    @Transactional
+    public MarketDto updateArticle(Integer marketId, String title, String body) {
+        Market market = marketRepository.findById(marketId).orElseThrow(() ->
+                new BusinessLogicException(BusinessLogicError.NOTFOUND_ARTICLE, "marketId: " + marketId));
+
+        market.getArticle().updatedBody(body);
+        market.getArticle().updateTitle(title);
+        return MarketMapper.toDto(market);
+    }
+
+    public MarketDto update(Integer marketId, MarketDto marketDto) {
+        Market market = marketRepository.findById(marketId).orElseThrow(() ->
+                new BusinessLogicException(BusinessLogicError.NOTFOUND_ARTICLE, "marketId: " + marketId));
+
+        market.getArticle().updateTitle(marketDto.getArticle().getTitle());
+        market.getArticle().updatedBody(marketDto.getArticle().getBody());
+        market.updateState(marketDto.getState());
+        market.updateTag(marketDto.getTag());
+        market.updatePrice(marketDto.getPrice());
+
         return MarketMapper.toDto(market);
     }
 
