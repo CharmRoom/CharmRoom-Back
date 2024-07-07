@@ -2,21 +2,17 @@ package com.charmroom.charmroom.controller.integration;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.charmroom.charmroom.dto.presentation.UserDto.UserUpdateRequest;
 import com.charmroom.charmroom.entity.Article;
@@ -205,7 +201,6 @@ public class UserControllerIntegrationTestDy extends IntegrationTestBase {
 					,jsonPath("$.data.content[*].parent").exists()
 					,jsonPath("$.data.content[*].childList[?(@.size() > 0)]").exists()
 					)
-			.andDo(print())
 			;
 		}
 	}
