@@ -111,9 +111,9 @@ public class ClubService {
     }
 
     @Transactional
-    public ClubDto setImage(String clubName, MultipartFile imageFile) {
-        Club club = clubRepository.findByName(clubName).orElseThrow(() ->
-                new BusinessLogicException(BusinessLogicError.NOTFOUND_CLUB, "clubName: " + clubName));
+    public ClubDto setImage(Integer clubId, MultipartFile imageFile) {
+        Club club = clubRepository.findById(clubId).orElseThrow(() ->
+                new BusinessLogicException(BusinessLogicError.NOTFOUND_CLUB, "clubId: " + clubId));
 
         if (club.getImage() != null) {
             uploadUtil.deleteFile(club.getImage());
