@@ -12,6 +12,7 @@ import com.charmroom.charmroom.util.CharmroomUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -51,8 +52,8 @@ public class ClubService {
         return clubRepository.existsByName(clubName);
     }
 
-    public Page<ClubDto> getAllClubsByPageable(PageRequest pageRequest) {
-        Page<Club> clubs = clubRepository.findAll(pageRequest);
+    public Page<ClubDto> getAllClubsByPageable(Pageable pageable) {
+        Page<Club> clubs = clubRepository.findAll(pageable);
         return clubs.map(club -> ClubMapper.toDto(club));
     }
 
@@ -91,6 +92,17 @@ public class ClubService {
         return ClubMapper.toDto(club);
     }
 
+    public ClubDto update(Integer clubId, ClubDto clubDto) {
+        Club club = clubRepository.findById(clubId).orElseThrow(() ->
+                new BusinessLogicException(BusinessLogicError.NOTFOUND_CLUB, "clubId: " + clubId));
+
+        club.updateName(clubDto.getName());
+        club.updateDescription(clubDto.getDescription());
+        club.updateContact(clubDto.getContact());
+
+        return ClubMapper.toDto(club);
+    }
+
     public void deleteClub(Integer clubId) {
         Club club = clubRepository.findById(clubId).orElseThrow(() ->
                 new BusinessLogicException(BusinessLogicError.NOTFOUND_CLUB, "clubId: " + clubId));
@@ -99,9 +111,9 @@ public class ClubService {
     }
 
     @Transactional
-    public ClubDto setImage(String clubName, MultipartFile imageFile) {
-        Club club = clubRepository.findByName(clubName).orElseThrow(() ->
-                new BusinessLogicException(BusinessLogicError.NOTFOUND_CLUB, "clubName: " + clubName));
+    public ClubDto setImage(Integer clubId, MultipartFile imageFile) {
+        Club club = clubRepository.findById(clubId).orElseThrow(() ->
+                new BusinessLogicException(BusinessLogicError.NOTFOUND_CLUB, "clubId: " + clubId));
 
         if (club.getImage() != null) {
             uploadUtil.deleteFile(club.getImage());
