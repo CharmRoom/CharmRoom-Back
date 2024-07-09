@@ -2,6 +2,7 @@ package com.charmroom.charmroom.service;
 
 import com.charmroom.charmroom.dto.business.AdDto;
 import com.charmroom.charmroom.dto.business.AdMapper;
+import com.charmroom.charmroom.dto.business.ImageDto;
 import com.charmroom.charmroom.entity.Ad;
 import com.charmroom.charmroom.entity.Image;
 import com.charmroom.charmroom.exception.BusinessLogicError;
@@ -24,6 +25,7 @@ public class AdService {
     private final AdRepository adRepository;
     private final ImageRepository imageRepository;
     private final CharmroomUtil.Upload uploadUtil;
+    private final CharmroomUtil charmroomUtil;
 
     public AdDto create(String title, String link, MultipartFile imageFile, LocalDateTime startTime, LocalDateTime endTime) {
         Image image = uploadUtil.buildImage(imageFile);
@@ -98,6 +100,28 @@ public class AdService {
                 new BusinessLogicException(BusinessLogicError.NOTFOUND_AD, "adId: " + adId));
 
         ad.updateEnd(newEndTime);
+        return AdMapper.toDto(ad);
+    }
+
+    @Transactional
+    public AdDto updateAd(Integer adId, String title, String link, LocalDateTime startTime, LocalDateTime endTime, MultipartFile imageFile) {
+        Ad ad = adRepository.findById(adId).orElseThrow(() ->
+                new BusinessLogicException(BusinessLogicError.NOTFOUND_AD, "adId: " + adId));
+
+        Image adImage = null;
+        if (ad.getImage() != null) {
+            imageRepository.delete(ad.getImage());
+        }
+
+        Image image = uploadUtil.buildImage(imageFile);
+        adImage = imageRepository.save(image);
+
+        ad.updateTitle(title);
+        ad.updateLink(link);
+        ad.updateStart(startTime);
+        ad.updateEnd(endTime);
+        ad.updateImage(adImage);
+
         return AdMapper.toDto(ad);
     }
 
