@@ -9,6 +9,8 @@ import com.charmroom.charmroom.exception.BusinessLogicException;
 import com.charmroom.charmroom.repository.SubscribeRepository;
 import com.charmroom.charmroom.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -39,5 +41,15 @@ public class SubscribeService {
             Subscribe saved = subscribeRepository.save(subscribe);
             return SubscribeMapper.toDto(saved);
         }
+    }
+
+    public Page<SubscribeDto> getSubscribesBySubscriber(String subscriberName, Pageable pageable) {
+        User subscriber = userRepository.findByUsername(subscriberName).orElseThrow(
+                () -> new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "subscriberName: " + subscriberName)
+        );
+
+        Page<Subscribe> subscribes = subscribeRepository.findAllByUser(subscriber, pageable);
+
+        return subscribes.map(SubscribeMapper::toDto);
     }
 }

@@ -13,7 +13,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -70,7 +74,7 @@ public class SubscribeServiceUnitTest {
             doReturn(subscribe).when(subscribeRepository).save(any(Subscribe.class));
 
             // when
-            SubscribeDto created =  subscribeService.create(subscriber.getUsername(), target.getUsername());
+            SubscribeDto created = subscribeService.create(subscriber.getUsername(), target.getUsername());
 
             // then
             assertThat(created).isNotNull();
@@ -92,6 +96,47 @@ public class SubscribeServiceUnitTest {
             // then
             assertNull(result);
             verify(subscribeRepository).delete(any(Subscribe.class));
+        }
+    }
+
+    @Nested
+    @DisplayName("get Subscribes")
+    class GetSubscribes {
+        @Test
+        void success() {
+            // given
+            User target1 = createUser("target1");
+            User target2 = createUser("target2");
+            User target3 = createUser("target3");
+            User subscriber = createUser("subscriber");
+
+            Subscribe subscribe1 = Subscribe.builder()
+                    .subscriber(subscriber)
+                    .target(target1)
+                    .build();
+
+            Subscribe subscribe2 = Subscribe.builder()
+                    .subscriber(subscriber)
+                    .target(target2)
+                    .build();
+
+            Subscribe subscribe3 = Subscribe.builder()
+                    .subscriber(subscriber)
+                    .target(target3)
+                    .build();
+
+            List<Subscribe> subscribeList = List.of(subscribe1, subscribe2, subscribe3);
+            PageRequest pageRequest = PageRequest.of(0, 3);
+            PageImpl<Subscribe> subscribePage = new PageImpl<>(subscribeList);
+
+            doReturn(Optional.of(subscriber)).when(userRepository).findByUsername(subscriber.getUsername());
+            doReturn(subscribePage).when(subscribeRepository).findAllByUser(subscriber, pageRequest);
+
+            // when
+            Page<SubscribeDto> result = subscribeService.getSubscribesBySubscriber(subscriber.getUsername(), pageRequest);
+
+            // then
+            assertThat(result).hasSize(3);
         }
     }
 }
