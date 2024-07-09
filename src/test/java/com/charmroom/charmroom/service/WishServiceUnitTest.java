@@ -108,7 +108,7 @@ public class WishServiceUnitTest {
             doReturn(wish).when(wishRepository).save(any(Wish.class));
 
             // when
-            WishDto created = wishService.create(username, marketId);
+            WishDto created = wishService.wishOrCancel(username, marketId);
 
             // then
             assertThat(created).isNotNull();
@@ -123,7 +123,7 @@ public class WishServiceUnitTest {
             doReturn(Optional.of(wish)).when(wishRepository).findByUserAndMarket(user, market);
 
             // when
-            WishDto created = wishService.create(username, marketId);
+            WishDto created = wishService.wishOrCancel(username, marketId);
 
             // then
             verify(wishRepository).delete(any(Wish.class));
