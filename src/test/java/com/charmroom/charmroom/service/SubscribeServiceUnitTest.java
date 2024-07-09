@@ -74,7 +74,7 @@ public class SubscribeServiceUnitTest {
             doReturn(subscribe).when(subscribeRepository).save(any(Subscribe.class));
 
             // when
-            SubscribeDto created = subscribeService.create(subscriber.getUsername(), target.getUsername());
+            SubscribeDto created = subscribeService.subscribeOrCancel(subscriber.getUsername(), target.getUsername());
 
             // then
             assertThat(created).isNotNull();
@@ -91,7 +91,7 @@ public class SubscribeServiceUnitTest {
             doReturn(Optional.of(subscribe)).when(subscribeRepository).findBySubscriberAndTarget(subscriber, target);
 
             // when
-            SubscribeDto result = subscribeService.create(subscriber.getUsername(), target.getUsername());
+            SubscribeDto result = subscribeService.subscribeOrCancel(subscriber.getUsername(), target.getUsername());
 
             // then
             assertNull(result);

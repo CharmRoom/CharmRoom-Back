@@ -21,7 +21,7 @@ public class SubscribeService {
     private final SubscribeRepository subscribeRepository;
     private final UserRepository userRepository;
 
-    public SubscribeDto create(String subscriberName, String targetName) {
+    public SubscribeDto subscribeOrCancel(String subscriberName, String targetName) {
         User subscriber = userRepository.findByUsername(subscriberName).orElseThrow(() ->
                 new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "subscriberName: " + subscriberName));
         User target = userRepository.findByUsername(targetName).orElseThrow(() ->
