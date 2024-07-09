@@ -22,7 +22,7 @@ public class WishService {
     private final UserRepository userRepository;
     private final MarketRepository marketRepository;
 
-    public WishDto create(String username, Integer marketId) {
+    public WishDto wishOrCancel(String username, Integer marketId) {
         User user = userRepository.findByUsername(username).orElseThrow(() ->
                 new BusinessLogicException(BusinessLogicError.NOTFOUND_USER));
         Market market = marketRepository.findById(marketId).orElseThrow(() ->
