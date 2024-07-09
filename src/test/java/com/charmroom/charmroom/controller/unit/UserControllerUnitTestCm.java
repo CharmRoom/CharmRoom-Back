@@ -2,8 +2,10 @@ package com.charmroom.charmroom.controller.unit;
 
 import com.charmroom.charmroom.controller.api.UserController;
 import com.charmroom.charmroom.dto.business.ArticleDto;
+import com.charmroom.charmroom.dto.business.MarketDto;
 import com.charmroom.charmroom.dto.business.SubscribeDto;
 import com.charmroom.charmroom.dto.business.UserDto;
+import com.charmroom.charmroom.dto.business.WishDto;
 import com.charmroom.charmroom.dto.presentation.SubscribeDto.SubscribeCreateRequestDto;
 import com.charmroom.charmroom.dto.business.UserMapper;
 import com.charmroom.charmroom.entity.User;
@@ -14,6 +16,7 @@ import com.charmroom.charmroom.exception.ExceptionHandlerAdvice;
 import com.charmroom.charmroom.service.ArticleService;
 import com.charmroom.charmroom.service.SubscribeService;
 import com.charmroom.charmroom.service.UserService;
+import com.charmroom.charmroom.service.WishService;
 import com.google.gson.Gson;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -50,6 +53,8 @@ public class UserControllerUnitTestCm {
     SubscribeService subscribeService;
     @Mock
     ArticleService articleService;
+    @Mock
+    WishService wishService;
 
     @InjectMocks
     UserController userController;
@@ -58,6 +63,7 @@ public class UserControllerUnitTestCm {
     User mockedSubscriber;
     UserDto mockedDto;
     ArticleDto mockedArticle;
+    WishDto mockedWish;
 
     Gson gson;
 
@@ -77,6 +83,12 @@ public class UserControllerUnitTestCm {
                 .nickname("nickname")
                 .build();
 
+        mockedArticle = ArticleDto.builder()
+                .id(1)
+                .title("test")
+                .body("test")
+                .build();
+
         mockedDto = UserMapper.toDto(mockedSubscriber);
         gson = new Gson();
     }
@@ -86,12 +98,6 @@ public class UserControllerUnitTestCm {
         @Test
         void success() throws Exception {
             // given
-            mockedArticle = ArticleDto.builder()
-                    .id(1)
-                    .title("test")
-                    .body("test")
-                    .build();
-
             List<ArticleDto> articles = List.of(mockedArticle, mockedArticle, mockedArticle, mockedArticle, mockedArticle, mockedArticle);
             PageRequest pageRequest = PageRequest.of(0, 10, Sort.by("id").descending());
             PageImpl<ArticleDto> dtoPage = new PageImpl<>(articles, pageRequest, articles.size());
@@ -107,6 +113,38 @@ public class UserControllerUnitTestCm {
                     jsonPath("$.data.content").isArray(),
                     jsonPath("$.data.content.size()").value(6),
                     jsonPath("$.data.content[0].title").value(mockedArticle.getTitle())
+            );
+        }
+    }
+
+    @Nested
+    class GetMyWishes {
+        @Test
+        void success() throws Exception {
+            // given
+            MarketDto market = MarketDto.builder()
+                    .id(1)
+                    .article(mockedArticle)
+                    .build();
+
+            mockedWish = WishDto.builder()
+                    .user(mockedDto)
+                    .market(market)
+                    .build();
+
+            List<WishDto> dtoList = List.of(mockedWish, mockedWish, mockedWish);
+            PageRequest pageRequest = PageRequest.of(0, 10, Sort.by("id").descending());
+            PageImpl<WishDto> dtoPage = new PageImpl<>(dtoList, pageRequest, 3);
+
+            doReturn(dtoPage).when(wishService).getWishesByUserName(any(), eq(pageRequest));
+
+            // when
+            ResultActions resultActions = mockMvc.perform(get("/api/user/wish"));
+
+            // then
+            resultActions.andExpectAll(
+                    status().isOk(),
+                    jsonPath("$.data.content.size()").value(3)
             );
         }
     }

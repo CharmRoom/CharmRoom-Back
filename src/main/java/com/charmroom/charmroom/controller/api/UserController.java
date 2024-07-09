@@ -6,6 +6,9 @@ import com.charmroom.charmroom.dto.business.CommentMapper;
 import com.charmroom.charmroom.dto.business.PointMapper;
 import com.charmroom.charmroom.dto.business.SubscribeDto;
 import com.charmroom.charmroom.dto.business.SubscribeMapper;
+import com.charmroom.charmroom.dto.presentation.WishDto.WishResponseDto;
+import com.charmroom.charmroom.dto.business.WishDto;
+import com.charmroom.charmroom.dto.business.WishMapper;
 import com.charmroom.charmroom.dto.presentation.SubscribeDto.SubscribeCreateRequestDto;
 import com.charmroom.charmroom.dto.presentation.ArticleDto.ArticleResponseDto;
 import com.charmroom.charmroom.dto.business.UserMapper;
@@ -18,6 +21,7 @@ import com.charmroom.charmroom.service.CommentService;
 import com.charmroom.charmroom.service.PointService;
 import com.charmroom.charmroom.service.SubscribeService;
 import com.charmroom.charmroom.service.UserService;
+import com.charmroom.charmroom.service.WishService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -42,6 +46,7 @@ public class UserController {
 	private final CommentService commentService;
 	private final SubscribeService subscribeService;
 	private final ArticleService articleService;
+	private final WishService wishService;
 
 	@GetMapping("")
 	public ResponseEntity<?> getMyInfo(@AuthenticationPrincipal User user) {
@@ -91,9 +96,20 @@ public class UserController {
 	public ResponseEntity<?> getMyArticles(
 			@AuthenticationPrincipal User user,
 			@PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
-			) {
+	) {
 		Page<ArticleDto> dtos = articleService.getArticlesByUsername(user.getUsername(), pageable);
 		Page<ArticleResponseDto> response = dtos.map(dto -> ArticleMapper.toResponse(dto));
+
+		return CommonResponseDto.ok(response).toResponseEntity();
+	}
+
+	@GetMapping("/wish")
+	public ResponseEntity<?> getMyWishes(
+			@AuthenticationPrincipal User user,
+			@PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
+	) {
+		Page<WishDto> dtos = wishService.getWishesByUserName(user.getUsername(), pageable);
+		Page<WishResponseDto> response = dtos.map(dto -> WishMapper.toResponse(dto));
 
 		return CommonResponseDto.ok(response).toResponseEntity();
 	}
