@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -71,7 +70,7 @@ public class AdminController {
 			){
 		var dto = pointService.create(username, request.getType(), request.getDiff());
 		var response = PointMapper.toResponse(dto);
-		return CommonResponseDto.ok(response).toResponseEntity();
+		return CommonResponseDto.created(response).toResponseEntity();
 		
 	}
 	@PostMapping("/board")

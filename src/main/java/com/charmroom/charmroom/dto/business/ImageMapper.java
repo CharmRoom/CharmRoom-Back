@@ -15,6 +15,8 @@ public class ImageMapper {
 	}
 	
 	public static ImageResponseDto toResponse(ImageDto dto) {
+		if (dto == null) return null;
+		
 		return ImageResponseDto.builder()
 				.id(dto.getId())
 				.originalName(dto.getOriginalName())

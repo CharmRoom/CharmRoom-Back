@@ -37,7 +37,7 @@ public class CommentDto {
 		private Integer id;
 		private UserResponseDto user;
 		private Integer articleId;
-		private Integer parentId;
+		private CommentResponseDto parent;
 		@Builder.Default
 		private List<CommentResponseDto> childList = new ArrayList<>();
 		private String body;
