@@ -1,8 +1,11 @@
 package com.charmroom.charmroom.controller.api;
 
+import com.charmroom.charmroom.dto.presentation.WishDto.WishResponseDto;
 import com.charmroom.charmroom.dto.business.ArticleDto;
 import com.charmroom.charmroom.dto.business.MarketDto;
 import com.charmroom.charmroom.dto.business.MarketMapper;
+import com.charmroom.charmroom.dto.business.WishDto;
+import com.charmroom.charmroom.dto.business.WishMapper;
 import com.charmroom.charmroom.dto.presentation.CommonResponseDto;
 import com.charmroom.charmroom.dto.presentation.MarketDto.MarketCreateRequestDto;
 import com.charmroom.charmroom.dto.presentation.MarketDto.MarketResponseDto;
@@ -10,6 +13,7 @@ import com.charmroom.charmroom.dto.presentation.MarketDto.MarketUpdateRequestDto
 import com.charmroom.charmroom.entity.User;
 import com.charmroom.charmroom.service.ArticleService;
 import com.charmroom.charmroom.service.MarketService;
+import com.charmroom.charmroom.service.WishService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,7 +21,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import com.charmroom.charmroom.dto.presentation.ArticleDto.ArticleCreateRequestDto;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -34,6 +37,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MarketController {
     private final MarketService marketService;
     private final ArticleService articleService;
+    private final WishService wishService;
 
     @PostMapping("/{boardId}")
     public ResponseEntity<?> addMarket(
@@ -117,5 +121,16 @@ public class MarketController {
     ) {
         marketService.delete(marketId);
         return CommonResponseDto.ok().toResponseEntity();
+    }
+
+    @PostMapping("/{marketId}/wish")
+    public ResponseEntity<?> wishMarket(
+            @PathVariable("marketId") Integer marketId,
+            @AuthenticationPrincipal User user
+    ) {
+        WishDto wishDto = wishService.wishOrCancel(user.getUsername(), marketId);
+        WishResponseDto response = WishMapper.toResponse(wishDto);
+
+        return CommonResponseDto.created(response).toResponseEntity();
     }
 }

@@ -3,13 +3,17 @@ package com.charmroom.charmroom.controller.unit;
 import com.charmroom.charmroom.controller.api.MarketController;
 import com.charmroom.charmroom.dto.business.MarketDto;
 import com.charmroom.charmroom.dto.business.ArticleDto;
+import com.charmroom.charmroom.dto.business.UserDto;
+import com.charmroom.charmroom.dto.business.WishDto;
 import com.charmroom.charmroom.entity.enums.MarketArticleState;
+import com.charmroom.charmroom.entity.enums.UserLevel;
 import com.charmroom.charmroom.exception.ExceptionHandlerAdvice;
 import com.charmroom.charmroom.dto.presentation.ArticleDto.ArticleUpdateRequestDto;
 import com.charmroom.charmroom.service.ArticleService;
 import com.charmroom.charmroom.dto.business.ArticleDto;
 import com.charmroom.charmroom.service.MarketService;
 import com.charmroom.charmroom.dto.presentation.MarketDto.MarketUpdateRequestDto;
+import com.charmroom.charmroom.service.WishService;
 import com.google.gson.Gson;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -50,12 +54,15 @@ public class MarketControllerUnitTestCm {
     MarketService marketService;
     @Mock
     ArticleService articleService;
+    @Mock
+    WishService wishService;
 
     @InjectMocks
     MarketController marketController;
 
     MockMvc mockMvc;
     MarketDto mockedMarketDto;
+    UserDto userDto;
     ArticleDto article;
     Gson gson;
 
@@ -68,7 +75,14 @@ public class MarketControllerUnitTestCm {
                 .setValidator(mock(Validator.class))
                 .build();
 
+        userDto = UserDto.builder()
+                .id(1)
+                .username("")
+                .level(UserLevel.ROLE_BASIC)
+                .build();
+
         article = ArticleDto.builder()
+                .user(userDto)
                 .title("test")
                 .body("test")
                 .build();
@@ -224,6 +238,30 @@ public class MarketControllerUnitTestCm {
             resultActions.andExpectAll(
                     status().isOk(),
                     jsonPath("$.data").doesNotExist()
+            );
+        }
+    }
+
+    @Nested
+    class Wish {
+        @Test
+        void success() throws Exception {
+            // given
+            WishDto mockedWishDto = WishDto.builder()
+                    .id(1)
+                    .user(mockedMarketDto.getArticle().getUser())
+                    .market(mockedMarketDto)
+                    .build();
+
+            doReturn(mockedWishDto).when(wishService).wishOrCancel(any(), eq(1));
+
+            // when
+            ResultActions resultActions = mockMvc.perform(post("/api/market/1/wish"));
+
+            // then
+            resultActions.andExpectAll(
+                    status().isCreated(),
+                    jsonPath("$.code").value("CREATED")
             );
         }
     }
