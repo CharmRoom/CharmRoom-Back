@@ -3,9 +3,12 @@ package com.charmroom.charmroom.controller.unit;
 import com.charmroom.charmroom.controller.api.UserController;
 import com.charmroom.charmroom.dto.business.SubscribeDto;
 import com.charmroom.charmroom.dto.business.UserDto;
+import com.charmroom.charmroom.dto.presentation.SubscribeDto.SubscribeCreateRequestDto;
 import com.charmroom.charmroom.dto.business.UserMapper;
 import com.charmroom.charmroom.entity.User;
 import com.charmroom.charmroom.entity.enums.UserLevel;
+import com.charmroom.charmroom.exception.BusinessLogicError;
+import com.charmroom.charmroom.exception.BusinessLogicException;
 import com.charmroom.charmroom.exception.ExceptionHandlerAdvice;
 import com.charmroom.charmroom.service.SubscribeService;
 import com.charmroom.charmroom.service.UserService;
@@ -21,6 +24,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -31,8 +35,10 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -70,6 +76,42 @@ public class UserControllerUnitTestCm {
 
         mockedDto = UserMapper.toDto(mockedSubscriber);
         gson = new Gson();
+    }
+
+    @Nested
+    class Subscribe {
+        @Test
+        void success() throws Exception {
+            // given
+            UserDto target = UserDto.builder()
+                    .id(1)
+                    .username("")
+                    .level(UserLevel.ROLE_BASIC)
+                    .build();
+
+            SubscribeDto dto = SubscribeDto.builder()
+                    .target(target)
+                    .subscriber(mockedDto)
+                    .build();
+
+            doReturn(dto).when(subscribeService).subscribeOrCancel(any(), any());
+
+            SubscribeCreateRequestDto requestDto = SubscribeCreateRequestDto.builder()
+                    .SubscriberUserName(mockedDto.getUsername())
+                    .targetUserName(target.getUsername())
+                    .build();
+
+            // when
+            ResultActions resultActions = mockMvc.perform(post("/api/user")
+                    .content(gson.toJson(requestDto))
+                    .contentType(MediaType.APPLICATION_JSON));
+
+            // then
+            resultActions.andExpectAll(
+                    status().isOk(),
+                    jsonPath("$.code").value("OK")
+            );
+        }
     }
 
     @Nested
@@ -125,6 +167,23 @@ public class UserControllerUnitTestCm {
                     status().isOk(),
                     jsonPath("$.data.totalElements").value(3),
                     jsonPath("$.data.content").isArray()
+            );
+        }
+
+        @Test
+        void fail_NotFoundUser() throws Exception {
+            // given
+            doThrow(new BusinessLogicException(BusinessLogicError.NOTFOUND_USER))
+                    .when(subscribeService)
+                    .getSubscribesBySubscriber(any(), any(PageRequest.class));
+
+            // when
+            ResultActions resultActions = mockMvc.perform(get("/api/user/subscribe"));
+
+            // then
+            resultActions.andExpectAll(
+                    status().isNotFound(),
+                    jsonPath("$.code").value("12100")
             );
         }
     }

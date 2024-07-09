@@ -4,6 +4,7 @@ import com.charmroom.charmroom.dto.business.CommentMapper;
 import com.charmroom.charmroom.dto.business.PointMapper;
 import com.charmroom.charmroom.dto.business.SubscribeDto;
 import com.charmroom.charmroom.dto.business.SubscribeMapper;
+import com.charmroom.charmroom.dto.presentation.SubscribeDto.SubscribeCreateRequestDto;
 import com.charmroom.charmroom.dto.business.UserMapper;
 import com.charmroom.charmroom.dto.presentation.CommonResponseDto;
 import com.charmroom.charmroom.dto.presentation.SubscribeDto.SubscribeResponseDto;
@@ -23,6 +24,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -79,6 +81,16 @@ public class UserController {
 		var response = dtos.map(dto -> CommentMapper.toResponse(dto));
 		return CommonResponseDto.ok(response).toResponseEntity();
 	}
+
+	@PostMapping("")
+	public ResponseEntity<?> subscribe(
+			@RequestBody SubscribeCreateRequestDto request
+	) {
+		SubscribeDto dto = subscribeService.subscribeOrCancel(request.getSubscriberUserName(), request.getTargetUserName());
+		SubscribeResponseDto response = SubscribeMapper.toResponse(dto);
+		return CommonResponseDto.ok(response).toResponseEntity();
+	}
+
 
 	@GetMapping("/subscribe")
 	public ResponseEntity<?> getMySubscribes(
