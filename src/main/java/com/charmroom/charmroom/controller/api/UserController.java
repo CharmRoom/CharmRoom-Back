@@ -1,15 +1,19 @@
 package com.charmroom.charmroom.controller.api;
 
+import com.charmroom.charmroom.dto.business.ArticleDto;
+import com.charmroom.charmroom.dto.business.ArticleMapper;
 import com.charmroom.charmroom.dto.business.CommentMapper;
 import com.charmroom.charmroom.dto.business.PointMapper;
 import com.charmroom.charmroom.dto.business.SubscribeDto;
 import com.charmroom.charmroom.dto.business.SubscribeMapper;
 import com.charmroom.charmroom.dto.presentation.SubscribeDto.SubscribeCreateRequestDto;
+import com.charmroom.charmroom.dto.presentation.ArticleDto.ArticleResponseDto;
 import com.charmroom.charmroom.dto.business.UserMapper;
 import com.charmroom.charmroom.dto.presentation.CommonResponseDto;
 import com.charmroom.charmroom.dto.presentation.SubscribeDto.SubscribeResponseDto;
 import com.charmroom.charmroom.dto.presentation.UserDto.UserUpdateRequest;
 import com.charmroom.charmroom.entity.User;
+import com.charmroom.charmroom.service.ArticleService;
 import com.charmroom.charmroom.service.CommentService;
 import com.charmroom.charmroom.service.PointService;
 import com.charmroom.charmroom.service.SubscribeService;
@@ -37,6 +41,7 @@ public class UserController {
 	private final PointService pointService;
 	private final CommentService commentService;
 	private final SubscribeService subscribeService;
+	private final ArticleService articleService;
 
 	@GetMapping("")
 	public ResponseEntity<?> getMyInfo(@AuthenticationPrincipal User user) {
@@ -79,6 +84,17 @@ public class UserController {
 	) {
 		var dtos = commentService.getCommentsByUsername(user.getUsername(), pageable);
 		var response = dtos.map(dto -> CommentMapper.toResponse(dto));
+		return CommonResponseDto.ok(response).toResponseEntity();
+	}
+
+	@GetMapping("/article")
+	public ResponseEntity<?> getMyArticles(
+			@AuthenticationPrincipal User user,
+			@PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
+			) {
+		Page<ArticleDto> dtos = articleService.getArticlesByUsername(user.getUsername(), pageable);
+		Page<ArticleResponseDto> response = dtos.map(dto -> ArticleMapper.toResponse(dto));
+
 		return CommonResponseDto.ok(response).toResponseEntity();
 	}
 
