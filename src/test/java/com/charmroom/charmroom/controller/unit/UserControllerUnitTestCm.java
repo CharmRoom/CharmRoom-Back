@@ -1,8 +1,11 @@
 package com.charmroom.charmroom.controller.unit;
 
 import com.charmroom.charmroom.controller.api.UserController;
+import com.charmroom.charmroom.dto.business.ArticleDto;
+import com.charmroom.charmroom.dto.business.MarketDto;
 import com.charmroom.charmroom.dto.business.SubscribeDto;
 import com.charmroom.charmroom.dto.business.UserDto;
+import com.charmroom.charmroom.dto.business.WishDto;
 import com.charmroom.charmroom.dto.presentation.SubscribeDto.SubscribeCreateRequestDto;
 import com.charmroom.charmroom.dto.business.UserMapper;
 import com.charmroom.charmroom.entity.User;
@@ -10,8 +13,10 @@ import com.charmroom.charmroom.entity.enums.UserLevel;
 import com.charmroom.charmroom.exception.BusinessLogicError;
 import com.charmroom.charmroom.exception.BusinessLogicException;
 import com.charmroom.charmroom.exception.ExceptionHandlerAdvice;
+import com.charmroom.charmroom.service.ArticleService;
 import com.charmroom.charmroom.service.SubscribeService;
 import com.charmroom.charmroom.service.UserService;
+import com.charmroom.charmroom.service.WishService;
 import com.google.gson.Gson;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -45,9 +50,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(MockitoExtension.class)
 public class UserControllerUnitTestCm {
     @Mock
-    UserService userService;
-    @Mock
     SubscribeService subscribeService;
+    @Mock
+    ArticleService articleService;
+    @Mock
+    WishService wishService;
 
     @InjectMocks
     UserController userController;
@@ -55,6 +62,8 @@ public class UserControllerUnitTestCm {
     MockMvc mockMvc;
     User mockedSubscriber;
     UserDto mockedDto;
+    ArticleDto mockedArticle;
+    WishDto mockedWish;
 
     Gson gson;
 
@@ -74,8 +83,70 @@ public class UserControllerUnitTestCm {
                 .nickname("nickname")
                 .build();
 
+        mockedArticle = ArticleDto.builder()
+                .id(1)
+                .title("test")
+                .body("test")
+                .build();
+
         mockedDto = UserMapper.toDto(mockedSubscriber);
         gson = new Gson();
+    }
+
+    @Nested
+    class getMyArticles {
+        @Test
+        void success() throws Exception {
+            // given
+            List<ArticleDto> articles = List.of(mockedArticle, mockedArticle, mockedArticle, mockedArticle, mockedArticle, mockedArticle);
+            PageRequest pageRequest = PageRequest.of(0, 10, Sort.by("id").descending());
+            PageImpl<ArticleDto> dtoPage = new PageImpl<>(articles, pageRequest, articles.size());
+
+            doReturn(dtoPage).when(articleService).getArticlesByUsername(any(), eq(pageRequest));
+
+            // when
+            ResultActions resultActions = mockMvc.perform(get("/api/user/article"));
+
+            // then
+            resultActions.andExpectAll(
+                    status().isOk(),
+                    jsonPath("$.data.content").isArray(),
+                    jsonPath("$.data.content.size()").value(6),
+                    jsonPath("$.data.content[0].title").value(mockedArticle.getTitle())
+            );
+        }
+    }
+
+    @Nested
+    class GetMyWishes {
+        @Test
+        void success() throws Exception {
+            // given
+            MarketDto market = MarketDto.builder()
+                    .id(1)
+                    .article(mockedArticle)
+                    .build();
+
+            mockedWish = WishDto.builder()
+                    .user(mockedDto)
+                    .market(market)
+                    .build();
+
+            List<WishDto> dtoList = List.of(mockedWish, mockedWish, mockedWish);
+            PageRequest pageRequest = PageRequest.of(0, 10, Sort.by("id").descending());
+            PageImpl<WishDto> dtoPage = new PageImpl<>(dtoList, pageRequest, 3);
+
+            doReturn(dtoPage).when(wishService).getWishesByUserName(any(), eq(pageRequest));
+
+            // when
+            ResultActions resultActions = mockMvc.perform(get("/api/user/wish"));
+
+            // then
+            resultActions.andExpectAll(
+                    status().isOk(),
+                    jsonPath("$.data.content.size()").value(3)
+            );
+        }
     }
 
     @Nested

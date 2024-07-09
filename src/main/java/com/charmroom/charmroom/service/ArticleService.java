@@ -71,6 +71,14 @@ public class ArticleService {
         return articles.map(ArticleMapper::toDto);
     }
 
+    public Page<ArticleDto> getArticlesByUsername(String username, Pageable pageable) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "username: " + username));
+
+        Page<Article> articles = articleRepository.findAllByUser(user, pageable);
+        return articles.map(ArticleMapper::toDto);
+    }
+
     public ArticleDto getOneArticle(Integer articleId) {
         Article found = articleRepository.findById(articleId)
                 .orElseThrow(() -> new BusinessLogicException(BusinessLogicError.NOTFOUND_ARTICLE, "articleId: " + articleId)

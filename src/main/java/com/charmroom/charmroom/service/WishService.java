@@ -11,6 +11,8 @@ import com.charmroom.charmroom.repository.MarketRepository;
 import com.charmroom.charmroom.repository.UserRepository;
 import com.charmroom.charmroom.repository.WishRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -42,5 +44,13 @@ public class WishService {
             Wish saved = wishRepository.save(wish);
             return WishMapper.doDto(saved);
         }
+    }
+
+    public Page<WishDto> getWishesByUserName(String username, Pageable pageable) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "username: " + username));
+
+        Page<Wish> wishes = wishRepository.findAllByUser(user, pageable);
+        return wishes.map(WishMapper::doDto);
     }
 }
