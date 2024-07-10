@@ -130,7 +130,7 @@ public class SubscribeServiceUnitTest {
             PageImpl<Subscribe> subscribePage = new PageImpl<>(subscribeList);
 
             doReturn(Optional.of(subscriber)).when(userRepository).findByUsername(subscriber.getUsername());
-            doReturn(subscribePage).when(subscribeRepository).findAllByUser(subscriber, pageRequest);
+            doReturn(subscribePage).when(subscribeRepository).findAllBySubscriber(subscriber, pageRequest);
 
             // when
             Page<SubscribeDto> result = subscribeService.getSubscribesBySubscriber(subscriber.getUsername(), pageRequest);

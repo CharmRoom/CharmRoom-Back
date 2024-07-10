@@ -48,7 +48,7 @@ public class SubscribeService {
                 () -> new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "subscriberName: " + subscriberName)
         );
 
-        Page<Subscribe> subscribes = subscribeRepository.findAllByUser(subscriber, pageable);
+        Page<Subscribe> subscribes = subscribeRepository.findAllBySubscriber(subscriber, pageable);
 
         return subscribes.map(SubscribeMapper::toDto);
     }

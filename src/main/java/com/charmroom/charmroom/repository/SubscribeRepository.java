@@ -12,5 +12,5 @@ import java.util.Optional;
 public interface SubscribeRepository extends JpaRepository<Subscribe, SubscribeId> {
     Optional<Subscribe> findBySubscriberAndTarget(User subscriber, User target);
 
-    Page<Subscribe> findAllByUser(User subscriber, Pageable pageable);
+    Page<Subscribe> findAllBySubscriber(User subscriber, Pageable pageable);
 }
