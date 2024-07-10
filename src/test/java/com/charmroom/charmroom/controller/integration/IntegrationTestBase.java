@@ -21,7 +21,6 @@ import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -39,8 +38,8 @@ import com.google.gson.Gson;
 @Transactional
 public class IntegrationTestBase {
 	@Autowired
-	MockMvc mockMvc;
-	Gson gson;
+	public MockMvc mockMvc;
+	public Gson gson;
 	
 	@Autowired
 	private UserRepository userRepository;
@@ -50,8 +49,8 @@ public class IntegrationTestBase {
 	@Autowired
 	private CharmroomUtil.Upload uploadUtil;
 	
-	User charmroomUser;
-	User charmroomAdmin;
+	public User charmroomUser;
+	public User charmroomAdmin;
 	@Target({ ElementType.METHOD, ElementType.TYPE })
 	@Retention(RetentionPolicy.RUNTIME)
 	@Inherited
@@ -59,7 +58,7 @@ public class IntegrationTestBase {
 			value = "test", 
 			setupBefore = TestExecutionEvent.TEST_EXECUTION,
 			userDetailsServiceBeanName = "customUserDetailsService") 
-	@interface WithCharmroomUserDetails {}
+	public static @interface WithCharmroomUserDetails {}
 	@Target({ ElementType.METHOD, ElementType.TYPE })
 	@Retention(RetentionPolicy.RUNTIME)
 	@Inherited
@@ -67,7 +66,7 @@ public class IntegrationTestBase {
 			value = "admin", 
 			setupBefore = TestExecutionEvent.TEST_EXECUTION,
 			userDetailsServiceBeanName = "customUserDetailsService")
-	@interface WithCharmroomAdminDetails{}
+	public static @interface WithCharmroomAdminDetails{}
 	
 	@AfterAll
 	static void cleanUp(

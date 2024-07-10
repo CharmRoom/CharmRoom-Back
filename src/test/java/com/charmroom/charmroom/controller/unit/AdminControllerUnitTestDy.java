@@ -190,7 +190,7 @@ public class AdminControllerUnitTestDy {
 					.contentType(MediaType.APPLICATION_JSON))
 			// then
 			.andExpectAll(
-					status().isOk()
+					status().isCreated()
 					,jsonPath("$.data.type").value("EARN")
 					,jsonPath("$.data.diff").value(400)
 					)

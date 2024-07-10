@@ -41,8 +41,8 @@ public class CharmroomUtil {
 			this.attachmentUploadPath = attachmentUploadPath;
 			setPathReady(this.imageUploadPath);
 			setPathReady(this.attachmentUploadPath);
-			imageResourceUrl = "/image/";
-			attachmentResourceUrl = "/attachment/";
+			imageResourceUrl = "/resource/image/";
+			attachmentResourceUrl = "/resource/attachment/";
 		}
 		
 		public Image buildImage(MultipartFile image) {
