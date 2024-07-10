@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.charmroom.charmroom.entity.Club;
 import com.charmroom.charmroom.entity.User;
+import com.charmroom.charmroom.dto.presentation.ClubDto.ClubResponseDto;
 
 import io.jsonwebtoken.lang.Arrays;
 
@@ -30,5 +31,15 @@ public class ClubMapper {
 			dto.setUserList(userDtoList);
 		}
 		return dto;
+	}
+
+	public static ClubResponseDto toResponse(ClubDto dto) {
+		return ClubResponseDto.builder()
+				.id(dto.getId())
+				.name(dto.getName())
+				.description(dto.getDescription())
+				.contact(dto.getContact())
+				.image(ImageMapper.toResponse(dto.getImage()))
+				.build();
 	}
 }

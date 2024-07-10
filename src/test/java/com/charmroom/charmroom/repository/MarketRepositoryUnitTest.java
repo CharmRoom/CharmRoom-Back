@@ -13,6 +13,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.context.TestPropertySource;
 
 import java.util.List;
@@ -40,11 +43,20 @@ public class MarketRepositoryUnitTest {
     private ArticleRepository articleRepository;
 
     private Board createTestBoard() {
-        return Board.builder().type(BoardType.LIST).exposed(false).build();
+        return Board.builder()
+                .type(BoardType.MARKET)
+                .exposed(false)
+                .build();
     }
 
     private User createTestUser(String username) {
-        return User.builder().username(username).email(username + "@test.com").nickname(username).password("").withdraw(false).build();
+        return User.builder()
+                .username(username)
+                .email(username + "@test.com")
+                .nickname(username)
+                .password("")
+                .withdraw(false)
+                .build();
     }
 
     private Article createTestArticle(String username) {
@@ -52,7 +64,13 @@ public class MarketRepositoryUnitTest {
         userRepository.save(user);
         Board board = createTestBoard();
         boardRepository.save(board);
-        return Article.builder().user(user).board(board).title("").body("").view(0).build();
+        return Article.builder()
+                .user(user)
+                .board(board)
+                .title("")
+                .body("")
+                .view(0)
+                .build();
     }
 
     private Market createTestMarket(Article article) {
@@ -112,6 +130,48 @@ public class MarketRepositoryUnitTest {
             // then
             assertThat(found).isNotPresent();
         }
+    }
+
+    @Nested
+    @DisplayName("Get Markets By Board")
+    class getMarketsByBoard {
+        private Market buildMarket(Board board, User user) {
+            Article saved = articleRepository.save(Article.builder()
+                    .title("")
+                    .body("")
+                    .user(user)
+                    .board(board)
+                    .build());
+
+            return marketRepository.save(Market.builder()
+                    .article(saved)
+                            .price(100)
+                            .state(MarketArticleState.SALE)
+                            .tag("")
+                    .build());
+        }
+
+        @Test
+        void success() {
+            // given
+            Board board = boardRepository.save(Board.builder()
+                    .name("")
+                    .type(BoardType.MARKET)
+                    .build());
+
+            for (int i = 0; i < 5; i++) {
+                buildMarket(board, article.getUser());
+            }
+
+            PageRequest pageRequest = PageRequest.of(0, 10, Sort.Direction.ASC, "id");
+
+            // when
+            Page<Market> founds = marketRepository.findAllByBoard(board, pageRequest);
+
+            // then
+            assertThat(founds).size().isEqualTo(5);
+        }
+
     }
 
     @Nested

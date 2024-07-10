@@ -8,6 +8,7 @@ import lombok.Data;
 @AllArgsConstructor
 @Builder
 public class SubscribeDto {
+    private Integer id;
     private UserDto subscriber;
     private UserDto target;
 }

@@ -117,7 +117,7 @@ public class ArticleLikeServiceUnitTest {
             doReturn(Optional.empty()).when(articleLikeRepository).findByUserAndArticle(user, article);
 
             // when
-            ArticleLikeDto like = articleLikeService.likeOrDislike(user.getUsername(), article.getId(), true);
+            ArticleLikeDto like = articleLikeService.like(user.getUsername(), article.getId());
 
             // then
             verify(articleLikeRepository).save(any(ArticleLike.class));
@@ -133,7 +133,7 @@ public class ArticleLikeServiceUnitTest {
             when(articleLikeRepository.findByUserAndArticle(user, article)).thenReturn(Optional.of(articleLike));
 
             // when
-            ArticleLikeDto like = articleLikeService.likeOrDislike(user.getUsername(), article.getId(), true);
+            ArticleLikeDto like = articleLikeService.like(user.getUsername(), article.getId());
             // then
             verify(articleLikeRepository).delete(any(ArticleLike.class));
             assertNull(like);
@@ -148,7 +148,7 @@ public class ArticleLikeServiceUnitTest {
             when(articleLikeRepository.findByUserAndArticle(user, article)).thenReturn(Optional.of(articleDislike));
 
             // when
-            ArticleLikeDto like = articleLikeService.likeOrDislike(user.getUsername(), article.getId(), true);
+            ArticleLikeDto like = articleLikeService.like(user.getUsername(), article.getId());
 
             // then
             assertThat(like.getType()).isEqualTo(true);
@@ -162,7 +162,7 @@ public class ArticleLikeServiceUnitTest {
 
             // when
             BusinessLogicException thrown = assertThrows(BusinessLogicException.class, () -> {
-                articleLikeService.likeOrDislike(user.getUsername(), article.getId(), true);
+                articleLikeService.like(user.getUsername(), article.getId());
             });
 
             // then
@@ -182,7 +182,7 @@ public class ArticleLikeServiceUnitTest {
             doReturn(Optional.empty()).when(articleLikeRepository).findByUserAndArticle(user, article);
 
             // when
-            ArticleLikeDto dislike = articleLikeService.likeOrDislike(user.getUsername(), article.getId(), false);
+            ArticleLikeDto dislike = articleLikeService.dislike(user.getUsername(), article.getId());
 
             // then
             verify(articleLikeRepository).save(any(ArticleLike.class));
@@ -198,7 +198,7 @@ public class ArticleLikeServiceUnitTest {
             when(articleLikeRepository.findByUserAndArticle(user, article)).thenReturn(Optional.of(articleDislike));
 
             // when
-            ArticleLikeDto like = articleLikeService.likeOrDislike(user.getUsername(), article.getId(), false);
+            ArticleLikeDto like = articleLikeService.dislike(user.getUsername(), article.getId());
 
             // then
             verify(articleLikeRepository).delete(any(ArticleLike.class));
@@ -214,7 +214,7 @@ public class ArticleLikeServiceUnitTest {
             doReturn(articleDislike).when(articleLikeRepository).save(any(ArticleLike.class));
 
             // when
-            ArticleLikeDto like = articleLikeService.likeOrDislike(user.getUsername(), article.getId(), false);
+            ArticleLikeDto like = articleLikeService.dislike(user.getUsername(), article.getId());
 
             // then
             assertThat(like.getType()).isEqualTo(false);

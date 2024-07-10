@@ -1,6 +1,7 @@
 package com.charmroom.charmroom.dto.business;
 
 import com.charmroom.charmroom.entity.Ad;
+import com.charmroom.charmroom.dto.presentation.AdDto.AdResponseDto;
 
 public class AdMapper {
     public static AdDto toDto(Ad entity) {
@@ -17,5 +18,16 @@ public class AdMapper {
         }
 
         return dto;
+    }
+
+    public static AdResponseDto toResponse(AdDto dto) {
+        return AdResponseDto.builder()
+                .id(dto.getId())
+                .title(dto.getTitle())
+                .start(dto.getStart())
+                .start(dto.getStart())
+                .end(dto.getEnd())
+                .image(ImageMapper.toResponse(dto.getImage()))
+                .build();
     }
 }
