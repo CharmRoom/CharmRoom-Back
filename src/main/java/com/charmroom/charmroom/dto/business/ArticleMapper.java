@@ -35,7 +35,7 @@ public class ArticleMapper {
 			}
 			dto.setCommentList(commentDtoList);
 		}
-		if (!entity.getAttachmentList().isEmpty() && ignores.contains("attachmentList")) {
+		if (!entity.getAttachmentList().isEmpty() && !ignores.contains("attachmentList")) {
 			var attachmentList = entity.getAttachmentList();
 			List<AttachmentDto> attachmentDtoList = new ArrayList<>();
 			for(var attachment : attachmentList) {
