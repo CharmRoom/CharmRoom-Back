@@ -312,12 +312,12 @@ public class ClubServiceUnitTest {
                     .originalName("")
                     .build();
 
-            doReturn(Optional.of(club)).when(clubRepository).findByName(club.getName());
+            doReturn(Optional.of(club)).when(clubRepository).findById(club.getId());
             doReturn(image).when(uploadUtil).buildImage(imageFile);
             doReturn(image).when(imageRepository).save(image);
 
             // when
-            ClubDto updated = clubService.setImage(club.getName(), imageFile);
+            ClubDto updated = clubService.setImage(club.getId(), imageFile);
 
             // then
             assertThat(updated).isNotNull();
@@ -328,11 +328,11 @@ public class ClubServiceUnitTest {
         void fail_ClubNotFound() {
             // given
             MockMultipartFile imageFile = new MockMultipartFile("file", "test.png", "image/png", "test".getBytes());
-            doReturn(Optional.empty()).when(clubRepository).findByName(club.getName());
+            doReturn(Optional.empty()).when(clubRepository).findById(club.getId());
 
             // when
             BusinessLogicException thrown = assertThrows(BusinessLogicException.class, () -> {
-                clubService.setImage(club.getName(), imageFile);
+                clubService.setImage(club.getId(), imageFile);
             });
 
             // then
@@ -353,13 +353,13 @@ public class ClubServiceUnitTest {
                     .image(image)
                     .build();
 
-            doReturn(Optional.of(club)).when(clubRepository).findByName(club.getName());
+            doReturn(Optional.of(club)).when(clubRepository).findById(club.getId());
             doNothing().when(uploadUtil).deleteFile(club.getImage());
             doReturn(image).when(uploadUtil).buildImage(imageFile);
             doReturn(image).when(imageRepository).save(image);
 
             // when
-            ClubDto updated = clubService.setImage(club.getName(), imageFile);
+            ClubDto updated = clubService.setImage(club.getId(), imageFile);
 
             // then
             verify(uploadUtil).deleteFile(club.getImage());

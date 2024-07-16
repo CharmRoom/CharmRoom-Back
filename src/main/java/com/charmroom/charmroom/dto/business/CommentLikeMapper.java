@@ -14,6 +14,8 @@ public class CommentLikeMapper {
 	}
 	
 	public static CommentLikeResponseDto toResponse(CommentLikeDto dto) {
+		if (dto == null)
+			return null;
 		return CommentLikeResponseDto.builder()
 				.type(dto.getType())
 				.build();

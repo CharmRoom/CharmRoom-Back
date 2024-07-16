@@ -50,4 +50,12 @@ public class ArticleLikeService {
             return ArticleLikeMapper.toDto(saved);
         }
     }
+
+    public ArticleLikeDto like(String username, Integer articleId) {
+        return likeOrDislike(username, articleId, true);
+    }
+
+    public ArticleLikeDto dislike(String username, Integer articleId) {
+        return likeOrDislike(username, articleId, false);
+    }
 }

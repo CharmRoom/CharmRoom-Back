@@ -21,13 +21,13 @@ public class WebConfig implements WebMvcConfigurer{
 		if (!attachmentUploadPath.endsWith("/")) attachmentUploadPath += "/"; 
 		
 		registry
-			.addResourceHandler("/static/image/**")
+			.addResourceHandler("/resource/image/**")
 			.addResourceLocations("file:"+imageUploadPath)
 			// 개발중에는 캐시 사용하지 않음
 			//.setCacheControl(CacheControl.maxAge(Duration.ofHours(1L)).cachePublic())
 			.resourceChain(false);
 		registry
-			.addResourceHandler("/static/attachment/**")
+			.addResourceHandler("/resource/attachment/**")
 			.addResourceLocations("file:"+attachmentUploadPath)
 			//.setCacheControl(CacheControl.maxAge(Duration.ofHours(1L)).cachePublic())
 			.resourceChain(false);

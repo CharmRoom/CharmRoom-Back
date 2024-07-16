@@ -8,6 +8,7 @@ import lombok.Data;
 @AllArgsConstructor
 @Builder
 public class WishDto {
+    private Integer id;
     private UserDto user;
     private MarketDto market;
 }

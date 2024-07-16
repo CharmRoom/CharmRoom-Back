@@ -94,10 +94,14 @@ public class CommentControllerUnitTestDy {
 		@Test
 		void successWhenParentExists() throws Exception{
 			// given
-			mockedCommentDto.setParent(mockedCommentDto);
-			doReturn(mockedCommentDto).when(commentService).create(eq(1), any(), eq("test"), eq(1));
+			CommentDto mockedChildDto = CommentDto.builder()
+					.id(2)
+					.body("child")
+					.build();
+			mockedChildDto.setParent(mockedCommentDto);
+			doReturn(mockedChildDto).when(commentService).create(eq(1), any(), eq("child"), eq(1));
 			var request = CommentCreateRequestDto.builder()
-					.body("test")
+					.body("child")
 					.parentId(1)
 					.build();
 			// when
@@ -109,8 +113,8 @@ public class CommentControllerUnitTestDy {
 			// then
 			.andExpectAll(
 					status().isCreated(),
-					jsonPath("$.data.body").value("test"),
-					jsonPath("$.data.parentId").value(1)
+					jsonPath("$.data.body").value("child"),
+					jsonPath("$.data.parent.body").value("test")
 					)
 			;
 		}
