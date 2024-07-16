@@ -14,6 +14,9 @@ public class ArticleLikeMapper {
     }
 
     public static ArticleLikeResponseDto toResponse(ArticleLikeDto dto) {
+        if (dto == null) {
+            return null;
+        }
         return ArticleLikeResponseDto.builder()
                 .type(dto.getType())
                 .build();
