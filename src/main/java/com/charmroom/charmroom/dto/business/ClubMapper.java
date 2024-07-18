@@ -20,7 +20,11 @@ public class ClubMapper {
 				.contact(entity.getContact())
 				.image(ImageMapper.toDto(entity.getImage()))
 				.build();
-		
+
+		if (entity.getOwner() != null && !ignores.contains("owner")) {
+			dto.setOwner(UserMapper.toDto(entity.getOwner(), "club"));
+		}
+
 		if (entity.getUserList().size() > 0 && !ignores.contains("userList")) {
 			List<User> userList = entity.getUserList();
 			List<UserDto> userDtoList = new ArrayList<>();
@@ -39,6 +43,7 @@ public class ClubMapper {
 				.name(dto.getName())
 				.description(dto.getDescription())
 				.contact(dto.getContact())
+				.owner(UserMapper.toResponse(dto.getOwner()))
 				.image(ImageMapper.toResponse(dto.getImage()))
 				.build();
 	}

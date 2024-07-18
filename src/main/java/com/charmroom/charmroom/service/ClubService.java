@@ -2,12 +2,15 @@ package com.charmroom.charmroom.service;
 
 import com.charmroom.charmroom.dto.business.ClubDto;
 import com.charmroom.charmroom.dto.business.ClubMapper;
+import com.charmroom.charmroom.dto.business.UserDto;
 import com.charmroom.charmroom.entity.Club;
 import com.charmroom.charmroom.entity.Image;
+import com.charmroom.charmroom.entity.User;
 import com.charmroom.charmroom.exception.BusinessLogicError;
 import com.charmroom.charmroom.exception.BusinessLogicException;
 import com.charmroom.charmroom.repository.ClubRepository;
 import com.charmroom.charmroom.repository.ImageRepository;
+import com.charmroom.charmroom.repository.UserRepository;
 import com.charmroom.charmroom.util.CharmroomUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -23,8 +26,12 @@ public class ClubService {
     private final ClubRepository clubRepository;
     private final ImageRepository imageRepository;
     private final CharmroomUtil.Upload uploadUtil;
+    private final UserRepository userRepository;
 
-    public ClubDto createClub(ClubDto clubDto, MultipartFile imageFile) {
+    public ClubDto createClub(String username, ClubDto clubDto, MultipartFile imageFile) {
+        User user = userRepository.findByUsername(username).orElseThrow(() ->
+                new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "username: " + username));
+
         if(isDuplicateClubName(clubDto.getName())) throw new BusinessLogicException(BusinessLogicError.DUPLICATED_CLUBNAME);
 
         Image clubImage = null;
@@ -38,14 +45,15 @@ public class ClubService {
                 .description(clubDto.getDescription())
                 .contact(clubDto.getContact())
                 .image(clubImage)
+                .owner(user)
                 .build();
 
         Club saved = clubRepository.save(club);
         return ClubMapper.toDto(saved);
     }
 
-    public ClubDto createClub(ClubDto clubDto) {
-        return createClub(clubDto, null);
+    public ClubDto createClub(String username, ClubDto clubDto) {
+        return createClub(username, clubDto, null);
     }
 
     public boolean isDuplicateClubName(String clubName) {
@@ -84,6 +92,7 @@ public class ClubService {
         return ClubMapper.toDto(club);
     }
 
+    @Transactional
     public ClubDto updateContact(Integer clubId, String newClubContact) {
         Club club = clubRepository.findById(clubId).orElseThrow(() ->
                 new BusinessLogicException(BusinessLogicError.NOTFOUND_CLUB, "clubId: " + clubId));
@@ -92,6 +101,7 @@ public class ClubService {
         return ClubMapper.toDto(club);
     }
 
+    @Transactional
     public ClubDto update(Integer clubId, ClubDto clubDto) {
         Club club = clubRepository.findById(clubId).orElseThrow(() ->
                 new BusinessLogicException(BusinessLogicError.NOTFOUND_CLUB, "clubId: " + clubId));
@@ -100,6 +110,18 @@ public class ClubService {
         club.updateDescription(clubDto.getDescription());
         club.updateContact(clubDto.getContact());
 
+        return ClubMapper.toDto(club);
+    }
+
+    @Transactional
+    public ClubDto changeOwner(Integer clubId, String username) {
+        Club club = clubRepository.findById(clubId).orElseThrow(() ->
+                new BusinessLogicException(BusinessLogicError.NOTFOUND_CLUB, "clubId: " + clubId));
+
+        User user = userRepository.findByUsername(username).orElseThrow(() ->
+                new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "username: " + username));
+
+        club.updateOwner(user);
         return ClubMapper.toDto(club);
     }
 

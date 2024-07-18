@@ -36,6 +36,7 @@ public class ClubDto {
         private String name;
         private String description;
         private String contact;
+        private UserDto.UserResponseDto owner;
         private ImageDto.ImageResponseDto image;
     }
 }
