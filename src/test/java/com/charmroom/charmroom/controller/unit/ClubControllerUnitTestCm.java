@@ -3,11 +3,16 @@ package com.charmroom.charmroom.controller.unit;
 import com.charmroom.charmroom.controller.api.ClubController;
 import com.charmroom.charmroom.dto.business.ArticleDto;
 import com.charmroom.charmroom.dto.business.ClubDto;
+import com.charmroom.charmroom.dto.business.ClubRegisterDto;
+import com.charmroom.charmroom.dto.business.UserDto;
 import com.charmroom.charmroom.dto.presentation.ClubDto.ClubUpdateRequestDto;
 import com.charmroom.charmroom.dto.business.ImageDto;
+import com.charmroom.charmroom.entity.User;
+import com.charmroom.charmroom.entity.enums.UserLevel;
 import com.charmroom.charmroom.exception.BusinessLogicError;
 import com.charmroom.charmroom.exception.BusinessLogicException;
 import com.charmroom.charmroom.exception.ExceptionHandlerAdvice;
+import com.charmroom.charmroom.service.ClubRegisterService;
 import com.charmroom.charmroom.service.ClubService;
 import com.google.gson.Gson;
 import com.charmroom.charmroom.dto.presentation.ClubDto.ClubCreateRequestDto;
@@ -29,6 +34,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.Validator;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -37,6 +43,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
@@ -49,6 +56,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class ClubControllerUnitTestCm {
     @Mock
     ClubService clubService;
+    @Mock
+    ClubRegisterService clubRegisterService;
 
     @InjectMocks
     ClubController clubController;
@@ -56,6 +65,9 @@ public class ClubControllerUnitTestCm {
     MockMvc mockMvc;
     ClubDto mockedClubDto;
     ImageDto mockedImageDto;
+    ClubRegisterDto registerDto;
+    UserDto mockedUserDto;
+    UserDto owner;
     Gson gson;
 
     @BeforeEach
@@ -73,12 +85,31 @@ public class ClubControllerUnitTestCm {
                 .originalName("")
                 .build();
 
+        owner = UserDto.builder()
+                .username("owner")
+                .level(UserLevel.ROLE_BASIC)
+                .build();
+
         mockedClubDto = ClubDto.builder()
                 .id(1)
-                .name("")
+                .name("clubname")
                 .description("")
                 .contact("")
                 .image(mockedImageDto)
+                .owner(owner)
+                .build();
+
+        mockedUserDto = UserDto.builder()
+                .username("test")
+                .password("password")
+                .email("test@test.com")
+                .nickname("nickname")
+                .level(UserLevel.ROLE_BASIC)
+                .build();
+
+        registerDto = ClubRegisterDto.builder()
+                .club(mockedClubDto)
+                .user(mockedUserDto)
                 .build();
 
         gson = new Gson();
@@ -89,7 +120,7 @@ public class ClubControllerUnitTestCm {
         @Test
         void success_withoutImage() throws Exception {
             // given
-            doReturn(mockedClubDto).when(clubService).createClub(any(ClubDto.class));
+            doReturn(mockedClubDto).when(clubService).createClub(any(), any(ClubDto.class));
 
             ClubCreateRequestDto request = ClubCreateRequestDto.builder()
                     .name("")
@@ -114,7 +145,7 @@ public class ClubControllerUnitTestCm {
             // given
             MockMultipartFile imageFile = new MockMultipartFile("image", "test.png", MediaType.IMAGE_PNG_VALUE, "test".getBytes());
 
-            doReturn(mockedClubDto).when(clubService).createClub(any(ClubDto.class), eq(imageFile));
+            doReturn(mockedClubDto).when(clubService).createClub(any(), any(ClubDto.class), eq(imageFile));
 
             // when
             ResultActions resultActions = mockMvc.perform(multipart("/api/club/")
@@ -137,7 +168,7 @@ public class ClubControllerUnitTestCm {
             // given
             doThrow(new BusinessLogicException(BusinessLogicError.DUPLICATED_CLUBNAME))
                     .when(clubService)
-                    .createClub(any(ClubDto.class));
+                    .createClub(any(), any(ClubDto.class));
 
             // when
             ResultActions resultActions = mockMvc.perform(post("/api/club/")
@@ -263,6 +294,27 @@ public class ClubControllerUnitTestCm {
     }
 
     @Nested
+    class ChangeOwner {
+        @Test
+        void success() throws Exception {
+            // given
+            doReturn(mockedClubDto).when(clubService).changeOwner(eq(1), any());
+
+            // when
+            ResultActions resultActions = mockMvc.perform(patch("/api/club/owner/1")
+                    .param("username", owner.getUsername())
+            );
+
+            // then
+            resultActions.andExpectAll(
+                    status().isOk(),
+                    jsonPath("$.code").value("OK"),
+                    jsonPath("$.data.owner.username").value(owner.getUsername())
+            );
+        }
+    }
+
+    @Nested
     class Delete {
         @Test
         void success() throws Exception {
@@ -285,8 +337,126 @@ public class ClubControllerUnitTestCm {
         @Test
         void success() throws Exception {
             // given
+            doReturn(registerDto).when(clubRegisterService).register(any(), eq(1));
+
             // when
+            ResultActions resultActions = mockMvc.perform(post("/api/club/register/1"));
+
             // then
+            resultActions.andExpectAll(
+                    status().isCreated(),
+                    jsonPath("$.code").value("CREATED"),
+                    jsonPath("$.data.user.username").value(mockedUserDto.getUsername())
+            );
+        }
+
+        @Test
+        void failNotFoundClub() throws Exception {
+            // given
+            doThrow(new BusinessLogicException(BusinessLogicError.NOTFOUND_CLUB))
+                    .when(clubRegisterService)
+                    .register(any(), eq(1));
+
+            // when
+            ResultActions resultActions = mockMvc.perform(post("/api/club/register/1"));
+
+            // then
+            resultActions.andExpectAll(
+                    status().isNotFound(),
+                    jsonPath("$.code").value("05100")
+            );
+        }
+    }
+
+    @Nested
+    class getRegistersByClub {
+        @Test
+        void success() throws Exception {
+            // given
+            List<UserDto> users = new ArrayList<>();
+            for (int i = 1; i <= 3; i++) {
+                users.add(UserDto.builder()
+                        .id(i)
+                        .username("test" + i)
+                        .level(UserLevel.ROLE_BASIC)
+                        .build());
+            }
+
+            List<ClubRegisterDto> dtoList = new ArrayList<>();
+            for (int i = 0; i < 3; i++) {
+                dtoList.add(ClubRegisterDto.builder()
+                        .club(mockedClubDto)
+                        .user(users.get(i))
+                        .build());
+            }
+
+            PageRequest pageRequest = PageRequest.of(0, 10, Sort.by("id").descending());
+            PageImpl<ClubRegisterDto> dtoPage = new PageImpl<>(dtoList, pageRequest, 3);
+            doReturn(dtoPage).when(clubRegisterService).getClubRegistersByClub(1, pageRequest);
+
+            // when
+            ResultActions resultActions = mockMvc.perform(get("/api/club/register/1"));
+
+            // then
+            resultActions.andExpectAll(
+                    status().isOk(),
+                    jsonPath("$.data.content.size()").value(3)
+            );
+        }
+    }
+
+    @Nested
+    class Approve {
+        @Test
+        void success() throws Exception {
+            // given
+            doNothing().when(clubRegisterService).approveClubRegister(any(), eq(mockedUserDto.getUsername()), eq(1));
+
+            // when
+            ResultActions resultActions = mockMvc.perform(patch("/api/club/register/1")
+                    .param("username", mockedUserDto.getUsername())
+            );
+
+            // then
+            resultActions.andExpectAll(
+                    status().isOk(),
+                    jsonPath("code").value("OK")
+            );
+        }
+    }
+
+    @Nested
+    class deleteRegister {
+        @Test
+        void success() throws Exception {
+            // given
+            doNothing().when(clubRegisterService).deleteClubRegister(any(), eq(1));
+
+            // when
+            ResultActions resultActions = mockMvc.perform(delete("/api/club/register/1"));
+            // then
+            resultActions.andExpectAll(
+                    status().isOk(),
+                    jsonPath("$.code").value("OK")
+            );
+            verify(clubRegisterService).deleteClubRegister(any(), eq(1));
+        }
+
+        @Test
+        void failNotFoundUser() throws Exception {
+            // given
+            doThrow(new BusinessLogicException(BusinessLogicError.NOTFOUND_USER))
+                    .when(clubRegisterService)
+                    .deleteClubRegister(any(), eq(1));
+
+            // when
+            ResultActions resultActions = mockMvc.perform(delete("/api/club/register/1"));
+
+            // then
+            resultActions.andExpectAll(
+                    status().isNotFound(),
+                    jsonPath("$.code").value("12100")
+            );
         }
     }
 }

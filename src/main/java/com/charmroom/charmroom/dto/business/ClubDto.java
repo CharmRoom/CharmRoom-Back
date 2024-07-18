@@ -15,5 +15,6 @@ public class ClubDto {
 	private String description;
 	private String contact;
 	private ImageDto image;
+	private UserDto owner;
 	private List<UserDto> userList;
 }
