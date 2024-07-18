@@ -11,6 +11,7 @@ import com.charmroom.charmroom.repository.ClubRegisterRepository;
 import com.charmroom.charmroom.repository.ClubRepository;
 import com.charmroom.charmroom.repository.ImageRepository;
 import com.charmroom.charmroom.repository.UserRepository;
+import com.charmroom.charmroom.util.CharmroomUtil;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,12 +100,32 @@ public class ClubControllerIntegrationTestCm extends IntegrationTestBase {
 
     @Nested
     class GetClubList {
+        @Autowired
+        UserRepository userRepository;
+        @Autowired
+        CharmroomUtil.Upload charmroomUtil;
+
         @Test
         void success() throws Exception {
             // given
-            List<Club> clubs = new ArrayList<>();
             for (int i = 1; i <= 3; i++) {
-                clubs.add(clubRepository.save(buildClub("test" + i)));
+                User user = userRepository.save(User.builder()
+                        .username("example" + i)
+                        .password("example" + i)
+                        .email("example" + i)
+                        .nickname("example" + i)
+                        .level(UserLevel.ROLE_BASIC)
+                        .build());
+
+                Image image = imageRepository.save(charmroomUtil.buildImage(file));
+
+                clubRepository.save(Club.builder()
+                        .name("example" + i)
+                        .owner(user)
+                        .image(image)
+                        .description("example" + i)
+                        .contact("example" + i)
+                        .build());
             }
 
             // when
@@ -113,7 +134,7 @@ public class ClubControllerIntegrationTestCm extends IntegrationTestBase {
             // then
             resultActions.andExpectAll(
                     status().isOk(),
-                    jsonPath("$.data.content[0].name").value("test3")
+                    jsonPath("$.data.content[0].name").value("example3")
             );
         }
     }
@@ -147,19 +168,26 @@ public class ClubControllerIntegrationTestCm extends IntegrationTestBase {
 
     @Nested
     class UpdateImage {
+        @Autowired
+        CharmroomUtil.Upload charmroomUtil;
+        @Autowired
+        ImageRepository imageRepository;
+
         @Test
         void success() throws Exception {
             // given
-            mockMvc.perform(multipart(urlPrefix)
-                    .file(file)
-                    .param("name", "test")
-                    .param("description", "test")
-                    .param("contact", "test")
-            );
+            Image image = imageRepository.save(charmroomUtil.buildImage(file));
+
+            Club club = clubRepository.save(Club.builder()
+                    .name("example")
+                    .owner(charmroomUser)
+                    .image(image)
+                    .description("example")
+                    .contact("example")
+                    .build());
 
             // when
-
-            ResultActions resultActions = mockMvc.perform(multipart(urlPrefix + "image/1")
+            ResultActions resultActions = mockMvc.perform(multipart(urlPrefix + "image/" + club.getId())
                     .file(file)
             );
 

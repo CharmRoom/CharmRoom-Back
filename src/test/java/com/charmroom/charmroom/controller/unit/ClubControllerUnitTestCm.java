@@ -390,7 +390,7 @@ public class ClubControllerUnitTestCm {
                         .build());
             }
 
-            PageRequest pageRequest = PageRequest.of(0, 10, Sort.by("id").descending());
+            PageRequest pageRequest = PageRequest.of(0, 10, Sort.by("userId").descending());
             PageImpl<ClubRegisterDto> dtoPage = new PageImpl<>(dtoList, pageRequest, 3);
             doReturn(dtoPage).when(clubRegisterService).getClubRegistersByClub(1, pageRequest);
 
