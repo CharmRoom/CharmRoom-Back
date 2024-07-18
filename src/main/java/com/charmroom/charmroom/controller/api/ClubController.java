@@ -146,7 +146,7 @@ public class ClubController {
     @GetMapping("/register/{clubId}")
     public ResponseEntity<?> getRegistersByClub(
             @PathVariable("clubId") Integer clubId,
-            @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
+            @PageableDefault(size = 10, sort = "userId", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         Page<ClubRegisterDto> dtos = clubRegisterService.getClubRegistersByClub(clubId, pageable);
         Page<ClubRegisterResponseDto> response = dtos.map(ClubRegisterMapper::toResponse);
