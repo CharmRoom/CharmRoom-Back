@@ -59,6 +59,10 @@ public enum BusinessLogicError {
 	NOTFOUND_USER(HttpStatus.NOT_FOUND, "12100", "User not found"), 
 	// end User
 
+	// ClubRegister
+	NOTFOUND_CLUBREGISTER(HttpStatus.NOT_FOUND, "14100", "Club register not found"),
+	// end ClubRegister
+
 	// ETC
 	MKDIR_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "MKDIR_FAIL", "mkdir failed"),
 	CHMOD_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "CHMOD_FAIL", "chmod failed"), 

@@ -2,15 +2,17 @@ package com.charmroom.charmroom.controller.api;
 
 import com.charmroom.charmroom.dto.business.ClubDto;
 import com.charmroom.charmroom.dto.business.ClubMapper;
-import com.charmroom.charmroom.dto.business.ImageDto;
+import com.charmroom.charmroom.dto.business.ClubRegisterDto;
+import com.charmroom.charmroom.dto.business.ClubRegisterMapper;
 import com.charmroom.charmroom.dto.presentation.ClubDto.ClubCreateRequestDto;
 import com.charmroom.charmroom.dto.presentation.ClubDto.ClubResponseDto;
 import com.charmroom.charmroom.dto.presentation.CommonResponseDto;
 import com.charmroom.charmroom.dto.presentation.ClubDto.ClubUpdateRequestDto;
 import com.charmroom.charmroom.entity.User;
+import com.charmroom.charmroom.service.ClubRegisterService;
 import com.charmroom.charmroom.service.ClubService;
 import lombok.RequiredArgsConstructor;
-import com.charmroom.charmroom.dto.presentation.ClubDto.ClubCreateRequestDto;
+import com.charmroom.charmroom.dto.presentation.ClubRegisterDto.ClubRegisterResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -25,7 +27,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -35,6 +36,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class ClubController {
     private final ClubService clubService;
+    private final ClubRegisterService clubRegisterService;
 
     @PostMapping("/")
     public ResponseEntity<?> createClub(
@@ -114,6 +116,37 @@ public class ClubController {
             @AuthenticationPrincipal User user
     ) {
         clubService.deleteClub(clubId);
+        return CommonResponseDto.ok().toResponseEntity();
+    }
+
+    @PostMapping("/register/{clubId}")
+    public ResponseEntity<?> register(
+            @PathVariable("clubId") Integer clubId,
+            @AuthenticationPrincipal User user
+    ) {
+        ClubRegisterDto dto = clubRegisterService.register(user.getUsername(), clubId);
+        ClubRegisterResponseDto response = ClubRegisterMapper.toResponse(dto);
+        return CommonResponseDto.created(response).toResponseEntity();
+    }
+
+    @GetMapping("/register/{clubname}")
+    public ResponseEntity<?> getRegistersByClub(
+            @PathVariable("clubname") String clubname,
+            @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
+    ) {
+        Page<ClubRegisterDto> dtos = clubRegisterService.getClubRegistersByClub(clubname, pageable);
+        Page<ClubRegisterResponseDto> response = dtos.map(ClubRegisterMapper::toResponse);
+
+        return CommonResponseDto.ok(response).toResponseEntity();
+    }
+
+    @DeleteMapping("/register/{clubId}")
+    public ResponseEntity<?> deleteRegistersByClub(
+            @PathVariable("clubId") Integer clubId,
+            @AuthenticationPrincipal User user
+    )
+    {
+        clubRegisterService.deleteClubRegister(user.getUsername(), clubId);
         return CommonResponseDto.ok().toResponseEntity();
     }
 }
