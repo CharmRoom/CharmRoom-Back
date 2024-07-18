@@ -13,7 +13,6 @@ public class ClubRegisterMapper {
 
     public static ClubRegisterResponseDto toResponse(ClubRegisterDto dto) {
         return ClubRegisterResponseDto.builder()
-                .id(dto.getId())
                 .club(ClubMapper.toResponse(dto.getClub()))
                 .user(UserMapper.toResponse(dto.getUser()))
                 .build();

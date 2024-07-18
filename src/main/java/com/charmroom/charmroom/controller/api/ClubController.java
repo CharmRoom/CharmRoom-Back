@@ -129,12 +129,12 @@ public class ClubController {
         return CommonResponseDto.created(response).toResponseEntity();
     }
 
-    @GetMapping("/register/{clubname}")
+    @GetMapping("/register/{clubId}")
     public ResponseEntity<?> getRegistersByClub(
-            @PathVariable("clubname") String clubname,
+            @PathVariable("clubId") Integer clubId,
             @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        Page<ClubRegisterDto> dtos = clubRegisterService.getClubRegistersByClub(clubname, pageable);
+        Page<ClubRegisterDto> dtos = clubRegisterService.getClubRegistersByClub(clubId, pageable);
         Page<ClubRegisterResponseDto> response = dtos.map(ClubRegisterMapper::toResponse);
 
         return CommonResponseDto.ok(response).toResponseEntity();

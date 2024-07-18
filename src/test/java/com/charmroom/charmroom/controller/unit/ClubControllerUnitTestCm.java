@@ -101,7 +101,6 @@ public class ClubControllerUnitTestCm {
                 .build();
 
         registerDto = ClubRegisterDto.builder()
-                .id(1)
                 .club(mockedClubDto)
                 .user(mockedUserDto)
                 .build();
@@ -365,10 +364,10 @@ public class ClubControllerUnitTestCm {
 
             PageRequest pageRequest = PageRequest.of(0, 10, Sort.by("id").descending());
             PageImpl<ClubRegisterDto> dtoPage = new PageImpl<>(dtoList, pageRequest, 3);
-            doReturn(dtoPage).when(clubRegisterService).getClubRegistersByClub("clubname", pageRequest);
+            doReturn(dtoPage).when(clubRegisterService).getClubRegistersByClub(1, pageRequest);
 
             // when
-            ResultActions resultActions = mockMvc.perform(get("/api/club/register/clubname"));
+            ResultActions resultActions = mockMvc.perform(get("/api/club/register/1"));
 
             // then
             resultActions.andExpectAll(

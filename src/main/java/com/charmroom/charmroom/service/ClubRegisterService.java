@@ -28,7 +28,7 @@ public class ClubRegisterService {
 
     public ClubRegisterDto register(String username, Integer clubId) {
         User user = userRepository.findByUsername(username).orElseThrow(() ->
-                new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "subscriberName: " + username));
+                new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "username: " + username));
 
         Club club = clubRepository.findById(clubId).orElseThrow(() ->
                 new BusinessLogicException(BusinessLogicError.NOTFOUND_CLUB, "clubId: " + clubId));
@@ -41,10 +41,10 @@ public class ClubRegisterService {
         return ClubRegisterMapper.toDto(saved);
     }
 
-    public Page<ClubRegisterDto> getClubRegistersByClub(String clubName, Pageable pageable) {
-        Club club = clubRepository.findByName(clubName)
+    public Page<ClubRegisterDto> getClubRegistersByClub(Integer clubId, Pageable pageable) {
+        Club club = clubRepository.findById(clubId)
                 .orElseThrow(() ->
-                new BusinessLogicException(BusinessLogicError.NOTFOUND_CLUB, clubName));
+                new BusinessLogicException(BusinessLogicError.NOTFOUND_CLUB, "clubId: " + clubId));
 
         Page<ClubRegister> clubRegisters = clubRegisterRepository.findAllByClub(club, pageable);
         return clubRegisters.map(ClubRegisterMapper::toDto);
@@ -52,7 +52,7 @@ public class ClubRegisterService {
 
     public void deleteClubRegister(String username, Integer clubId) {
         User user = userRepository.findByUsername(username).orElseThrow(() ->
-                new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "subscriberName: " + username));
+                new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "username: " + username));
 
         Club club = clubRepository.findById(clubId).orElseThrow(() ->
                 new BusinessLogicException(BusinessLogicError.NOTFOUND_CLUB, "clubId: " + clubId));

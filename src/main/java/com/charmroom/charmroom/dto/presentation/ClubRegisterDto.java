@@ -9,7 +9,6 @@ public class ClubRegisterDto {
     @AllArgsConstructor
     @Builder
     public static class ClubRegisterResponseDto {
-        private Integer id;
         private UserDto.UserResponseDto user;
         private ClubDto.ClubResponseDto club;
     }

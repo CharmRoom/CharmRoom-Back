@@ -114,11 +114,11 @@ public class ClubRegisterServiceUnitTest {
             PageRequest pageRequest = PageRequest.of(0, 3);
             PageImpl<ClubRegister> registerPage = new PageImpl<>(registerList);
 
-            doReturn(Optional.of(club)).when(clubRepository).findByName(club.getName());
+            doReturn(Optional.of(club)).when(clubRepository).findById(club.getId());
             doReturn(registerPage).when(clubRegisterRepository).findAllByClub(club, pageRequest);
 
             // when
-            Page<ClubRegisterDto> clubRegisters = clubRegisterService.getClubRegistersByClub(club.getName(), pageRequest);
+            Page<ClubRegisterDto> clubRegisters = clubRegisterService.getClubRegistersByClub(club.getId(), pageRequest);
 
             // then
             assertThat(clubRegisters).hasSize(3);
