@@ -10,6 +10,8 @@ import static org.mockito.Mockito.verify;
 import java.util.List;
 import java.util.Optional;
 
+import com.charmroom.charmroom.entity.User;
+import com.charmroom.charmroom.entity.enums.UserLevel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -54,18 +56,26 @@ public class ClubServiceUnitTest {
     private String description;
     private String contact;
     private int clubId;
+    private User owner;
 
-    private Club createClub(String prefix) {
+    Club createClub(String prefix) {
         return Club.builder()
                 .id(clubId)
                 .name(prefix + clubName)
                 .description(description)
+                .owner(owner)
                 .contact(contact)
                 .build();
     }
 
     @BeforeEach
     void setUp() {
+        owner = User.builder()
+                .username("owner")
+                .email("")
+                .level(UserLevel.ROLE_BASIC)
+                .build();
+
         clubId = 1;
         clubName = "club name";
         description = "club description";
@@ -80,6 +90,7 @@ public class ClubServiceUnitTest {
         @Test
         void success_whenImageFileExists() {
             // given
+            doReturn(Optional.of(owner)).when(userRepository).findByUsername(owner.getUsername());
             doReturn(club).when(clubRepository).save(any(Club.class));
             doReturn(false).when(clubRepository).existsByName(clubName);
 
@@ -93,7 +104,7 @@ public class ClubServiceUnitTest {
             doReturn(image).when(uploadUtil).buildImage(imageFile);
 
             // when
-            ClubDto created = clubService.createClub(clubDto, imageFile);
+            ClubDto created = clubService.createClub(owner.getUsername(), clubDto, imageFile);
 
             // then
             verify(clubRepository).save(any(Club.class));
@@ -103,11 +114,12 @@ public class ClubServiceUnitTest {
         @Test
         void success_whenImageFileNotExists() {
             // given
+            doReturn(Optional.of(owner)).when(userRepository).findByUsername(owner.getUsername());
             doReturn(club).when(clubRepository).save(any(Club.class));
             doReturn(false).when(clubRepository).existsByName(clubName);
 
             // when
-            ClubDto created = clubService.createClub(clubDto);
+            ClubDto created = clubService.createClub(owner.getUsername(), clubDto);
 
             // then
             verify(clubRepository).save(any(Club.class));
@@ -117,13 +129,14 @@ public class ClubServiceUnitTest {
         @Test
         void fail_ClubNameDuplicated() {
             // given
+            doReturn(Optional.of(owner)).when(userRepository).findByUsername(owner.getUsername());
             doReturn(true).when(clubRepository).existsByName(clubName);
 
             MockMultipartFile imageFile = new MockMultipartFile("file", "test.png", "image/png", "test".getBytes());
 
             // when
             BusinessLogicException thrown = assertThrows(BusinessLogicException.class, () ->
-                    clubService.createClub(clubDto, imageFile));
+                    clubService.createClub(owner.getUsername(), clubDto, imageFile));
 
             // then
             assertThat(thrown.getError()).isEqualTo(BusinessLogicError.DUPLICATED_CLUBNAME);
@@ -266,6 +279,24 @@ public class ClubServiceUnitTest {
             // then
             assertThat(thrown.getError()).isEqualTo(BusinessLogicError.NOTFOUND_CLUB);
             assertThat(thrown.getMessage()).isEqualTo("clubId: " + club.getId());
+        }
+    }
+
+    @Nested
+    @DisplayName("Change Owner")
+    class ChangeOwner {
+        @Test
+        void success() {
+            // given
+            doReturn(Optional.of(club)).when(clubRepository).findById(club.getId());
+            doReturn(Optional.of(owner)).when(userRepository).findByUsername(owner.getUsername());
+
+            // when
+            ClubDto dto = clubService.changeOwner(club.getId(), owner.getUsername());
+
+            // then
+            assertThat(dto).isNotNull();
+            assertThat(dto.getOwner().getUsername()).isEqualTo(owner.getUsername());
         }
     }
 

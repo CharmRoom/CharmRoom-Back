@@ -67,6 +67,7 @@ public class ClubControllerUnitTestCm {
     ImageDto mockedImageDto;
     ClubRegisterDto registerDto;
     UserDto mockedUserDto;
+    UserDto owner;
     Gson gson;
 
     @BeforeEach
@@ -84,12 +85,18 @@ public class ClubControllerUnitTestCm {
                 .originalName("")
                 .build();
 
+        owner = UserDto.builder()
+                .username("owner")
+                .level(UserLevel.ROLE_BASIC)
+                .build();
+
         mockedClubDto = ClubDto.builder()
                 .id(1)
                 .name("clubname")
                 .description("")
                 .contact("")
                 .image(mockedImageDto)
+                .owner(owner)
                 .build();
 
         mockedUserDto = UserDto.builder()
@@ -113,7 +120,7 @@ public class ClubControllerUnitTestCm {
         @Test
         void success_withoutImage() throws Exception {
             // given
-            doReturn(mockedClubDto).when(clubService).createClub(any(ClubDto.class));
+            doReturn(mockedClubDto).when(clubService).createClub(any(), any(ClubDto.class));
 
             ClubCreateRequestDto request = ClubCreateRequestDto.builder()
                     .name("")
@@ -138,7 +145,7 @@ public class ClubControllerUnitTestCm {
             // given
             MockMultipartFile imageFile = new MockMultipartFile("image", "test.png", MediaType.IMAGE_PNG_VALUE, "test".getBytes());
 
-            doReturn(mockedClubDto).when(clubService).createClub(any(ClubDto.class), eq(imageFile));
+            doReturn(mockedClubDto).when(clubService).createClub(any(), any(ClubDto.class), eq(imageFile));
 
             // when
             ResultActions resultActions = mockMvc.perform(multipart("/api/club/")
@@ -161,7 +168,7 @@ public class ClubControllerUnitTestCm {
             // given
             doThrow(new BusinessLogicException(BusinessLogicError.DUPLICATED_CLUBNAME))
                     .when(clubService)
-                    .createClub(any(ClubDto.class));
+                    .createClub(any(), any(ClubDto.class));
 
             // when
             ResultActions resultActions = mockMvc.perform(post("/api/club/")
@@ -287,6 +294,27 @@ public class ClubControllerUnitTestCm {
     }
 
     @Nested
+    class ChangeOwner {
+        @Test
+        void success() throws Exception {
+            // given
+            doReturn(mockedClubDto).when(clubService).changeOwner(eq(1), any());
+
+            // when
+            ResultActions resultActions = mockMvc.perform(patch("/api/club/owner/1")
+                    .param("username", owner.getUsername())
+            );
+
+            // then
+            resultActions.andExpectAll(
+                    status().isOk(),
+                    jsonPath("$.code").value("OK"),
+                    jsonPath("$.data.owner.username").value(owner.getUsername())
+            );
+        }
+    }
+
+    @Nested
     class Delete {
         @Test
         void success() throws Exception {
@@ -373,6 +401,26 @@ public class ClubControllerUnitTestCm {
             resultActions.andExpectAll(
                     status().isOk(),
                     jsonPath("$.data.content.size()").value(3)
+            );
+        }
+    }
+
+    @Nested
+    class Approve {
+        @Test
+        void success() throws Exception {
+            // given
+            doNothing().when(clubRegisterService).approveClubRegister(any(), eq(mockedUserDto.getUsername()), eq(1));
+
+            // when
+            ResultActions resultActions = mockMvc.perform(patch("/api/club/register/1")
+                    .param("username", mockedUserDto.getUsername())
+            );
+
+            // then
+            resultActions.andExpectAll(
+                    status().isOk(),
+                    jsonPath("code").value("OK")
             );
         }
     }

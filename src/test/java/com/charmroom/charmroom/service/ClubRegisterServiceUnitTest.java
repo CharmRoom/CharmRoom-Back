@@ -4,6 +4,8 @@ import com.charmroom.charmroom.dto.business.ClubRegisterDto;
 import com.charmroom.charmroom.entity.Club;
 import com.charmroom.charmroom.entity.ClubRegister;
 import com.charmroom.charmroom.entity.User;
+import com.charmroom.charmroom.exception.BusinessLogicError;
+import com.charmroom.charmroom.exception.BusinessLogicException;
 import com.charmroom.charmroom.repository.ClubRegisterRepository;
 import com.charmroom.charmroom.repository.ClubRepository;
 import com.charmroom.charmroom.repository.UserRepository;
@@ -23,8 +25,10 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -39,6 +43,7 @@ public class ClubRegisterServiceUnitTest {
     ClubRegisterService clubRegisterService;
 
     private User user;
+    private User owner;
     private Club club;
     private ClubRegister clubRegister;
 
@@ -58,6 +63,7 @@ public class ClubRegisterServiceUnitTest {
                 .name(clubname)
                 .contact("")
                 .description("")
+                .owner(owner)
                 .build();
     }
 
@@ -70,6 +76,7 @@ public class ClubRegisterServiceUnitTest {
 
     @BeforeEach
     void setup() {
+        owner = createTestUser("owner");
         user = createTestUser("test");
         club = createTestClub("test");
         clubRegister = createClubRegister(club, user);
@@ -138,6 +145,55 @@ public class ClubRegisterServiceUnitTest {
             // then
             verify(clubRegisterRepository).findByUserAndClub(user, club);
             verify(clubRegisterRepository).delete(clubRegister);
+        }
+    }
+
+    @Nested
+    class Approve {
+        @Test
+        void success() {
+            // given
+            doReturn(Optional.of(user)).when(userRepository).findByUsername(user.getUsername());
+            doReturn(Optional.of(club)).when(clubRepository).findById(club.getId());
+            doReturn(Optional.of(clubRegister)).when(clubRegisterRepository).findByUserAndClub(user, club);
+
+            // when
+            clubRegisterService.approveClubRegister(owner.getUsername(), user.getUsername(), club.getId());
+
+            // then
+            verify(clubRegisterRepository).delete(clubRegister);
+        }
+
+        @Test
+        void failUnauthorizedClub() {
+            // given
+            doReturn(Optional.of(user)).when(userRepository).findByUsername(user.getUsername());
+            doReturn(Optional.of(club)).when(clubRepository).findById(club.getId());
+            doReturn(Optional.of(clubRegister)).when(clubRegisterRepository).findByUserAndClub(user, club);
+
+            // when
+            BusinessLogicException thrown = assertThrows(BusinessLogicException.class, () ->
+                    clubRegisterService.approveClubRegister("12345", user.getUsername(), club.getId()));
+
+            // then
+            assertThat(thrown.getError()).isEqualTo(BusinessLogicError.UNAUTHORIZED_CLUB);
+        }
+
+        @Test
+        void failNotFoundClubRegister() {
+            // given
+            doReturn(Optional.of(user)).when(userRepository).findByUsername(user.getUsername());
+            doReturn(Optional.of(club)).when(clubRepository).findById(club.getId());
+
+            // when
+            BusinessLogicException thrown = assertThrows(
+                    BusinessLogicException.class, () ->
+                            clubRegisterService.approveClubRegister(owner.getUsername(), user.getUsername(), club.getId()
+                            )
+            );
+
+            // then
+            assertThat(thrown.getError()).isEqualTo(BusinessLogicError.NOTFOUND_CLUBREGISTER);
         }
     }
 }
