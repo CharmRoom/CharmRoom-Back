@@ -37,7 +37,10 @@ public class Club {
 
     @OneToOne
     private Image image;
-    
+
+    @OneToOne
+    private User owner;
+
     @Builder.Default
     @OneToMany(mappedBy = "club")
     private List<User> userList = new ArrayList<>();
@@ -56,5 +59,9 @@ public class Club {
 
     public void updateImage(Image Image) {
         this.image = Image;
+    }
+
+    public void updateOwner(User user) {
+        this.owner = user;
     }
 }

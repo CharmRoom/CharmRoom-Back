@@ -9,6 +9,7 @@ import com.charmroom.charmroom.dto.presentation.ClubDto.ClubResponseDto;
 import com.charmroom.charmroom.dto.presentation.CommonResponseDto;
 import com.charmroom.charmroom.dto.presentation.ClubDto.ClubUpdateRequestDto;
 import com.charmroom.charmroom.entity.User;
+import com.charmroom.charmroom.entity.embid.ClubRegisterId;
 import com.charmroom.charmroom.service.ClubRegisterService;
 import com.charmroom.charmroom.service.ClubService;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -40,7 +42,8 @@ public class ClubController {
 
     @PostMapping("/")
     public ResponseEntity<?> createClub(
-            @ModelAttribute ClubCreateRequestDto requestDto
+            @ModelAttribute ClubCreateRequestDto requestDto,
+            @AuthenticationPrincipal User user
     ) {
         ClubDto club;
 
@@ -51,9 +54,9 @@ public class ClubController {
                 .build();
 
         if (requestDto.getImage() != null && !requestDto.getImage().isEmpty()) {
-            club = clubService.createClub(clubDto, requestDto.getImage());
+            club = clubService.createClub(user.getUsername(), clubDto, requestDto.getImage());
         } else {
-            club = clubService.createClub(clubDto);
+            club = clubService.createClub(user.getUsername(), clubDto);
         }
 
         ClubResponseDto response = ClubMapper.toResponse(club);
@@ -95,6 +98,17 @@ public class ClubController {
         ClubDto dto = clubService.update(clubId, clubDto);
 
         ClubResponseDto response = ClubMapper.toResponse(dto);
+        return CommonResponseDto.ok(response).toResponseEntity();
+    }
+
+    @PatchMapping("/owner/{clubId}")
+    public ResponseEntity<?> updateClubOwner(
+            @PathVariable("clubId") Integer clubId,
+            @AuthenticationPrincipal User user,
+            @RequestParam("username") String username
+    ) {
+        ClubDto clubDto = clubService.changeOwner(clubId, username);
+        ClubResponseDto response = ClubMapper.toResponse(clubDto);
         return CommonResponseDto.ok(response).toResponseEntity();
     }
 
@@ -140,12 +154,21 @@ public class ClubController {
         return CommonResponseDto.ok(response).toResponseEntity();
     }
 
+    @PatchMapping("/register/{clubId}")
+    public ResponseEntity<?> approve(
+            @PathVariable("clubId") Integer clubId,
+            @AuthenticationPrincipal User owner,
+            @RequestParam("username") String username
+    ) {
+        clubRegisterService.approveClubRegister(owner.getUsername(), username, clubId);
+        return CommonResponseDto.ok().toResponseEntity();
+    }
+
     @DeleteMapping("/register/{clubId}")
     public ResponseEntity<?> deleteRegistersByClub(
             @PathVariable("clubId") Integer clubId,
             @AuthenticationPrincipal User user
-    )
-    {
+    ) {
         clubRegisterService.deleteClubRegister(user.getUsername(), clubId);
         return CommonResponseDto.ok().toResponseEntity();
     }
