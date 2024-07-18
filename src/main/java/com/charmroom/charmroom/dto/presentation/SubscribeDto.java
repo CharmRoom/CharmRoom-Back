@@ -11,7 +11,7 @@ public class SubscribeDto {
     @NoArgsConstructor
     @Builder
     public static class SubscribeCreateRequestDto {
-        private String SubscriberUserName;
+        private String subscriberUserName;
         private String targetUserName;
     }
 

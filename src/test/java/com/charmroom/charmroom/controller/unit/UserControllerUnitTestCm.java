@@ -168,7 +168,7 @@ public class UserControllerUnitTestCm {
             doReturn(dto).when(subscribeService).subscribeOrCancel(any(), any());
 
             SubscribeCreateRequestDto requestDto = SubscribeCreateRequestDto.builder()
-                    .SubscriberUserName(mockedDto.getUsername())
+                    .subscriberUserName(mockedDto.getUsername())
                     .targetUserName(target.getUsername())
                     .build();
 

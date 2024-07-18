@@ -13,6 +13,10 @@ public class WishMapper {
     }
 
     public static WishResponseDto toResponse(WishDto dto) {
+        if (dto == null) {
+            return null;
+        }
+
         return WishResponseDto.builder()
                 .id(dto.getId())
                 .user(UserMapper.toResponse(dto.getUser()))
