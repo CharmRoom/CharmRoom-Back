@@ -8,7 +8,6 @@ import lombok.Data;
 @AllArgsConstructor
 @Builder
 public class ClubRegisterDto {
-    private Integer id;
     private UserDto user;
     private ClubDto club;
 }

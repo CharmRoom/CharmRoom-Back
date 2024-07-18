@@ -10,6 +10,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.TestPropertySource;
 
 import java.util.List;
@@ -108,6 +111,26 @@ public class ClubRegisterRepositoryUnitTest {
 
             // then
             assertThat(found).isNotPresent();
+        }
+    }
+
+    @Nested
+    class ReadAll {
+        @Test
+        void success() {
+            // given
+            for (int i = 1; i <= 3; i++) {
+                User user = userRepository.save(createTestUser(String.valueOf(i)));
+                clubRegisterRepository.save(createClubRegister(club, user));
+            }
+            PageRequest pageRequest = PageRequest.of(0, 3);
+
+            // when
+            Page<ClubRegister> all = clubRegisterRepository.findAllByClub(club, pageRequest);
+
+            // then
+            assertThat(all).hasSize(3);
+            assertThat(all.get().toList().get(0).getUser().getUsername()).isEqualTo("1");
         }
     }
 

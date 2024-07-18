@@ -5,6 +5,7 @@ import com.charmroom.charmroom.dto.business.ClubRegisterMapper;
 import com.charmroom.charmroom.entity.Club;
 import com.charmroom.charmroom.entity.ClubRegister;
 import com.charmroom.charmroom.entity.User;
+import com.charmroom.charmroom.entity.embid.ClubRegisterId;
 import com.charmroom.charmroom.exception.BusinessLogicError;
 import com.charmroom.charmroom.exception.BusinessLogicException;
 import com.charmroom.charmroom.repository.ClubRegisterRepository;
@@ -28,7 +29,7 @@ public class ClubRegisterService {
 
     public ClubRegisterDto register(String username, Integer clubId) {
         User user = userRepository.findByUsername(username).orElseThrow(() ->
-                new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "subscriberName: " + username));
+                new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "username: " + username));
 
         Club club = clubRepository.findById(clubId).orElseThrow(() ->
                 new BusinessLogicException(BusinessLogicError.NOTFOUND_CLUB, "clubId: " + clubId));
@@ -41,10 +42,10 @@ public class ClubRegisterService {
         return ClubRegisterMapper.toDto(saved);
     }
 
-    public Page<ClubRegisterDto> getClubRegistersByClub(String clubName, Pageable pageable) {
-        Club club = clubRepository.findByName(clubName)
+    public Page<ClubRegisterDto> getClubRegistersByClub(Integer clubId, Pageable pageable) {
+        Club club = clubRepository.findById(clubId)
                 .orElseThrow(() ->
-                new BusinessLogicException(BusinessLogicError.NOTFOUND_CLUB, clubName));
+                new BusinessLogicException(BusinessLogicError.NOTFOUND_CLUB, "clubId: " + clubId));
 
         Page<ClubRegister> clubRegisters = clubRegisterRepository.findAllByClub(club, pageable);
         return clubRegisters.map(ClubRegisterMapper::toDto);
@@ -52,7 +53,7 @@ public class ClubRegisterService {
 
     public void deleteClubRegister(String username, Integer clubId) {
         User user = userRepository.findByUsername(username).orElseThrow(() ->
-                new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "subscriberName: " + username));
+                new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "username: " + username));
 
         Club club = clubRepository.findById(clubId).orElseThrow(() ->
                 new BusinessLogicException(BusinessLogicError.NOTFOUND_CLUB, "clubId: " + clubId));
@@ -66,5 +67,24 @@ public class ClubRegisterService {
             throw new BusinessLogicException(BusinessLogicError.NOTFOUND_CLUBREGISTER
             );
         }
+    }
+
+    @Transactional
+    public void approveClubRegister(String ownerName, String username, Integer clubId) {
+        User user = userRepository.findByUsername(username).orElseThrow(() ->
+                new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "username: " + username));
+
+        Club club = clubRepository.findById(clubId).orElseThrow(() ->
+                new BusinessLogicException(BusinessLogicError.NOTFOUND_CLUB, "clubId: " + clubId));
+
+        ClubRegister register = clubRegisterRepository.findByUserAndClub(user, club).orElseThrow(() ->
+                new BusinessLogicException(BusinessLogicError.NOTFOUND_CLUBREGISTER));
+
+        if(!ownerName.equals(club.getOwner().getUsername())) {
+            throw new BusinessLogicException(BusinessLogicError.UNAUTHORIZED_CLUB);
+        }
+
+        user.updateClub(register.getClub());
+        clubRegisterRepository.delete(register);
     }
 }

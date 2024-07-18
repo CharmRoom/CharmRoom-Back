@@ -35,6 +35,7 @@ public enum BusinessLogicError {
 	DUPLICATED_CLUBNAME(HttpStatus.BAD_REQUEST, "05000", "Duplicated club name"),
 
 	NOTFOUND_CLUB(HttpStatus.NOT_FOUND, "05100", "Club not found"),
+	UNAUTHORIZED_CLUB(HttpStatus.UNAUTHORIZED, "05200", "Don't have permission on club"),
 	// end Club
 
 	// Comment
