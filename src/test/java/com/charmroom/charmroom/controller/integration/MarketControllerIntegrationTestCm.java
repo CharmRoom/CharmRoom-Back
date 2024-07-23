@@ -197,7 +197,24 @@ public class MarketControllerIntegrationTestCm extends IntegrationTestBase {
         @Test
         void success() throws Exception {
             // given
-            Market market = marketRepository.save(buildMarket("test"));
+            Board board = boardRepository.save(Board.builder()
+                    .name("board")
+                    .type(BoardType.LIST)
+                    .build());
+
+            Article article = articleRepository.save(Article.builder()
+                    .user(charmroomUser)
+                    .board(board)
+                    .title("test")
+                    .body("test")
+                    .build());
+
+            Market market = marketRepository.save(Market.builder()
+                    .article(article)
+                    .tag("test")
+                    .state(MarketArticleState.SALE)
+                    .price(1000)
+                    .build());
 
             ArticleUpdateRequestDto articleDto = ArticleUpdateRequestDto.builder()
                     .title("updated")
@@ -230,7 +247,24 @@ public class MarketControllerIntegrationTestCm extends IntegrationTestBase {
         @Test
         void success() throws Exception {
             // given
-            Market market = marketRepository.save(buildMarket("test"));
+            Board board = boardRepository.save(Board.builder()
+                    .name("board")
+                    .type(BoardType.LIST)
+                    .build());
+
+            Article article = articleRepository.save(Article.builder()
+                    .user(charmroomUser)
+                    .board(board)
+                    .title("test")
+                    .body("test")
+                    .build());
+
+            Market market = marketRepository.save(Market.builder()
+                    .article(article)
+                    .tag("test")
+                    .state(MarketArticleState.SALE)
+                    .price(1000)
+                    .build());
 
             // when
             ResultActions resultActions = mockMvc.perform(delete(urlPrefix + market.getId()));
