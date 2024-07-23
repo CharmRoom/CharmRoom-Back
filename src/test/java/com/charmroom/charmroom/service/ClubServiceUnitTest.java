@@ -288,15 +288,21 @@ public class ClubServiceUnitTest {
         @Test
         void success() {
             // given
+            User build = User.builder()
+                    .username("updateName")
+                    .email("")
+                    .level(UserLevel.ROLE_BASIC)
+                    .build();
+
             doReturn(Optional.of(club)).when(clubRepository).findById(club.getId());
-            doReturn(Optional.of(owner)).when(userRepository).findByUsername(owner.getUsername());
+            doReturn(Optional.of(build)).when(userRepository).findByUsername(build.getUsername());
 
             // when
-            ClubDto dto = clubService.changeOwner(club.getId(), owner.getUsername());
+            ClubDto dto = clubService.changeOwner(club.getId(), build.getUsername(), owner.getUsername());
 
             // then
             assertThat(dto).isNotNull();
-            assertThat(dto.getOwner().getUsername()).isEqualTo(owner.getUsername());
+            assertThat(dto.getOwner().getUsername()).isEqualTo(build.getUsername());
         }
     }
 
@@ -309,7 +315,7 @@ public class ClubServiceUnitTest {
             doReturn(Optional.of(club)).when(clubRepository).findById(club.getId());
 
             // when
-            clubService.deleteClub(club.getId());
+            clubService.deleteClub(club.getId(), owner.getUsername());
 
             // then
             verify(clubRepository).delete(any(Club.class));
@@ -322,7 +328,7 @@ public class ClubServiceUnitTest {
 
             // when
             BusinessLogicException thrown = assertThrows(BusinessLogicException.class, () -> {
-                clubService.deleteClub(club.getId());
+                clubService.deleteClub(club.getId(), owner.getUsername());
             });
 
             // then
@@ -348,7 +354,7 @@ public class ClubServiceUnitTest {
             doReturn(image).when(imageRepository).save(image);
 
             // when
-            ClubDto updated = clubService.setImage(club.getId(), imageFile);
+            ClubDto updated = clubService.setImage(club.getId(), imageFile, owner.getUsername());
 
             // then
             assertThat(updated).isNotNull();
@@ -363,7 +369,7 @@ public class ClubServiceUnitTest {
 
             // when
             BusinessLogicException thrown = assertThrows(BusinessLogicException.class, () -> {
-                clubService.setImage(club.getId(), imageFile);
+                clubService.setImage(club.getId(), imageFile, owner.getUsername());
             });
 
             // then
@@ -382,6 +388,7 @@ public class ClubServiceUnitTest {
 
             Club club = Club.builder()
                     .image(image)
+                    .owner(owner)
                     .build();
 
             doReturn(Optional.of(club)).when(clubRepository).findById(club.getId());
@@ -390,7 +397,7 @@ public class ClubServiceUnitTest {
             doReturn(image).when(imageRepository).save(image);
 
             // when
-            ClubDto updated = clubService.setImage(club.getId(), imageFile);
+            ClubDto updated = clubService.setImage(club.getId(), imageFile, owner.getUsername());
 
             // then
             verify(uploadUtil).deleteFile(club.getImage());

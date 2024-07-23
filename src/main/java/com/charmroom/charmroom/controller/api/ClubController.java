@@ -19,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,6 +41,7 @@ public class ClubController {
     private final ClubService clubService;
     private final ClubRegisterService clubRegisterService;
 
+    @PreAuthorize("hasRole('ROLE_BASIC')")
     @PostMapping("/")
     public ResponseEntity<?> createClub(
             @ModelAttribute ClubCreateRequestDto requestDto,
@@ -63,6 +65,7 @@ public class ClubController {
         return CommonResponseDto.created(response).toResponseEntity();
     }
 
+    @PreAuthorize("permitAll()")
     @GetMapping("/{clubId}")
     public ResponseEntity<?> getClub(
             @PathVariable("clubId") Integer clubId
@@ -73,6 +76,7 @@ public class ClubController {
         return CommonResponseDto.ok(response).toResponseEntity();
     }
 
+    @PreAuthorize("permitAll()")
     @GetMapping("/list")
     public ResponseEntity<?> getClubList(
             @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
@@ -83,6 +87,7 @@ public class ClubController {
         return CommonResponseDto.ok(responseDtos).toResponseEntity();
     }
 
+    @PreAuthorize("isAuthenticated()")
     @PatchMapping("/{clubId}")
     public ResponseEntity<?> updateClub(
             @PathVariable("clubId") Integer clubId,
@@ -95,44 +100,47 @@ public class ClubController {
                 .contact(request.getContact())
                 .build();
 
-        ClubDto dto = clubService.update(clubId, clubDto);
+        ClubDto dto = clubService.update(clubId, clubDto, user.getUsername());
 
         ClubResponseDto response = ClubMapper.toResponse(dto);
         return CommonResponseDto.ok(response).toResponseEntity();
     }
 
+    @PreAuthorize("isAuthenticated()")
     @PatchMapping("/owner/{clubId}")
     public ResponseEntity<?> updateClubOwner(
             @PathVariable("clubId") Integer clubId,
             @AuthenticationPrincipal User user,
-            @RequestParam("username") String username
+            @RequestParam("username") String updatedName
     ) {
-        ClubDto clubDto = clubService.changeOwner(clubId, username);
+        ClubDto clubDto = clubService.changeOwner(clubId, updatedName, user.getUsername());
         ClubResponseDto response = ClubMapper.toResponse(clubDto);
         return CommonResponseDto.ok(response).toResponseEntity();
     }
 
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/image/{clubId}")
     public ResponseEntity<?> updateClubImage(
             @PathVariable("clubId") Integer clubId,
             @AuthenticationPrincipal User user,
             @RequestPart("image") MultipartFile image
     ) {
-        ClubDto dto = clubService.setImage(clubId, image);
+        ClubDto dto = clubService.setImage(clubId, image, user.getUsername());
         ClubResponseDto response = ClubMapper.toResponse(dto);
         return CommonResponseDto.ok(response).toResponseEntity();
     }
 
-
+    @PreAuthorize("isAuthenticated()")
     @DeleteMapping("/{clubId}")
     public ResponseEntity<?> deleteClub(
             @PathVariable("clubId") Integer clubId,
             @AuthenticationPrincipal User user
     ) {
-        clubService.deleteClub(clubId);
+        clubService.deleteClub(clubId, user.getUsername());
         return CommonResponseDto.ok().toResponseEntity();
     }
 
+    @PreAuthorize("hasRole('ROLE_BASIC')")
     @PostMapping("/register/{clubId}")
     public ResponseEntity<?> register(
             @PathVariable("clubId") Integer clubId,
@@ -146,14 +154,16 @@ public class ClubController {
     @GetMapping("/register/{clubId}")
     public ResponseEntity<?> getRegistersByClub(
             @PathVariable("clubId") Integer clubId,
+            @AuthenticationPrincipal User owner,
             @PageableDefault(size = 10, sort = "userId", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        Page<ClubRegisterDto> dtos = clubRegisterService.getClubRegistersByClub(clubId, pageable);
+        Page<ClubRegisterDto> dtos = clubRegisterService.getClubRegistersByClub(clubId, pageable, owner.getUsername());
         Page<ClubRegisterResponseDto> response = dtos.map(ClubRegisterMapper::toResponse);
 
         return CommonResponseDto.ok(response).toResponseEntity();
     }
 
+    @PreAuthorize("isAuthenticated()")
     @PatchMapping("/register/{clubId}")
     public ResponseEntity<?> approve(
             @PathVariable("clubId") Integer clubId,
@@ -164,12 +174,14 @@ public class ClubController {
         return CommonResponseDto.ok().toResponseEntity();
     }
 
+    @PreAuthorize("isAuthenticated()")
     @DeleteMapping("/register/{clubId}")
     public ResponseEntity<?> deleteRegistersByClub(
             @PathVariable("clubId") Integer clubId,
-            @AuthenticationPrincipal User user
+            @AuthenticationPrincipal User owner,
+            @RequestParam("username") String username
     ) {
-        clubRegisterService.deleteClubRegister(user.getUsername(), clubId);
+        clubRegisterService.deleteClubRegister(username, clubId, owner.getUsername());
         return CommonResponseDto.ok().toResponseEntity();
     }
 }

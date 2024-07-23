@@ -42,21 +42,29 @@ public class ClubRegisterService {
         return ClubRegisterMapper.toDto(saved);
     }
 
-    public Page<ClubRegisterDto> getClubRegistersByClub(Integer clubId, Pageable pageable) {
+    public Page<ClubRegisterDto> getClubRegistersByClub(Integer clubId, Pageable pageable, String username) {
         Club club = clubRepository.findById(clubId)
                 .orElseThrow(() ->
                 new BusinessLogicException(BusinessLogicError.NOTFOUND_CLUB, "clubId: " + clubId));
+
+        if (!username.equals(club.getOwner().getUsername())) {
+            throw new BusinessLogicException(BusinessLogicError.UNAUTHORIZED_CLUB);
+        }
 
         Page<ClubRegister> clubRegisters = clubRegisterRepository.findAllByClub(club, pageable);
         return clubRegisters.map(ClubRegisterMapper::toDto);
     }
 
-    public void deleteClubRegister(String username, Integer clubId) {
+    public void deleteClubRegister(String username, Integer clubId, String ownerName) {
         User user = userRepository.findByUsername(username).orElseThrow(() ->
                 new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "username: " + username));
 
         Club club = clubRepository.findById(clubId).orElseThrow(() ->
                 new BusinessLogicException(BusinessLogicError.NOTFOUND_CLUB, "clubId: " + clubId));
+
+        if (!ownerName.equals(club.getOwner().getUsername())) {
+            throw new BusinessLogicException(BusinessLogicError.UNAUTHORIZED_CLUB);
+        }
 
         Optional<ClubRegister> found = clubRegisterRepository.findByUserAndClub(user, club);
 

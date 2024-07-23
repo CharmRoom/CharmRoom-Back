@@ -36,6 +36,7 @@ import org.springframework.validation.Validator;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -251,7 +252,7 @@ public class ClubControllerUnitTestCm {
         @Test
         void success() throws Exception {
             // given
-            doReturn(mockedClubDto).when(clubService).update(eq(1), any(ClubDto.class));
+            doReturn(mockedClubDto).when(clubService).update(eq(1), any(ClubDto.class), any());
 
             ClubUpdateRequestDto request = ClubUpdateRequestDto.builder()
                     .name(mockedClubDto.getName())
@@ -271,13 +272,16 @@ public class ClubControllerUnitTestCm {
                     jsonPath("$.data.name").value(mockedClubDto.getName())
             );
         }
+    }
 
+    @Nested
+    class SetImage {
         @Test
-        void updateImage() throws Exception {
+        void setImage() throws Exception {
             // given
             MockMultipartFile imageFile = new MockMultipartFile("image", "test.png", MediaType.IMAGE_PNG_VALUE, "test".getBytes());
 
-            doReturn(mockedClubDto).when(clubService).setImage(eq(1), eq(imageFile));
+            doReturn(mockedClubDto).when(clubService).setImage(eq(1), eq(imageFile), any());
 
             // when
             ResultActions resultActions = mockMvc.perform(multipart("/api/club/image/1")
@@ -289,16 +293,16 @@ public class ClubControllerUnitTestCm {
                     status().isOk(),
                     jsonPath("$.code").value("OK")
             );
-
         }
     }
+
 
     @Nested
     class ChangeOwner {
         @Test
         void success() throws Exception {
             // given
-            doReturn(mockedClubDto).when(clubService).changeOwner(eq(1), any());
+            doReturn(mockedClubDto).when(clubService).changeOwner(eq(1), any(), any());
 
             // when
             ResultActions resultActions = mockMvc.perform(patch("/api/club/owner/1")
@@ -319,7 +323,7 @@ public class ClubControllerUnitTestCm {
         @Test
         void success() throws Exception {
             // given
-            doNothing().when(clubService).deleteClub(mockedClubDto.getId());
+            doNothing().when(clubService).deleteClub(eq(mockedClubDto.getId()), any());
 
             // when
             ResultActions resultActions = mockMvc.perform(delete("/api/club/1"));
@@ -392,7 +396,8 @@ public class ClubControllerUnitTestCm {
 
             PageRequest pageRequest = PageRequest.of(0, 10, Sort.by("userId").descending());
             PageImpl<ClubRegisterDto> dtoPage = new PageImpl<>(dtoList, pageRequest, 3);
-            doReturn(dtoPage).when(clubRegisterService).getClubRegistersByClub(1, pageRequest);
+
+            doReturn(dtoPage).when(clubRegisterService).getClubRegistersByClub(eq(1), eq(pageRequest), any());
 
             // when
             ResultActions resultActions = mockMvc.perform(get("/api/club/register/1"));
@@ -430,16 +435,18 @@ public class ClubControllerUnitTestCm {
         @Test
         void success() throws Exception {
             // given
-            doNothing().when(clubRegisterService).deleteClubRegister(any(), eq(1));
+            doNothing().when(clubRegisterService).deleteClubRegister(any(), eq(1), any());
 
             // when
-            ResultActions resultActions = mockMvc.perform(delete("/api/club/register/1"));
+            ResultActions resultActions = mockMvc.perform(delete("/api/club/register/1")
+                    .param("username", mockedUserDto.getUsername()));
+
             // then
             resultActions.andExpectAll(
                     status().isOk(),
                     jsonPath("$.code").value("OK")
             );
-            verify(clubRegisterService).deleteClubRegister(any(), eq(1));
+            verify(clubRegisterService).deleteClubRegister(any(), eq(1), any());
         }
 
         @Test
@@ -447,10 +454,11 @@ public class ClubControllerUnitTestCm {
             // given
             doThrow(new BusinessLogicException(BusinessLogicError.NOTFOUND_USER))
                     .when(clubRegisterService)
-                    .deleteClubRegister(any(), eq(1));
+                    .deleteClubRegister(any(), eq(1), any());
 
             // when
-            ResultActions resultActions = mockMvc.perform(delete("/api/club/register/1"));
+            ResultActions resultActions = mockMvc.perform(delete("/api/club/register/1")
+                    .param("username", mockedUserDto.getUsername()));
 
             // then
             resultActions.andExpectAll(

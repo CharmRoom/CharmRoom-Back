@@ -125,7 +125,7 @@ public class ClubRegisterServiceUnitTest {
             doReturn(registerPage).when(clubRegisterRepository).findAllByClub(club, pageRequest);
 
             // when
-            Page<ClubRegisterDto> clubRegisters = clubRegisterService.getClubRegistersByClub(club.getId(), pageRequest);
+            Page<ClubRegisterDto> clubRegisters = clubRegisterService.getClubRegistersByClub(club.getId(), pageRequest, owner.getUsername());
 
             // then
             assertThat(clubRegisters).hasSize(3);
@@ -141,7 +141,7 @@ public class ClubRegisterServiceUnitTest {
             doReturn(Optional.of(club)).when(clubRepository).findById(club.getId());
             doReturn(Optional.of(clubRegister)).when(clubRegisterRepository).findByUserAndClub(user, club);
             // when
-            clubRegisterService.deleteClubRegister(user.getUsername(), club.getId());
+            clubRegisterService.deleteClubRegister(user.getUsername(), club.getId(), owner.getUsername());
             // then
             verify(clubRegisterRepository).findByUserAndClub(user, club);
             verify(clubRegisterRepository).delete(clubRegister);
