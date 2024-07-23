@@ -4,6 +4,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -19,6 +21,7 @@ import com.charmroom.charmroom.service.CustomUserDetailsService;
 
 import lombok.RequiredArgsConstructor;
 
+@EnableMethodSecurity
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -41,13 +44,13 @@ public class SecurityConfig {
 		http.httpBasic((httpBasic) -> httpBasic.disable());
 		
 		// 경로 별 인가 작업
-		http.authorizeHttpRequests((authorizeHttpRequests) -> authorizeHttpRequests
-				// API permit list
-				.requestMatchers("/api/auth/login", "/api/auth/signup", "/static/image/**").permitAll()
-				.requestMatchers("/", "/error/**" , "/login", "/auth/login", "/auth/signup").permitAll()
-				.requestMatchers("/api/admin/**").hasAnyAuthority("ROLE_ADMIN")
-				.anyRequest().authenticated()
-				);
+//		http.authorizeHttpRequests((authorizeHttpRequests) -> authorizeHttpRequests
+//				// API permit list
+//				.requestMatchers("/api/auth/login", "/api/auth/signup", "/static/image/**").permitAll()
+//				.requestMatchers("/", "/error/**" , "/login", "/auth/login", "/auth/signup").permitAll()
+//				.requestMatchers("/api/admin/**").hasAnyAuthority("ROLE_ADMIN")
+//				.anyRequest().authenticated()
+//				);
 		
 		// JWTFilter 등록
 		http.addFilterBefore(
