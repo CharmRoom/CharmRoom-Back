@@ -29,6 +29,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -92,6 +93,7 @@ public class UserController {
 		return CommonResponseDto.ok(response).toResponseEntity();
 	}
 
+	@PreAuthorize("isAuthenticated()")
 	@GetMapping("/article")
 	public ResponseEntity<?> getMyArticles(
 			@AuthenticationPrincipal User user,
@@ -103,6 +105,7 @@ public class UserController {
 		return CommonResponseDto.ok(response).toResponseEntity();
 	}
 
+	@PreAuthorize("isAuthenticated()")
 	@GetMapping("/wish")
 	public ResponseEntity<?> getMyWishes(
 			@AuthenticationPrincipal User user,
@@ -114,6 +117,7 @@ public class UserController {
 		return CommonResponseDto.ok(response).toResponseEntity();
 	}
 
+	@PreAuthorize("isAuthenticated()")
 	@PostMapping("")
 	public ResponseEntity<?> subscribe(
 			@RequestBody SubscribeCreateRequestDto request
@@ -123,7 +127,7 @@ public class UserController {
 		return CommonResponseDto.ok(response).toResponseEntity();
 	}
 
-
+	@PreAuthorize("isAuthenticated()")
 	@GetMapping("/subscribe")
 	public ResponseEntity<?> getMySubscribes(
 			@AuthenticationPrincipal User user,
