@@ -280,7 +280,7 @@ public class MarketServiceUnitTest {
             doReturn(Optional.of(market)).when(marketRepository).findById(marketId);
 
             // when
-            marketService.delete(marketId);
+            marketService.delete(marketId, user.getUsername());
 
             // then
             verify(marketRepository).delete(market);
@@ -293,7 +293,7 @@ public class MarketServiceUnitTest {
             doReturn(Optional.empty()).when(marketRepository).findById(marketId);
 
             // when
-            BusinessLogicException thrown = assertThrows(BusinessLogicException.class, () -> marketService.delete(marketId));
+            BusinessLogicException thrown = assertThrows(BusinessLogicException.class, () -> marketService.delete(marketId, user.getUsername()));
 
             // then
             assertThat(thrown.getError()).isEqualTo(BusinessLogicError.NOTFOUND_ARTICLE);

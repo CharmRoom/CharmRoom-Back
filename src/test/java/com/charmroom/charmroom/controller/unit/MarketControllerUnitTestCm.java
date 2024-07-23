@@ -195,7 +195,7 @@ public class MarketControllerUnitTestCm {
         @Test
         void success() throws Exception {
             // given
-            doReturn(mockedMarketDto).when(marketService).update(eq(1), any(MarketDto.class));
+            doReturn(mockedMarketDto).when(marketService).update(eq(1), any(MarketDto.class), any());
 
             ArticleUpdateRequestDto article = ArticleUpdateRequestDto.builder()
                     .title(mockedMarketDto.getArticle().getTitle())
@@ -229,7 +229,7 @@ public class MarketControllerUnitTestCm {
         @Test
         void success() throws Exception{
             // given
-            doNothing().when(marketService).delete(eq(1));
+            doNothing().when(marketService).delete(eq(1), any());
 
             // when
             ResultActions resultActions = mockMvc.perform(delete("/api/market/1"));
