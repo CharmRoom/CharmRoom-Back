@@ -18,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,6 +38,7 @@ public class ArticleController {
     private final ArticleService articleService;
     private final ArticleLikeService articleLikeService;
 
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/{boardId}")
     public ResponseEntity<?> addArticle(
             @PathVariable(value = "boardId") Integer boardId,
@@ -56,6 +58,7 @@ public class ArticleController {
         return CommonResponseDto.created(responseDto).toResponseEntity();
     }
 
+    @PreAuthorize("permitAll()")
     @GetMapping("/{articleId}")
     public ResponseEntity<?> getArticle(
             @PathVariable("articleId") Integer articleId) {
@@ -64,6 +67,7 @@ public class ArticleController {
         return CommonResponseDto.ok(responseDto).toResponseEntity();
     }
 
+    @PreAuthorize("permitAll()")
     @GetMapping("/{boardId}/articles")
     public ResponseEntity<?> getArticleList(
             @PathVariable("boardId") Integer boardId,
@@ -75,6 +79,7 @@ public class ArticleController {
         return CommonResponseDto.ok(responseDtos).toResponseEntity();
     }
 
+    @PreAuthorize("hasRole('ROLE_BASIC')")
     @PatchMapping("/{articleId}")
     public ResponseEntity<?> updateArticle(
             @PathVariable("articleId") Integer articleId,
@@ -87,15 +92,17 @@ public class ArticleController {
         return CommonResponseDto.ok(responseDto).toResponseEntity();
     }
 
+    @PreAuthorize("hasRole('ROLE_BASIC')")
     @DeleteMapping("/{articleId}")
     public ResponseEntity<?> deleteArticle(
             @PathVariable("articleId") Integer articleId,
             @AuthenticationPrincipal User user
     ) {
-        articleService.deleteArticle(articleId);
+        articleService.deleteArticle(articleId, user.getUsername());
         return CommonResponseDto.ok().toResponseEntity();
     }
 
+    @PreAuthorize("hasRole('ROLE_BASIC')")
     @PostMapping("/like/{articleId}")
     public ResponseEntity<?> likeArticle(
             @AuthenticationPrincipal User user,
@@ -106,6 +113,7 @@ public class ArticleController {
         return CommonResponseDto.ok(response).toResponseEntity();
     }
 
+    @PreAuthorize("hasRole('ROLE_BASIC')")
     @PostMapping("/dislike/{articleId}")
     public ResponseEntity<?> dislikeArticle(
             @AuthenticationPrincipal User user,

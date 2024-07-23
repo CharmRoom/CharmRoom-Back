@@ -91,9 +91,14 @@ public class ArticleService {
         User user = userRepository.findByUsername(username).orElseThrow(() ->
                 new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "username: " + username));
 
+
         Article originalArticle = articleRepository.findById(articleId).orElseThrow(
                 () -> new BusinessLogicException(BusinessLogicError.NOTFOUND_ARTICLE, "articleId: " + articleId)
         );
+
+        if (!user.getUsername().equals(originalArticle.getUser().getUsername())) {
+            throw new BusinessLogicException(BusinessLogicError.UNAUTHORIZED_ARTICLE);
+        }
 
         if (!originalArticle.getUser().equals(user)) {
             throw new BusinessLogicException(BusinessLogicError.UNAUTHORIZED_ARTICLE, "articleId: " + articleId);
@@ -104,11 +109,15 @@ public class ArticleService {
         return ArticleMapper.toDto(originalArticle);
     }
 
-    public void deleteArticle(Integer articleId) {
-        Article found = articleRepository.findById(articleId).orElseThrow(
+    public void deleteArticle(Integer articleId, String username) {
+        Article article = articleRepository.findById(articleId).orElseThrow(
                 () -> new BusinessLogicException(BusinessLogicError.NOTFOUND_ARTICLE, "articleId: " + articleId)
         );
 
-        articleRepository.delete(found);
+        if(!username.equals(article.getUser().getUsername())) {
+            throw new BusinessLogicException(BusinessLogicError.UNAUTHORIZED_ARTICLE, "articleId: " + articleId);
+        }
+
+        articleRepository.delete(article);
     }
 }
