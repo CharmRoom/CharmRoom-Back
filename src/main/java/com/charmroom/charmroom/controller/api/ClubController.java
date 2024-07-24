@@ -42,7 +42,7 @@ public class ClubController {
     private final ClubService clubService;
     private final ClubRegisterService clubRegisterService;
 
-    @PreAuthorize("hasRole('ROLE_BASIC')")
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/")
     public ResponseEntity<?> createClub(
             @ModelAttribute ClubCreateRequestDto requestDto,
@@ -141,7 +141,7 @@ public class ClubController {
         return CommonResponseDto.ok().toResponseEntity();
     }
 
-    @PreAuthorize("hasRole('ROLE_BASIC')")
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/register/{clubId}")
     public ResponseEntity<?> register(
             @PathVariable("clubId") Integer clubId,
