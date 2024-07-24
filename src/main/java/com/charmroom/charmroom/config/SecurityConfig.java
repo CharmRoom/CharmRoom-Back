@@ -43,15 +43,6 @@ public class SecurityConfig {
 		// HTTP basic 인증 disable
 		http.httpBasic((httpBasic) -> httpBasic.disable());
 		
-		// 경로 별 인가 작업
-//		http.authorizeHttpRequests((authorizeHttpRequests) -> authorizeHttpRequests
-//				// API permit list
-//				.requestMatchers("/api/auth/login", "/api/auth/signup", "/static/image/**").permitAll()
-//				.requestMatchers("/", "/error/**" , "/login", "/auth/login", "/auth/signup").permitAll()
-//				.requestMatchers("/api/admin/**").hasAnyAuthority("ROLE_ADMIN")
-//				.anyRequest().authenticated()
-//				);
-		
 		// JWTFilter 등록
 		http.addFilterBefore(
 				new JWTFilter(jwtUtil, customUserDetailsService),
