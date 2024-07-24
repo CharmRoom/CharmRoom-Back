@@ -96,7 +96,7 @@ public class MarketController {
         return CommonResponseDto.ok(responseDtos).toResponseEntity();
     }
 
-    @PreAuthorize("hasRole('ROLE_BASIC')")
+    @PreAuthorize("isAuthenticated()")
     @PatchMapping("/{marketId}")
     public ResponseEntity<?> updateMarket(
             @PathVariable("marketId") Integer marketId,
@@ -131,7 +131,7 @@ public class MarketController {
         return CommonResponseDto.ok().toResponseEntity();
     }
 
-    @PreAuthorize("hasRole('ROLE_BASIC')")
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/{marketId}/wish")
     public ResponseEntity<?> wishMarket(
             @PathVariable("marketId") Integer marketId,
