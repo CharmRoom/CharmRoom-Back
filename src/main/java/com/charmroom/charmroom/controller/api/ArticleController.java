@@ -80,7 +80,7 @@ public class ArticleController {
         return CommonResponseDto.ok(responseDtos).toResponseEntity();
     }
 
-    @PreAuthorize("hasRole('ROLE_BASIC')")
+    @PreAuthorize("isAuthenticated()")
     @PatchMapping("/{articleId}")
     public ResponseEntity<?> updateArticle(
             @PathVariable("articleId") Integer articleId,
@@ -93,7 +93,7 @@ public class ArticleController {
         return CommonResponseDto.ok(responseDto).toResponseEntity();
     }
 
-    @PreAuthorize("hasRole('ROLE_BASIC')")
+    @PreAuthorize("isAuthenticated()")
     @DeleteMapping("/{articleId}")
     public ResponseEntity<?> deleteArticle(
             @PathVariable("articleId") Integer articleId,
@@ -103,7 +103,7 @@ public class ArticleController {
         return CommonResponseDto.ok().toResponseEntity();
     }
 
-    @PreAuthorize("hasRole('ROLE_BASIC')")
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/like/{articleId}")
     public ResponseEntity<?> likeArticle(
             @AuthenticationPrincipal User user,
@@ -114,7 +114,7 @@ public class ArticleController {
         return CommonResponseDto.ok(response).toResponseEntity();
     }
 
-    @PreAuthorize("hasRole('ROLE_BASIC')")
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/dislike/{articleId}")
     public ResponseEntity<?> dislikeArticle(
             @AuthenticationPrincipal User user,
