@@ -10,12 +10,15 @@ import com.charmroom.charmroom.dto.presentation.ArticleDto.ArticleUpdateRequestD
 import com.charmroom.charmroom.entity.Article;
 import com.charmroom.charmroom.entity.Board;
 import com.charmroom.charmroom.entity.Market;
+import com.charmroom.charmroom.entity.User;
 import com.charmroom.charmroom.entity.Wish;
 import com.charmroom.charmroom.entity.enums.BoardType;
 import com.charmroom.charmroom.entity.enums.MarketArticleState;
+import com.charmroom.charmroom.entity.enums.UserLevel;
 import com.charmroom.charmroom.repository.ArticleRepository;
 import com.charmroom.charmroom.repository.BoardRepository;
 import com.charmroom.charmroom.repository.MarketRepository;
+import com.charmroom.charmroom.repository.UserRepository;
 import com.charmroom.charmroom.repository.WishRepository;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -51,6 +54,7 @@ public class MarketControllerIntegrationTestCm extends IntegrationTestBase {
             .build();
 
     Article article = Article.builder()
+            .user(charmroomUser)
             .board(board)
             .title("test")
             .body("test")
@@ -193,7 +197,24 @@ public class MarketControllerIntegrationTestCm extends IntegrationTestBase {
         @Test
         void success() throws Exception {
             // given
-            Market market = marketRepository.save(buildMarket("test"));
+            Board board = boardRepository.save(Board.builder()
+                    .name("board")
+                    .type(BoardType.LIST)
+                    .build());
+
+            Article article = articleRepository.save(Article.builder()
+                    .user(charmroomUser)
+                    .board(board)
+                    .title("test")
+                    .body("test")
+                    .build());
+
+            Market market = marketRepository.save(Market.builder()
+                    .article(article)
+                    .tag("test")
+                    .state(MarketArticleState.SALE)
+                    .price(1000)
+                    .build());
 
             ArticleUpdateRequestDto articleDto = ArticleUpdateRequestDto.builder()
                     .title("updated")
@@ -226,7 +247,24 @@ public class MarketControllerIntegrationTestCm extends IntegrationTestBase {
         @Test
         void success() throws Exception {
             // given
-            Market market = marketRepository.save(buildMarket("test"));
+            Board board = boardRepository.save(Board.builder()
+                    .name("board")
+                    .type(BoardType.LIST)
+                    .build());
+
+            Article article = articleRepository.save(Article.builder()
+                    .user(charmroomUser)
+                    .board(board)
+                    .title("test")
+                    .body("test")
+                    .build());
+
+            Market market = marketRepository.save(Market.builder()
+                    .article(article)
+                    .tag("test")
+                    .state(MarketArticleState.SALE)
+                    .price(1000)
+                    .build());
 
             // when
             ResultActions resultActions = mockMvc.perform(delete(urlPrefix + market.getId()));

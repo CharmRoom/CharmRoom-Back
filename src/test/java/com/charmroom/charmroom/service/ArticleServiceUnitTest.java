@@ -303,7 +303,7 @@ public class ArticleServiceUnitTest {
             doReturn(Optional.of(article)).when(articleRepository).findById(article.getId());
 
             // when
-            articleService.deleteArticle(article.getId());
+            articleService.deleteArticle(article.getId(), user.getUsername());
 
             // then
             verify(articleRepository).findById(article.getId());
@@ -317,7 +317,7 @@ public class ArticleServiceUnitTest {
 
             // when
             BusinessLogicException thrown = assertThrows(BusinessLogicException.class, () ->
-                    articleService.deleteArticle(article.getId()));
+                    articleService.deleteArticle(article.getId(), user.getUsername()));
 
             // then
             verify(articleRepository).findById(article.getId());

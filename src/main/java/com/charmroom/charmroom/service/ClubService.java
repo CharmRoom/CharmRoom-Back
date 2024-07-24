@@ -102,9 +102,13 @@ public class ClubService {
     }
 
     @Transactional
-    public ClubDto update(Integer clubId, ClubDto clubDto) {
+    public ClubDto update(Integer clubId, ClubDto clubDto, String username) {
         Club club = clubRepository.findById(clubId).orElseThrow(() ->
                 new BusinessLogicException(BusinessLogicError.NOTFOUND_CLUB, "clubId: " + clubId));
+
+        if (!username.equals(club.getOwner().getUsername())) {
+            throw new BusinessLogicException(BusinessLogicError.UNAUTHORIZED_CLUB);
+        }
 
         club.updateName(clubDto.getName());
         club.updateDescription(clubDto.getDescription());
@@ -114,28 +118,40 @@ public class ClubService {
     }
 
     @Transactional
-    public ClubDto changeOwner(Integer clubId, String username) {
+    public ClubDto changeOwner(Integer clubId, String updatedName, String username) {
         Club club = clubRepository.findById(clubId).orElseThrow(() ->
                 new BusinessLogicException(BusinessLogicError.NOTFOUND_CLUB, "clubId: " + clubId));
 
-        User user = userRepository.findByUsername(username).orElseThrow(() ->
-                new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "username: " + username));
+        User user = userRepository.findByUsername(updatedName).orElseThrow(() ->
+                new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "username: " + updatedName));
+
+        if(!username.equals(club.getOwner().getUsername())) {
+            throw new BusinessLogicException(BusinessLogicError.UNAUTHORIZED_CLUB);
+        }
 
         club.updateOwner(user);
         return ClubMapper.toDto(club);
     }
 
-    public void deleteClub(Integer clubId) {
+    public void deleteClub(Integer clubId, String username) {
         Club club = clubRepository.findById(clubId).orElseThrow(() ->
                 new BusinessLogicException(BusinessLogicError.NOTFOUND_CLUB, "clubId: " + clubId));
+
+        if (!username.equals(club.getOwner().getUsername())) {
+            throw new BusinessLogicException(BusinessLogicError.UNAUTHORIZED_CLUB);
+        }
 
         clubRepository.delete(club);
     }
 
     @Transactional
-    public ClubDto setImage(Integer clubId, MultipartFile imageFile) {
+    public ClubDto setImage(Integer clubId, MultipartFile imageFile, String username) {
         Club club = clubRepository.findById(clubId).orElseThrow(() ->
                 new BusinessLogicException(BusinessLogicError.NOTFOUND_CLUB, "clubId: " + clubId));
+
+        if (!username.equals(club.getOwner().getUsername())) {
+            throw new BusinessLogicException(BusinessLogicError.UNAUTHORIZED_CLUB);
+        }
 
         if (club.getImage() != null) {
             uploadUtil.deleteFile(club.getImage());

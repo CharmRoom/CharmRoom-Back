@@ -126,9 +126,13 @@ public class MarketService {
         return MarketMapper.toDto(market);
     }
 
-    public MarketDto update(Integer marketId, MarketDto marketDto) {
+    public MarketDto update(Integer marketId, MarketDto marketDto, String username) {
         Market market = marketRepository.findById(marketId).orElseThrow(() ->
                 new BusinessLogicException(BusinessLogicError.NOTFOUND_ARTICLE, "marketId: " + marketId));
+
+        if(!username.equals(market.getArticle().getUser().getUsername())) {
+            throw new BusinessLogicException(BusinessLogicError.UNAUTHORIZED_ARTICLE, "marketId: " + marketId);
+        }
 
         market.getArticle().updateTitle(marketDto.getArticle().getTitle());
         market.getArticle().updatedBody(marketDto.getArticle().getBody());
@@ -139,9 +143,13 @@ public class MarketService {
         return MarketMapper.toDto(market);
     }
 
-    public void delete(Integer marketId) {
+    public void delete(Integer marketId, String username) {
         Market market = marketRepository.findById(marketId).orElseThrow(() ->
                 new BusinessLogicException(BusinessLogicError.NOTFOUND_ARTICLE, "marketId: " + marketId));
+
+        if(!username.equals(market.getArticle().getUser().getUsername())) {
+            throw new BusinessLogicException(BusinessLogicError.UNAUTHORIZED_ARTICLE, "marketId: " + marketId);
+        }
 
         marketRepository.delete(market);
         articleRepository.delete(market.getArticle());

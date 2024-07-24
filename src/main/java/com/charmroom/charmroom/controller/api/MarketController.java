@@ -20,6 +20,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,6 +41,7 @@ public class MarketController {
     private final ArticleService articleService;
     private final WishService wishService;
 
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/{boardId}")
     public ResponseEntity<?> addMarket(
             @PathVariable("boardId") Integer boardId,
@@ -69,6 +72,7 @@ public class MarketController {
         return CommonResponseDto.created(response).toResponseEntity();
     }
 
+    @PreAuthorize("permitAll()")
     @GetMapping("/{marketId}")
     public ResponseEntity<?> getMarket(
             @PathVariable("marketId") Integer marketId
@@ -79,6 +83,7 @@ public class MarketController {
         return CommonResponseDto.ok(response).toResponseEntity();
     }
 
+    @PreAuthorize("permitAll()")
     @GetMapping("/list/{boardId}")
     public ResponseEntity<?> getMarketList(
             @PathVariable("boardId") Integer boardId,
@@ -90,6 +95,7 @@ public class MarketController {
         return CommonResponseDto.ok(responseDtos).toResponseEntity();
     }
 
+    @PreAuthorize("hasRole('ROLE_BASIC')")
     @PatchMapping("/{marketId}")
     public ResponseEntity<?> updateMarket(
             @PathVariable("marketId") Integer marketId,
@@ -108,21 +114,23 @@ public class MarketController {
                 .state(request.getState())
                 .build();
 
-        MarketDto dto = marketService.update(marketId, marketDto);
+        MarketDto dto = marketService.update(marketId, marketDto, user.getUsername());
 
         MarketResponseDto response = MarketMapper.toResponse(dto);
         return CommonResponseDto.ok(response).toResponseEntity();
     }
 
+    @PreAuthorize("isAuthenticated()")
     @DeleteMapping("/{marketId}")
     public ResponseEntity<?> deleteMarket(
             @PathVariable("marketId") Integer marketId,
             @AuthenticationPrincipal User user
     ) {
-        marketService.delete(marketId);
+        marketService.delete(marketId, user.getUsername());
         return CommonResponseDto.ok().toResponseEntity();
     }
 
+    @PreAuthorize("hasRole('ROLE_BASIC')")
     @PostMapping("/{marketId}/wish")
     public ResponseEntity<?> wishMarket(
             @PathVariable("marketId") Integer marketId,

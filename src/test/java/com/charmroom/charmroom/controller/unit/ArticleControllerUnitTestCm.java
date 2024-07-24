@@ -3,7 +3,9 @@ package com.charmroom.charmroom.controller.unit;
 import com.charmroom.charmroom.controller.api.ArticleController;
 import com.charmroom.charmroom.dto.business.ArticleDto;
 import com.charmroom.charmroom.dto.business.ArticleLikeDto;
+import com.charmroom.charmroom.dto.business.UserDto;
 import com.charmroom.charmroom.dto.presentation.ArticleDto.ArticleUpdateRequestDto;
+import com.charmroom.charmroom.entity.enums.UserLevel;
 import com.charmroom.charmroom.exception.ExceptionHandlerAdvice;
 import com.charmroom.charmroom.service.ArticleLikeService;
 import com.charmroom.charmroom.service.ArticleService;
@@ -54,6 +56,7 @@ public class ArticleControllerUnitTestCm {
 
     MockMvc mockMvc;
     ArticleDto mockedArticleDto;
+    UserDto mockedUserDto;
     Gson gson;
 
     @BeforeEach
@@ -65,8 +68,17 @@ public class ArticleControllerUnitTestCm {
                 .setValidator(mock(Validator.class))
                 .build();
 
+        mockedUserDto = UserDto.builder()
+                .level(UserLevel.ROLE_BASIC)
+                .username("username")
+                .password("password")
+                .email("test@test.com")
+                .nickname("nickname")
+                .build();
+
         mockedArticleDto = ArticleDto.builder()
                 .id(1)
+                .user(mockedUserDto)
                 .title("test")
                 .body("test")
                 .build();
@@ -189,7 +201,7 @@ public class ArticleControllerUnitTestCm {
         @Test
         void success() throws Exception {
             // given
-            doNothing().when(articleService).deleteArticle(1);
+            doNothing().when(articleService).deleteArticle(eq(1), any());
 
             // when
             ResultActions resultActions = mockMvc.perform(delete("/api/article/1"));

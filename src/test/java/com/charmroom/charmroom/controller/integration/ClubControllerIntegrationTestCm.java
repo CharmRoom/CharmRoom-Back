@@ -54,7 +54,7 @@ public class ClubControllerIntegrationTestCm extends IntegrationTestBase {
                 .name(prefix)
                 .description(prefix + "description")
                 .contact(prefix + "contact")
-                .owner(charmroomAdmin)
+                .owner(charmroomUser)
                 .image(image)
                 .build();
     }
