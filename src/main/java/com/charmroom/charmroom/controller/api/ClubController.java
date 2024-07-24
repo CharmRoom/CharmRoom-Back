@@ -152,6 +152,7 @@ public class ClubController {
         return CommonResponseDto.created(response).toResponseEntity();
     }
 
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/register/{clubId}")
     public ResponseEntity<?> getRegistersByClub(
             @PathVariable("clubId") Integer clubId,
