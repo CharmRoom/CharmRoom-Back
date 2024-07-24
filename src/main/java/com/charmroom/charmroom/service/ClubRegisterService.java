@@ -1,23 +1,24 @@
 package com.charmroom.charmroom.service;
 
+import java.util.Optional;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
 import com.charmroom.charmroom.dto.business.ClubRegisterDto;
 import com.charmroom.charmroom.dto.business.ClubRegisterMapper;
 import com.charmroom.charmroom.entity.Club;
 import com.charmroom.charmroom.entity.ClubRegister;
 import com.charmroom.charmroom.entity.User;
-import com.charmroom.charmroom.entity.embid.ClubRegisterId;
 import com.charmroom.charmroom.exception.BusinessLogicError;
 import com.charmroom.charmroom.exception.BusinessLogicException;
 import com.charmroom.charmroom.repository.ClubRegisterRepository;
 import com.charmroom.charmroom.repository.ClubRepository;
 import com.charmroom.charmroom.repository.UserRepository;
+
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor

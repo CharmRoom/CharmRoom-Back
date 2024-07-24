@@ -1,20 +1,20 @@
 package com.charmroom.charmroom.controller.unit;
 
-import com.charmroom.charmroom.controller.api.MarketController;
-import com.charmroom.charmroom.dto.business.MarketDto;
-import com.charmroom.charmroom.dto.business.ArticleDto;
-import com.charmroom.charmroom.dto.business.UserDto;
-import com.charmroom.charmroom.dto.business.WishDto;
-import com.charmroom.charmroom.entity.enums.MarketArticleState;
-import com.charmroom.charmroom.entity.enums.UserLevel;
-import com.charmroom.charmroom.exception.ExceptionHandlerAdvice;
-import com.charmroom.charmroom.dto.presentation.ArticleDto.ArticleUpdateRequestDto;
-import com.charmroom.charmroom.service.ArticleService;
-import com.charmroom.charmroom.dto.business.ArticleDto;
-import com.charmroom.charmroom.service.MarketService;
-import com.charmroom.charmroom.dto.presentation.MarketDto.MarketUpdateRequestDto;
-import com.charmroom.charmroom.service.WishService;
-import com.google.gson.Gson;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -33,20 +33,20 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.Validator;
 
-import java.util.List;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import com.charmroom.charmroom.controller.api.MarketController;
+import com.charmroom.charmroom.dto.business.ArticleDto;
+import com.charmroom.charmroom.dto.business.MarketDto;
+import com.charmroom.charmroom.dto.business.UserDto;
+import com.charmroom.charmroom.dto.business.WishDto;
+import com.charmroom.charmroom.dto.presentation.ArticleDto.ArticleUpdateRequestDto;
+import com.charmroom.charmroom.dto.presentation.MarketDto.MarketUpdateRequestDto;
+import com.charmroom.charmroom.entity.enums.MarketArticleState;
+import com.charmroom.charmroom.entity.enums.UserLevel;
+import com.charmroom.charmroom.exception.ExceptionHandlerAdvice;
+import com.charmroom.charmroom.service.ArticleService;
+import com.charmroom.charmroom.service.MarketService;
+import com.charmroom.charmroom.service.WishService;
+import com.google.gson.Gson;
 
 @ExtendWith(MockitoExtension.class)
 public class MarketControllerUnitTestCm {

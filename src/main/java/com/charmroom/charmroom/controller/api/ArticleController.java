@@ -1,18 +1,5 @@
 package com.charmroom.charmroom.controller.api;
 
-import com.charmroom.charmroom.dto.business.ArticleDto;
-import com.charmroom.charmroom.dto.business.ArticleLikeDto;
-import com.charmroom.charmroom.dto.business.ArticleLikeMapper;
-import com.charmroom.charmroom.dto.business.ArticleMapper;
-import com.charmroom.charmroom.dto.presentation.ArticleDto.ArticleCreateRequestDto;
-import com.charmroom.charmroom.dto.presentation.ArticleDto.ArticleResponseDto;
-import  com.charmroom.charmroom.dto.presentation.ArticleLikeDto.ArticleLikeResponseDto;
-import com.charmroom.charmroom.dto.presentation.CommonResponseDto;
-import com.charmroom.charmroom.dto.presentation.ArticleDto.ArticleUpdateRequestDto;
-import com.charmroom.charmroom.entity.User;
-import com.charmroom.charmroom.service.ArticleLikeService;
-import com.charmroom.charmroom.service.ArticleService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -28,8 +15,22 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.charmroom.charmroom.dto.business.ArticleDto;
+import com.charmroom.charmroom.dto.business.ArticleLikeDto;
+import com.charmroom.charmroom.dto.business.ArticleLikeMapper;
+import com.charmroom.charmroom.dto.business.ArticleMapper;
+import com.charmroom.charmroom.dto.presentation.ArticleDto.ArticleCreateRequestDto;
+import com.charmroom.charmroom.dto.presentation.ArticleDto.ArticleResponseDto;
+import com.charmroom.charmroom.dto.presentation.ArticleDto.ArticleUpdateRequestDto;
+import  com.charmroom.charmroom.dto.presentation.ArticleLikeDto.ArticleLikeResponseDto;
+import com.charmroom.charmroom.dto.presentation.CommonResponseDto;
+import com.charmroom.charmroom.entity.User;
+import com.charmroom.charmroom.service.ArticleLikeService;
+import com.charmroom.charmroom.service.ArticleService;
+
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/article")

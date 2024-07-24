@@ -1,45 +1,26 @@
 package com.charmroom.charmroom.controller.integration;
 
-import com.charmroom.charmroom.controller.integration.IntegrationTestBase.WithCharmroomUserDetails;
-import com.charmroom.charmroom.dto.presentation.AdDto.AdCreateRequestDto;
-import com.charmroom.charmroom.dto.presentation.AdDto;
-import com.charmroom.charmroom.dto.presentation.AdDto.AdUpdateRequestDto;
-import com.charmroom.charmroom.entity.Ad;
-import com.charmroom.charmroom.entity.Image;
-import com.charmroom.charmroom.entity.User;
-import com.charmroom.charmroom.entity.enums.UserLevel;
-import com.charmroom.charmroom.repository.AdRepository;
-import com.charmroom.charmroom.repository.ImageRepository;
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.time.LocalDateTime;
+
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.lang.reflect.Type;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import com.charmroom.charmroom.entity.Ad;
+import com.charmroom.charmroom.entity.Image;
+import com.charmroom.charmroom.repository.AdRepository;
+import com.charmroom.charmroom.repository.ImageRepository;
 
 @IntegrationTestBase.WithCharmroomAdminDetails
 public class AdminControllerIntegrationTestCm extends IntegrationTestBase {

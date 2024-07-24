@@ -1,12 +1,7 @@
 package com.charmroom.charmroom.dto.business;
 
-import com.charmroom.charmroom.entity.Attachment;
-import com.charmroom.charmroom.entity.Comment;
-import com.charmroom.charmroom.entity.Market;
 import  com.charmroom.charmroom.dto.presentation.MarketDto.MarketResponseDto;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.charmroom.charmroom.entity.Market;
 
 public class MarketMapper {
     // MarketEntity -> MarketDto 변환

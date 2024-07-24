@@ -1,7 +1,24 @@
 package com.charmroom.charmroom.controller.integration;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.ResultActions;
+
 import com.charmroom.charmroom.controller.integration.IntegrationTestBase.WithCharmroomUserDetails;
-import com.charmroom.charmroom.dto.presentation.ArticleDto;
 import com.charmroom.charmroom.dto.presentation.ArticleDto.ArticleCreateRequestDto;
 import com.charmroom.charmroom.dto.presentation.ArticleDto.ArticleUpdateRequestDto;
 import com.charmroom.charmroom.entity.Article;
@@ -11,24 +28,6 @@ import com.charmroom.charmroom.entity.enums.BoardType;
 import com.charmroom.charmroom.repository.ArticleLikeRepository;
 import com.charmroom.charmroom.repository.ArticleRepository;
 import com.charmroom.charmroom.repository.BoardRepository;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.ResultActions;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WithCharmroomUserDetails
 public class ArticleControllerIntegrationTestCm extends IntegrationTestBase {
