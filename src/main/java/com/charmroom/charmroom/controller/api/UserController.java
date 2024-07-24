@@ -49,13 +49,15 @@ public class UserController {
 	private final ArticleService articleService;
 	private final WishService wishService;
 
+	@PreAuthorize("isAuthenticated()")
 	@GetMapping("")
 	public ResponseEntity<?> getMyInfo(@AuthenticationPrincipal User user) {
 		var dto = userService.getUserByUsername(user.getUsername());
 		var response = UserMapper.toResponse(dto);
 		return CommonResponseDto.ok(response).toResponseEntity();
 	}
-
+	
+	@PreAuthorize("isAuthenticated()")
 	@PatchMapping("")
 	public ResponseEntity<?> updateMyInfo(
 			@AuthenticationPrincipal User user,
@@ -65,6 +67,7 @@ public class UserController {
 		return CommonResponseDto.ok(response).toResponseEntity();
 	}
 
+	@PreAuthorize("isAuthenticated()")
 	@PatchMapping("/withdraw")
 	public ResponseEntity<?> withdraw(
 			@AuthenticationPrincipal User user
@@ -74,6 +77,7 @@ public class UserController {
 		return CommonResponseDto.ok(response).toResponseEntity();
 	}
 
+	@PreAuthorize("isAuthenticated()")
 	@GetMapping("/point")
 	public ResponseEntity<?> getMyPoints(
 			@AuthenticationPrincipal User user,
@@ -83,6 +87,7 @@ public class UserController {
 		return CommonResponseDto.ok(response).toResponseEntity();
 	}
 
+	@PreAuthorize("isAuthenticated()")
 	@GetMapping("/comment")
 	public ResponseEntity<?> getMyComments(
 			@AuthenticationPrincipal User user,

@@ -1,34 +1,5 @@
 package com.charmroom.charmroom.controller.integration;
 
-import com.charmroom.charmroom.controller.integration.IntegrationTestBase.WithCharmroomUserDetails;
-import com.charmroom.charmroom.dto.presentation.ArticleDto;
-import com.charmroom.charmroom.dto.presentation.MarketDto;
-import com.charmroom.charmroom.dto.presentation.MarketDto.MarketCreateRequestDto;
-import com.charmroom.charmroom.dto.presentation.MarketDto.MarketUpdateRequestDto;
-import com.charmroom.charmroom.dto.presentation.ArticleDto.ArticleCreateRequestDto;
-import com.charmroom.charmroom.dto.presentation.ArticleDto.ArticleUpdateRequestDto;
-import com.charmroom.charmroom.entity.Article;
-import com.charmroom.charmroom.entity.Board;
-import com.charmroom.charmroom.entity.Market;
-import com.charmroom.charmroom.entity.User;
-import com.charmroom.charmroom.entity.Wish;
-import com.charmroom.charmroom.entity.enums.BoardType;
-import com.charmroom.charmroom.entity.enums.MarketArticleState;
-import com.charmroom.charmroom.entity.enums.UserLevel;
-import com.charmroom.charmroom.repository.ArticleRepository;
-import com.charmroom.charmroom.repository.BoardRepository;
-import com.charmroom.charmroom.repository.MarketRepository;
-import com.charmroom.charmroom.repository.UserRepository;
-import com.charmroom.charmroom.repository.WishRepository;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.ResultActions;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
@@ -36,6 +7,31 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.ResultActions;
+
+import com.charmroom.charmroom.controller.integration.IntegrationTestBase.WithCharmroomUserDetails;
+import com.charmroom.charmroom.dto.presentation.ArticleDto.ArticleCreateRequestDto;
+import com.charmroom.charmroom.dto.presentation.ArticleDto.ArticleUpdateRequestDto;
+import com.charmroom.charmroom.dto.presentation.MarketDto.MarketCreateRequestDto;
+import com.charmroom.charmroom.dto.presentation.MarketDto.MarketUpdateRequestDto;
+import com.charmroom.charmroom.entity.Article;
+import com.charmroom.charmroom.entity.Board;
+import com.charmroom.charmroom.entity.Market;
+import com.charmroom.charmroom.entity.Wish;
+import com.charmroom.charmroom.entity.enums.BoardType;
+import com.charmroom.charmroom.entity.enums.MarketArticleState;
+import com.charmroom.charmroom.repository.ArticleRepository;
+import com.charmroom.charmroom.repository.BoardRepository;
+import com.charmroom.charmroom.repository.MarketRepository;
+import com.charmroom.charmroom.repository.WishRepository;
 
 @WithCharmroomUserDetails
 public class MarketControllerIntegrationTestCm extends IntegrationTestBase {

@@ -1,21 +1,23 @@
 package com.charmroom.charmroom.controller.unit;
 
-import com.charmroom.charmroom.controller.api.ClubController;
-import com.charmroom.charmroom.dto.business.ArticleDto;
-import com.charmroom.charmroom.dto.business.ClubDto;
-import com.charmroom.charmroom.dto.business.ClubRegisterDto;
-import com.charmroom.charmroom.dto.business.UserDto;
-import com.charmroom.charmroom.dto.presentation.ClubDto.ClubUpdateRequestDto;
-import com.charmroom.charmroom.dto.business.ImageDto;
-import com.charmroom.charmroom.entity.User;
-import com.charmroom.charmroom.entity.enums.UserLevel;
-import com.charmroom.charmroom.exception.BusinessLogicError;
-import com.charmroom.charmroom.exception.BusinessLogicException;
-import com.charmroom.charmroom.exception.ExceptionHandlerAdvice;
-import com.charmroom.charmroom.service.ClubRegisterService;
-import com.charmroom.charmroom.service.ClubService;
-import com.google.gson.Gson;
-import com.charmroom.charmroom.dto.presentation.ClubDto.ClubCreateRequestDto;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -34,24 +36,20 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.Validator;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import com.charmroom.charmroom.controller.api.ClubController;
+import com.charmroom.charmroom.dto.business.ClubDto;
+import com.charmroom.charmroom.dto.business.ClubRegisterDto;
+import com.charmroom.charmroom.dto.business.ImageDto;
+import com.charmroom.charmroom.dto.business.UserDto;
+import com.charmroom.charmroom.dto.presentation.ClubDto.ClubCreateRequestDto;
+import com.charmroom.charmroom.dto.presentation.ClubDto.ClubUpdateRequestDto;
+import com.charmroom.charmroom.entity.enums.UserLevel;
+import com.charmroom.charmroom.exception.BusinessLogicError;
+import com.charmroom.charmroom.exception.BusinessLogicException;
+import com.charmroom.charmroom.exception.ExceptionHandlerAdvice;
+import com.charmroom.charmroom.service.ClubRegisterService;
+import com.charmroom.charmroom.service.ClubService;
+import com.google.gson.Gson;
 
 @ExtendWith(MockitoExtension.class)
 public class ClubControllerUnitTestCm {

@@ -1,19 +1,5 @@
 package com.charmroom.charmroom.controller.api;
 
-import com.charmroom.charmroom.dto.business.ClubDto;
-import com.charmroom.charmroom.dto.business.ClubMapper;
-import com.charmroom.charmroom.dto.business.ClubRegisterDto;
-import com.charmroom.charmroom.dto.business.ClubRegisterMapper;
-import com.charmroom.charmroom.dto.presentation.ClubDto.ClubCreateRequestDto;
-import com.charmroom.charmroom.dto.presentation.ClubDto.ClubResponseDto;
-import com.charmroom.charmroom.dto.presentation.CommonResponseDto;
-import com.charmroom.charmroom.dto.presentation.ClubDto.ClubUpdateRequestDto;
-import com.charmroom.charmroom.entity.User;
-import com.charmroom.charmroom.entity.embid.ClubRegisterId;
-import com.charmroom.charmroom.service.ClubRegisterService;
-import com.charmroom.charmroom.service.ClubService;
-import lombok.RequiredArgsConstructor;
-import com.charmroom.charmroom.dto.presentation.ClubRegisterDto.ClubRegisterResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -34,6 +20,21 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.charmroom.charmroom.dto.business.ClubDto;
+import com.charmroom.charmroom.dto.business.ClubMapper;
+import com.charmroom.charmroom.dto.business.ClubRegisterDto;
+import com.charmroom.charmroom.dto.business.ClubRegisterMapper;
+import com.charmroom.charmroom.dto.presentation.ClubDto.ClubCreateRequestDto;
+import com.charmroom.charmroom.dto.presentation.ClubDto.ClubResponseDto;
+import com.charmroom.charmroom.dto.presentation.ClubDto.ClubUpdateRequestDto;
+import com.charmroom.charmroom.dto.presentation.ClubRegisterDto.ClubRegisterResponseDto;
+import com.charmroom.charmroom.dto.presentation.CommonResponseDto;
+import com.charmroom.charmroom.entity.User;
+import com.charmroom.charmroom.service.ClubRegisterService;
+import com.charmroom.charmroom.service.ClubService;
+
+import lombok.RequiredArgsConstructor;
+
 @RestController
 @RequestMapping("/api/club")
 @RequiredArgsConstructor
@@ -41,7 +42,7 @@ public class ClubController {
     private final ClubService clubService;
     private final ClubRegisterService clubRegisterService;
 
-    @PreAuthorize("hasRole('ROLE_BASIC')")
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/")
     public ResponseEntity<?> createClub(
             @ModelAttribute ClubCreateRequestDto requestDto,
@@ -140,7 +141,7 @@ public class ClubController {
         return CommonResponseDto.ok().toResponseEntity();
     }
 
-    @PreAuthorize("hasRole('ROLE_BASIC')")
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/register/{clubId}")
     public ResponseEntity<?> register(
             @PathVariable("clubId") Integer clubId,
@@ -151,6 +152,7 @@ public class ClubController {
         return CommonResponseDto.created(response).toResponseEntity();
     }
 
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/register/{clubId}")
     public ResponseEntity<?> getRegistersByClub(
             @PathVariable("clubId") Integer clubId,

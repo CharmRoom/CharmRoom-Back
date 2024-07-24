@@ -1,8 +1,13 @@
 package com.charmroom.charmroom.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.charmroom.charmroom.dto.business.ClubDto;
 import com.charmroom.charmroom.dto.business.ClubMapper;
-import com.charmroom.charmroom.dto.business.UserDto;
 import com.charmroom.charmroom.entity.Club;
 import com.charmroom.charmroom.entity.Image;
 import com.charmroom.charmroom.entity.User;
@@ -12,13 +17,8 @@ import com.charmroom.charmroom.repository.ClubRepository;
 import com.charmroom.charmroom.repository.ImageRepository;
 import com.charmroom.charmroom.repository.UserRepository;
 import com.charmroom.charmroom.util.CharmroomUtil;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor

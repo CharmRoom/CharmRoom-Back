@@ -1,14 +1,15 @@
 package com.charmroom.charmroom.service;
 
-import com.charmroom.charmroom.dto.business.ClubRegisterDto;
-import com.charmroom.charmroom.entity.Club;
-import com.charmroom.charmroom.entity.ClubRegister;
-import com.charmroom.charmroom.entity.User;
-import com.charmroom.charmroom.exception.BusinessLogicError;
-import com.charmroom.charmroom.exception.BusinessLogicException;
-import com.charmroom.charmroom.repository.ClubRegisterRepository;
-import com.charmroom.charmroom.repository.ClubRepository;
-import com.charmroom.charmroom.repository.UserRepository;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -20,16 +21,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.verify;
+import com.charmroom.charmroom.dto.business.ClubRegisterDto;
+import com.charmroom.charmroom.entity.Club;
+import com.charmroom.charmroom.entity.ClubRegister;
+import com.charmroom.charmroom.entity.User;
+import com.charmroom.charmroom.exception.BusinessLogicError;
+import com.charmroom.charmroom.exception.BusinessLogicException;
+import com.charmroom.charmroom.repository.ClubRegisterRepository;
+import com.charmroom.charmroom.repository.ClubRepository;
+import com.charmroom.charmroom.repository.UserRepository;
 
 @ExtendWith(MockitoExtension.class)
 public class ClubRegisterServiceUnitTest {

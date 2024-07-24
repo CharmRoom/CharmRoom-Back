@@ -4,6 +4,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,6 +34,7 @@ public class CommentController {
 	private final CommentService commentService;
 	private final CommentLikeService commentLikeService;
 	
+	@PreAuthorize("isAuthenticated()")
 	@PostMapping("/{articleId}")
 	public ResponseEntity<?> create(
 			@AuthenticationPrincipal User user,
@@ -50,6 +52,7 @@ public class CommentController {
 		return CommonResponseDto.created(response).toResponseEntity();
 	}
 	
+	@PreAuthorize("permitAll()")
 	@GetMapping("/{articleId}")
 	public ResponseEntity<?> getCommentList(
 			@PathVariable("articleId") Integer articleId,
@@ -60,6 +63,7 @@ public class CommentController {
 		return CommonResponseDto.ok(response).toResponseEntity();
 	}
 	
+	@PreAuthorize("isAuthenticated()")
 	@PatchMapping("/{commentId}")
 	public ResponseEntity<?> update(
 			@AuthenticationPrincipal User user,
@@ -71,6 +75,7 @@ public class CommentController {
 		return CommonResponseDto.ok(response).toResponseEntity();
 	}
 	
+	@PreAuthorize("isAuthenticated()")
 	@DeleteMapping("/{commentId}")
 	public ResponseEntity<?> disable(
 			@AuthenticationPrincipal User user,
@@ -81,6 +86,7 @@ public class CommentController {
 		return CommonResponseDto.ok(response).toResponseEntity();
 	}
 	
+	@PreAuthorize("isAuthenticated()")
 	@PostMapping("/like/{commentId}")
 	public ResponseEntity<?> like(
 			@AuthenticationPrincipal User user,
@@ -91,6 +97,7 @@ public class CommentController {
 		return CommonResponseDto.ok(response).toResponseEntity();
 	}
 	
+	@PreAuthorize("isAuthenticated()")
 	@PostMapping("/dislike/{commentId}")
 	public ResponseEntity<?> dislike(
 			@AuthenticationPrincipal User user,

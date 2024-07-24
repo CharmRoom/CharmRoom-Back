@@ -1,11 +1,25 @@
 package com.charmroom.charmroom.controller.integration;
 
-import com.charmroom.charmroom.dto.presentation.SubscribeDto;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+
 import com.charmroom.charmroom.dto.presentation.SubscribeDto.SubscribeCreateRequestDto;
 import com.charmroom.charmroom.entity.Article;
-import com.charmroom.charmroom.entity.Subscribe;
-import com.charmroom.charmroom.entity.Subscribe;
 import com.charmroom.charmroom.entity.Market;
+import com.charmroom.charmroom.entity.Subscribe;
 import com.charmroom.charmroom.entity.User;
 import com.charmroom.charmroom.entity.Wish;
 import com.charmroom.charmroom.entity.enums.MarketArticleState;
@@ -15,21 +29,6 @@ import com.charmroom.charmroom.repository.MarketRepository;
 import com.charmroom.charmroom.repository.SubscribeRepository;
 import com.charmroom.charmroom.repository.UserRepository;
 import com.charmroom.charmroom.repository.WishRepository;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class UserControllerIntegrationTestCm extends IntegrationTestBase {
     @Nested
