@@ -138,7 +138,7 @@ public class ClubRegisterRepositoryUnitTest {
         @Test
         void success() {
             // given
-            ClubRegister saved = clubRegisterRepository.save(clubRegister);
+            clubRegisterRepository.save(clubRegister);
             // when
             clubRegisterRepository.delete(clubRegister);
             // then

@@ -12,6 +12,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @Embeddable
 public class ClubRegisterId implements Serializable {
-    private Integer clubId;
+    private static final long serialVersionUID = -1978618759109218319L;
+	private Integer clubId;
     private Integer userId;
 }

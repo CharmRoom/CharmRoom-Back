@@ -26,7 +26,6 @@ public class ClubRegisterService {
     private final ClubRegisterRepository clubRegisterRepository;
     private final UserRepository userRepository;
     private final ClubRepository clubRepository;
-    private final ClubService clubService;
 
     public ClubRegisterDto register(String username, Integer clubId) {
         User user = userRepository.findByUsername(username).orElseThrow(() ->

@@ -39,7 +39,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MarketController {
     private final MarketService marketService;
-    private final ArticleService articleService;
     private final WishService wishService;
 
     @PreAuthorize("isAuthenticated()")

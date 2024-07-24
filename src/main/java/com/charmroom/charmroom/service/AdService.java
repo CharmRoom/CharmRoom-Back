@@ -26,7 +26,6 @@ public class AdService {
     private final AdRepository adRepository;
     private final ImageRepository imageRepository;
     private final CharmroomUtil.Upload uploadUtil;
-    private final CharmroomUtil charmroomUtil;
 
     public AdDto create(String title, String link, MultipartFile imageFile, LocalDateTime startTime, LocalDateTime endTime) {
         Image image = uploadUtil.buildImage(imageFile);
