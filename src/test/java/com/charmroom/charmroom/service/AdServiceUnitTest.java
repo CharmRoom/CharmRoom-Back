@@ -94,7 +94,7 @@ public class AdServiceUnitTest {
             doReturn(ad).when(adRepository).save(any(Ad.class));
 
             // when
-            AdDto created = adService.create(title, link, imageFile, startTime, endTime);
+            AdDto created = adService.create(title, link, startTime, endTime, imageFile);
 
             // then
             assertThat(created).isNotNull();

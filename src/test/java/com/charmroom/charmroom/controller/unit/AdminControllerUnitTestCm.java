@@ -80,7 +80,7 @@ public class AdminControllerUnitTestCm {
             // given
             MockMultipartFile imageFile = new MockMultipartFile("image", "test.png", MediaType.IMAGE_PNG_VALUE, "test".getBytes());
 
-            doReturn(mockedAdDto).when(adService).create(mockedAdDto.getTitle(), mockedAdDto.getLink(), imageFile, mockedAdDto.getStart(), mockedAdDto.getEnd());
+            doReturn(mockedAdDto).when(adService).create(mockedAdDto.getTitle(), mockedAdDto.getLink(), mockedAdDto.getStart(), mockedAdDto.getEnd(), imageFile);
 
             // when
             ResultActions resultActions = mockMvc.perform(multipart("/api/admin/ad")

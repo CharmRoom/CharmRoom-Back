@@ -27,7 +27,22 @@ public class AdService {
     private final ImageRepository imageRepository;
     private final CharmroomUtil.Upload uploadUtil;
 
-    public AdDto create(String title, String link, MultipartFile imageFile, LocalDateTime startTime, LocalDateTime endTime) {
+    private Ad getAd(Integer adId) {
+        return adRepository.findById(adId).orElseThrow(() ->
+                new BusinessLogicException(BusinessLogicError.NOTFOUND_AD, "adId: " + adId));
+    }
+
+    private Image buildImage(MultipartFile imageFile, Ad ad) {
+        if (ad.getImage() != null) {
+            imageRepository.delete(ad.getImage());
+            return null;
+        }
+
+        Image image = uploadUtil.buildImage(imageFile);
+        return imageRepository.save(image);
+    }
+
+    public AdDto create(String title, String link, LocalDateTime startTime, LocalDateTime endTime, MultipartFile imageFile) {
         Image image = uploadUtil.buildImage(imageFile);
         Image savedImage = imageRepository.save(image);
 
@@ -50,71 +65,44 @@ public class AdService {
 
     @Transactional
     public AdDto updateTitle(Integer adId, String newAdTitle) {
-        Ad ad = adRepository.findById(adId)
-                .orElseThrow(() ->
-                        new BusinessLogicException(BusinessLogicError.NOTFOUND_AD, "adId: " + adId));
-
+        Ad ad = getAd(adId);
         ad.updateTitle(newAdTitle);
         return AdMapper.toDto(ad);
     }
 
     @Transactional
     public AdDto updateLink(Integer adId, String newAdLink) {
-        Ad ad = adRepository.findById(adId)
-                .orElseThrow(() ->
-                        new BusinessLogicException(BusinessLogicError.NOTFOUND_AD, "adId: " + adId));
-
+        Ad ad = getAd(adId);
         ad.updateLink(newAdLink);
         return AdMapper.toDto(ad);
     }
 
     @Transactional
     public AdDto setImage(Integer adId, MultipartFile imageFile) {
-        Ad ad = adRepository.findById(adId).orElseThrow(() ->
-                new BusinessLogicException(BusinessLogicError.NOTFOUND_AD, "adId: " + adId));
-
-        Image adImage = null;
-        if (ad.getImage() != null) {
-            imageRepository.delete(ad.getImage());
-        }
-
-        Image image = uploadUtil.buildImage(imageFile);
-        adImage = imageRepository.save(image);
-
+        Ad ad = getAd(adId);
+        Image adImage = buildImage(imageFile, ad);
         ad.updateImage(adImage);
         return AdMapper.toDto(ad);
     }
 
     @Transactional
     public AdDto updateStartTime(Integer adId, LocalDateTime newStartTime) {
-        Ad ad = adRepository.findById(adId).orElseThrow(() ->
-                new BusinessLogicException(BusinessLogicError.NOTFOUND_AD, "adId: " + adId));
-
+        Ad ad = getAd(adId);
         ad.updateStart(newStartTime);
         return AdMapper.toDto(ad);
     }
 
     @Transactional
     public AdDto updateEndTime(Integer adId, LocalDateTime newEndTime) {
-        Ad ad = adRepository.findById(adId).orElseThrow(() ->
-                new BusinessLogicException(BusinessLogicError.NOTFOUND_AD, "adId: " + adId));
-
+        Ad ad = getAd(adId);
         ad.updateEnd(newEndTime);
         return AdMapper.toDto(ad);
     }
 
     @Transactional
     public AdDto updateAd(Integer adId, String title, String link, LocalDateTime startTime, LocalDateTime endTime, MultipartFile imageFile) {
-        Ad ad = adRepository.findById(adId).orElseThrow(() ->
-                new BusinessLogicException(BusinessLogicError.NOTFOUND_AD, "adId: " + adId));
-
-        Image adImage = null;
-        if (ad.getImage() != null) {
-            imageRepository.delete(ad.getImage());
-        }
-
-        Image image = uploadUtil.buildImage(imageFile);
-        adImage = imageRepository.save(image);
+        Ad ad = getAd(adId);
+        Image adImage = buildImage(imageFile, ad);
 
         ad.updateTitle(title);
         ad.updateLink(link);
@@ -126,9 +114,7 @@ public class AdService {
     }
 
     public void deleteAd(Integer adId) {
-        Ad ad = adRepository.findById(adId).orElseThrow(() ->
-                new BusinessLogicException(BusinessLogicError.NOTFOUND_AD, "adId: " + adId));
-
+        Ad ad = getAd(adId);
         adRepository.delete(ad);
     }
 }
