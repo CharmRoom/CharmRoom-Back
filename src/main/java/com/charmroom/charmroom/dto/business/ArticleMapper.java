@@ -23,10 +23,10 @@ public class ArticleMapper {
 		if (entity.getUser() != null && !ignores.contains("user")) {
 			dto.setUser(UserMapper.toDto(entity.getUser()));
 		}
-		if (entity.getBoard() != null && ignores.contains("board")) {
+		if (entity.getBoard() != null && !ignores.contains("board")) {
 			dto.setBoard(BoardMapper.toDto(entity.getBoard()));
 		}
-		if (!entity.getCommentList().isEmpty() && ignores.contains("commentList")) {
+		if (!entity.getCommentList().isEmpty() && !ignores.contains("commentList")) {
 			var commentList = entity.getCommentList();
 			List<CommentDto> commentDtoList = new ArrayList<>();
 			for(var comment : commentList) {
@@ -57,24 +57,19 @@ public class ArticleMapper {
 				.createdAt(dto.getCreatedAt())
 				.updatedAt(dto.getUpdatedAt())
 				.build();
-
-		responseDto.setFiles(dto.getAttachmentList()
-				.stream().map(attachment -> AttachmentMapper.toResponse(attachment)).toList());
+		responseDto.setFiles(dto.getAttachmentList().stream().map(AttachmentMapper::toResponse).toList());
 
 		if (dto.getUser() != null) {
 			responseDto.setUser(UserMapper.toResponse(dto.getUser()));
 		}
-
 		if(dto.getBoard() != null) {
 			responseDto.setBoard(BoardMapper.toResponse(dto.getBoard()));
 		}
-
 		if(!dto.getCommentList().isEmpty()) {
 			var commentList = dto.getCommentList();
-			var commentResponseList = commentList.stream().map(comment -> CommentMapper.toResponse(comment)).toList();
+			var commentResponseList = commentList.stream().map(CommentMapper::toResponse).toList();
 			responseDto.setComments(commentResponseList);
 		}
-
 		return responseDto;
 	}
 }

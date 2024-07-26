@@ -34,16 +34,9 @@ public class ArticleService {
     private final UserRepository userRepository;
     private final BoardRepository boardRepository;
 
-    public ArticleDto createArticle(String username, Integer boardId, String title, String body) {
-        return createArticle(username, boardId, title, body, new ArrayList<>());
-    }
-
     public ArticleDto createArticle(String username, Integer boardId, String title, String body, List<MultipartFile> fileList) {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "username: " + username));
-
-        Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new BusinessLogicException(BusinessLogicError.NOTFOUND_BOARD, "boardId: " + boardId));
+        User user = getUser(username);
+        Board board = getBoard(boardId);
 
         Article article = Article.builder()
                 .title(title)
@@ -51,73 +44,69 @@ public class ArticleService {
                 .user(user)
                 .board(board)
                 .build();
-
         for (MultipartFile attachment : fileList) {
             Attachment attachmentEntity = uploadUtil.buildAttachment(attachment, article);
             Attachment saved = attachmentRepository.save(attachmentEntity);
             article.getAttachmentList().add(saved);
         }
-        
+
         Article saved = articleRepository.save(article);
         return ArticleMapper.toDto(saved);
     }
 
+    public ArticleDto createArticle(String username, Integer boardId, String title, String body) {
+        return createArticle(username, boardId, title, body, new ArrayList<>());
+    }
+
+    public ArticleDto getOneArticle(Integer articleId) {
+        Article found = getArticle(articleId);
+        return ArticleMapper.toDto(found);
+    }
+
     public Page<ArticleDto> getArticles(Integer boardId, Pageable pageable) {
-        Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new BusinessLogicException(BusinessLogicError.NOTFOUND_BOARD, "boardId: " + boardId));
-
+        Board board = getBoard(boardId);
         Page<Article> articles = articleRepository.findAllByBoard(board, pageable);
-
         return articles.map(ArticleMapper::toDto);
     }
 
     public Page<ArticleDto> getArticlesByUsername(String username, Pageable pageable) {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "username: " + username));
-
+        User user = getUser(username);
         Page<Article> articles = articleRepository.findAllByUser(user, pageable);
         return articles.map(ArticleMapper::toDto);
     }
 
-    public ArticleDto getOneArticle(Integer articleId) {
-        Article found = articleRepository.findById(articleId)
-                .orElseThrow(() -> new BusinessLogicException(BusinessLogicError.NOTFOUND_ARTICLE, "articleId: " + articleId)
-                );
-        return ArticleMapper.toDto(found);
-    }
-
     @Transactional
     public ArticleDto updateArticle(Integer articleId, String username, String title, String body) {
-        User user = userRepository.findByUsername(username).orElseThrow(() ->
-                new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "username: " + username));
-
-
-        Article originalArticle = articleRepository.findById(articleId).orElseThrow(
-                () -> new BusinessLogicException(BusinessLogicError.NOTFOUND_ARTICLE, "articleId: " + articleId)
-        );
-
-        if (!user.getUsername().equals(originalArticle.getUser().getUsername())) {
-            throw new BusinessLogicException(BusinessLogicError.UNAUTHORIZED_ARTICLE);
-        }
-
-        if (!originalArticle.getUser().equals(user)) {
+        Article originalArticle = getArticle(articleId);
+        if(!username.equals(originalArticle.getUser().getUsername())) {
             throw new BusinessLogicException(BusinessLogicError.UNAUTHORIZED_ARTICLE, "articleId: " + articleId);
         }
+
         originalArticle.updateTitle(title);
         originalArticle.updatedBody(body);
-
         return ArticleMapper.toDto(originalArticle);
     }
 
     public void deleteArticle(Integer articleId, String username) {
-        Article article = articleRepository.findById(articleId).orElseThrow(
-                () -> new BusinessLogicException(BusinessLogicError.NOTFOUND_ARTICLE, "articleId: " + articleId)
-        );
-
+        Article article = getArticle(articleId);
         if(!username.equals(article.getUser().getUsername())) {
             throw new BusinessLogicException(BusinessLogicError.UNAUTHORIZED_ARTICLE, "articleId: " + articleId);
         }
-
         articleRepository.delete(article);
+    }
+
+    private User getUser(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "username: " + username));
+    }
+
+    private Board getBoard(Integer boardId) {
+        return boardRepository.findById(boardId)
+                .orElseThrow(() -> new BusinessLogicException(BusinessLogicError.NOTFOUND_BOARD, "boardId: " + boardId));
+    }
+
+    private Article getArticle(Integer articleId) {
+        return articleRepository.findById(articleId)
+                .orElseThrow(() -> new BusinessLogicException(BusinessLogicError.NOTFOUND_ARTICLE, "articleId: " + articleId));
     }
 }

@@ -29,32 +29,30 @@ public class ArticleLikeService {
         Article article = articleRepository.findById(articleId).orElseThrow(() -> new BusinessLogicException(BusinessLogicError.NOTFOUND_ARTICLE));
 
         Optional<ArticleLike> found = articleLikeRepository.findByUserAndArticle(user, article);
-
         if (found.isPresent()) {
             ArticleLike articleLike = found.get();
             if (articleLike.getType() == type) {
                 articleLikeRepository.delete(articleLike);
                 return null; // 좋아요/싫어요 취소
-            } else {
-                articleLike.changeType(type);
-                return ArticleLikeMapper.toDto(articleLike);
             }
-        } else {
-            ArticleLike articleLike = ArticleLike.builder()
-                    .article(article)
-                    .user(user)
-                    .type(type)
-                    .build();
-
-            ArticleLike saved = articleLikeRepository.save(articleLike);
-            return ArticleLikeMapper.toDto(saved);
+            articleLike.changeType(type);
+            return ArticleLikeMapper.toDto(articleLike);
         }
+        ArticleLike articleLike = ArticleLike.builder()
+                .article(article)
+                .user(user)
+                .type(type)
+                .build();
+        ArticleLike saved = articleLikeRepository.save(articleLike);
+        return ArticleLikeMapper.toDto(saved);
     }
 
+    @Transactional
     public ArticleLikeDto like(String username, Integer articleId) {
         return likeOrDislike(username, articleId, true);
     }
 
+    @Transactional
     public ArticleLikeDto dislike(String username, Integer articleId) {
         return likeOrDislike(username, articleId, false);
     }

@@ -244,7 +244,6 @@ public class ArticleServiceUnitTest {
         @Test
         void success() {
             // given
-            doReturn(Optional.of(user)).when(userRepository).findByUsername(user.getUsername());
             doReturn(Optional.of(article)).when(articleRepository).findById(article.getId());
 
             String newTitle = "new title";
@@ -262,7 +261,6 @@ public class ArticleServiceUnitTest {
         @Test
         void fail_noArticleFound() {
             // given
-            doReturn(Optional.of(user)).when(userRepository).findByUsername(user.getUsername());
             doReturn(Optional.empty()).when(articleRepository).findById(article.getId());
 
             // when
@@ -279,15 +277,11 @@ public class ArticleServiceUnitTest {
         @Test
         void fail_unauthorizedUserUpdateArticle() {
             // given
-            User unauthorized = User.builder()
-                    .username("unauthorized")
-                    .build();
-            doReturn(Optional.of(unauthorized)).when(userRepository).findByUsername(unauthorized.getUsername());
             doReturn(Optional.of(article)).when(articleRepository).findById(article.getId());
 
             // when
             BusinessLogicException thrown = assertThrows(BusinessLogicException.class, () ->
-                    articleService.updateArticle(article.getId(), unauthorized.getUsername(), "", ""));
+                    articleService.updateArticle(article.getId(), "random", "", ""));
 
             // then
             assertThat(thrown.getError()).isEqualTo(BusinessLogicError.UNAUTHORIZED_ARTICLE);
