@@ -27,21 +27,6 @@ public class AdService {
     private final ImageRepository imageRepository;
     private final CharmroomUtil.Upload uploadUtil;
 
-    private Ad getAd(Integer adId) {
-        return adRepository.findById(adId).orElseThrow(() ->
-                new BusinessLogicException(BusinessLogicError.NOTFOUND_AD, "adId: " + adId));
-    }
-
-    private Image buildImage(MultipartFile imageFile, Ad ad) {
-        if (ad.getImage() != null) {
-            imageRepository.delete(ad.getImage());
-            return null;
-        }
-
-        Image image = uploadUtil.buildImage(imageFile);
-        return imageRepository.save(image);
-    }
-
     public AdDto create(String title, String link, LocalDateTime startTime, LocalDateTime endTime, MultipartFile imageFile) {
         Image image = uploadUtil.buildImage(imageFile);
         Image savedImage = imageRepository.save(image);
@@ -116,6 +101,21 @@ public class AdService {
     public void deleteAd(Integer adId) {
         Ad ad = getAd(adId);
         adRepository.delete(ad);
+    }
+
+    private Ad getAd(Integer adId) {
+        return adRepository.findById(adId).orElseThrow(() ->
+                new BusinessLogicException(BusinessLogicError.NOTFOUND_AD, "adId: " + adId));
+    }
+
+    private Image buildImage(MultipartFile imageFile, Ad ad) {
+        if (ad.getImage() != null) {
+            imageRepository.delete(ad.getImage());
+            return null;
+        }
+
+        Image image = uploadUtil.buildImage(imageFile);
+        return imageRepository.save(image);
     }
 }
 

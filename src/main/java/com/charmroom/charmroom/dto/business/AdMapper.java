@@ -16,7 +16,6 @@ public class AdMapper {
         if (entity.getImage() != null) {
             dto.setImage(ImageMapper.toDto(entity.getImage()));
         }
-
         return dto;
     }
 

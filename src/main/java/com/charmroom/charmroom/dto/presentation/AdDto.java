@@ -1,6 +1,7 @@
 package com.charmroom.charmroom.dto.presentation;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,12 +17,17 @@ public class AdDto {
     @NoArgsConstructor
     @Builder
     public static class AdCreateRequestDto {
+        @NotEmpty
         private String title;
+        @NotEmpty
         private String link;
+        @NotEmpty
         @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
         private LocalDateTime start;
+        @NotEmpty
         @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
         private LocalDateTime end;
+        @NotEmpty
         private MultipartFile image;
     }
 
@@ -30,12 +36,17 @@ public class AdDto {
     @NoArgsConstructor
     @Builder
     public static class AdUpdateRequestDto {
+        @NotEmpty
         private String title;
+        @NotEmpty
         private String link;
+        @NotEmpty
         @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
         private LocalDateTime start;
+        @NotEmpty
         @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
         private LocalDateTime end;
+        @NotEmpty
         private MultipartFile image;
     }
 
