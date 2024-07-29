@@ -1,5 +1,6 @@
 package com.charmroom.charmroom.controller.api;
 
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -43,7 +44,7 @@ public class ArticleController {
     @PostMapping("/{boardId}")
     public ResponseEntity<?> addArticle(
             @PathVariable(value = "boardId") Integer boardId,
-            @ModelAttribute ArticleCreateRequestDto requestDto,
+            @ModelAttribute @Valid ArticleCreateRequestDto requestDto,
             @AuthenticationPrincipal User user) {
 
         ArticleDto article;
@@ -81,7 +82,7 @@ public class ArticleController {
     public ResponseEntity<?> updateArticle(
             @PathVariable("articleId") Integer articleId,
             @AuthenticationPrincipal User user,
-            @RequestBody ArticleUpdateRequestDto request
+            @RequestBody @Valid ArticleUpdateRequestDto request
     ) {
         ArticleDto articleDto = articleService.updateArticle(articleId, user.getUsername(), request.getTitle(), request.getBody());
         ArticleResponseDto responseDto = ArticleMapper.toResponse(articleDto);
