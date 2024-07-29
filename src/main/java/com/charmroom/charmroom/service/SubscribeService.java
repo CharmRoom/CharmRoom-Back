@@ -22,34 +22,32 @@ public class SubscribeService {
     private final UserRepository userRepository;
 
     public SubscribeDto subscribeOrCancel(String subscriberName, String targetName) {
-        User subscriber = userRepository.findByUsername(subscriberName).orElseThrow(() ->
-                new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "subscriberName: " + subscriberName));
+        User subscriber = findSubscriber(subscriberName);
         User target = userRepository.findByUsername(targetName).orElseThrow(() ->
                 new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "targetName: " + targetName));
 
         Optional<Subscribe> found = subscribeRepository.findBySubscriberAndTarget(subscriber, target);
-
         if (found.isPresent()) {
             Subscribe subscribe = found.get();
             subscribeRepository.delete(subscribe);
             return null; // 구독 취소
-        } else {
-            Subscribe subscribe = Subscribe.builder()
-                    .subscriber(subscriber)
-                    .target(target)
-                    .build();
-            Subscribe saved = subscribeRepository.save(subscribe);
-            return SubscribeMapper.toDto(saved);
         }
+        Subscribe subscribe = Subscribe.builder()
+                .subscriber(subscriber)
+                .target(target)
+                .build();
+        Subscribe saved = subscribeRepository.save(subscribe);
+        return SubscribeMapper.toDto(saved);
     }
 
     public Page<SubscribeDto> getSubscribesBySubscriber(String subscriberName, Pageable pageable) {
-        User subscriber = userRepository.findByUsername(subscriberName).orElseThrow(
-                () -> new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "subscriberName: " + subscriberName)
-        );
-
+        User subscriber = findSubscriber(subscriberName);
         Page<Subscribe> subscribes = subscribeRepository.findAllBySubscriber(subscriber, pageable);
-
         return subscribes.map(SubscribeMapper::toDto);
+    }
+
+    private User findSubscriber(String subscriberName) {
+        return userRepository.findByUsername(subscriberName).orElseThrow(() ->
+                new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "subscriberName: " + subscriberName));
     }
 }

@@ -74,7 +74,6 @@ public class ClubController {
     ) {
         ClubDto club = clubService.getClub(clubId);
         ClubResponseDto response = ClubMapper.toResponse(club);
-
         return CommonResponseDto.ok(response).toResponseEntity();
     }
 
@@ -84,8 +83,7 @@ public class ClubController {
             @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         Page<ClubDto> dtos = clubService.getAllClubsByPageable(pageable);
-        Page<ClubResponseDto> responseDtos = dtos.map(dto -> ClubMapper.toResponse(dto));
-
+        Page<ClubResponseDto> responseDtos = dtos.map(ClubMapper::toResponse);
         return CommonResponseDto.ok(responseDtos).toResponseEntity();
     }
 
@@ -103,7 +101,6 @@ public class ClubController {
                 .build();
 
         ClubDto dto = clubService.update(clubId, clubDto, user.getUsername());
-
         ClubResponseDto response = ClubMapper.toResponse(dto);
         return CommonResponseDto.ok(response).toResponseEntity();
     }
@@ -162,7 +159,6 @@ public class ClubController {
     ) {
         Page<ClubRegisterDto> dtos = clubRegisterService.getClubRegistersByClub(clubId, pageable, owner.getUsername());
         Page<ClubRegisterResponseDto> response = dtos.map(ClubRegisterMapper::toResponse);
-
         return CommonResponseDto.ok(response).toResponseEntity();
     }
 

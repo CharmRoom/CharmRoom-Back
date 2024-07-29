@@ -65,7 +65,6 @@ public class MarketController {
         } else {
             created = marketService.create(marketDto, user.getUsername(), boardId, requestDto.getArticle().getFile());
         }
-
         MarketResponseDto response = MarketMapper.toResponse(created);
         return CommonResponseDto.created(response).toResponseEntity();
     }
@@ -77,7 +76,6 @@ public class MarketController {
     ) {
         MarketDto marketDto = marketService.getMarket(marketId);
         MarketResponseDto response = MarketMapper.toResponse(marketDto);
-
         return CommonResponseDto.ok(response).toResponseEntity();
     }
 
@@ -88,8 +86,7 @@ public class MarketController {
             @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         Page<MarketDto> dtos = marketService.getMarkets(boardId, pageable);
-        Page<MarketResponseDto> responseDtos = dtos.map(dto -> MarketMapper.toResponse(dto));
-
+        Page<MarketResponseDto> responseDtos = dtos.map(MarketMapper::toResponse);
         return CommonResponseDto.ok(responseDtos).toResponseEntity();
     }
 
@@ -104,7 +101,6 @@ public class MarketController {
                 .title(request.getArticle().getTitle())
                 .body(request.getArticle().getBody())
                 .build();
-
         MarketDto marketDto = MarketDto.builder()
                 .article(articleDto)
                 .price(request.getPrice())
@@ -113,7 +109,6 @@ public class MarketController {
                 .build();
 
         MarketDto dto = marketService.update(marketId, marketDto, user.getUsername());
-
         MarketResponseDto response = MarketMapper.toResponse(dto);
         return CommonResponseDto.ok(response).toResponseEntity();
     }
@@ -136,7 +131,6 @@ public class MarketController {
     ) {
         WishDto wishDto = wishService.wishOrCancel(user.getUsername(), marketId);
         WishResponseDto response = WishMapper.toResponse(wishDto);
-
         return CommonResponseDto.created(response).toResponseEntity();
     }
 }

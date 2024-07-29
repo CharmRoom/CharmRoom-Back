@@ -28,11 +28,8 @@ public class ClubRegisterService {
     private final ClubRepository clubRepository;
 
     public ClubRegisterDto register(String username, Integer clubId) {
-        User user = userRepository.findByUsername(username).orElseThrow(() ->
-                new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "username: " + username));
-
-        Club club = clubRepository.findById(clubId).orElseThrow(() ->
-                new BusinessLogicException(BusinessLogicError.NOTFOUND_CLUB, "clubId: " + clubId));
+        User user = findUser(username);
+        Club club = findClub(clubId);
 
         ClubRegister clubRegister = ClubRegister.builder()
                 .club(club)
@@ -43,30 +40,22 @@ public class ClubRegisterService {
     }
 
     public Page<ClubRegisterDto> getClubRegistersByClub(Integer clubId, Pageable pageable, String username) {
-        Club club = clubRepository.findById(clubId)
-                .orElseThrow(() ->
-                new BusinessLogicException(BusinessLogicError.NOTFOUND_CLUB, "clubId: " + clubId));
-
+        Club club = findClub(clubId);
         if (!username.equals(club.getOwner().getUsername())) {
             throw new BusinessLogicException(BusinessLogicError.UNAUTHORIZED_CLUB);
         }
-
         Page<ClubRegister> clubRegisters = clubRegisterRepository.findAllByClub(club, pageable);
         return clubRegisters.map(ClubRegisterMapper::toDto);
     }
 
     public void deleteClubRegister(String username, Integer clubId, String ownerName) {
-        User user = userRepository.findByUsername(username).orElseThrow(() ->
-                new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "username: " + username));
-
-        Club club = clubRepository.findById(clubId).orElseThrow(() ->
-                new BusinessLogicException(BusinessLogicError.NOTFOUND_CLUB, "clubId: " + clubId));
+        User user = findUser(username);
+        Club club = findClub(clubId);
+        Optional<ClubRegister> found = clubRegisterRepository.findByUserAndClub(user, club);
 
         if (!ownerName.equals(club.getOwner().getUsername())) {
             throw new BusinessLogicException(BusinessLogicError.UNAUTHORIZED_CLUB);
         }
-
-        Optional<ClubRegister> found = clubRegisterRepository.findByUserAndClub(user, club);
 
         if (found.isPresent()) {
             ClubRegister register = found.get();
@@ -79,20 +68,25 @@ public class ClubRegisterService {
 
     @Transactional
     public void approveClubRegister(String ownerName, String username, Integer clubId) {
-        User user = userRepository.findByUsername(username).orElseThrow(() ->
-                new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "username: " + username));
-
-        Club club = clubRepository.findById(clubId).orElseThrow(() ->
-                new BusinessLogicException(BusinessLogicError.NOTFOUND_CLUB, "clubId: " + clubId));
-
+        User user = findUser(username);
+        Club club = findClub(clubId);
         ClubRegister register = clubRegisterRepository.findByUserAndClub(user, club).orElseThrow(() ->
                 new BusinessLogicException(BusinessLogicError.NOTFOUND_CLUBREGISTER));
 
         if(!ownerName.equals(club.getOwner().getUsername())) {
             throw new BusinessLogicException(BusinessLogicError.UNAUTHORIZED_CLUB);
         }
-
         user.updateClub(register.getClub());
         clubRegisterRepository.delete(register);
+    }
+
+    private Club findClub(Integer clubId) {
+        return clubRepository.findById(clubId).orElseThrow(() ->
+                new BusinessLogicException(BusinessLogicError.NOTFOUND_CLUB, "clubId: " + clubId));
+    }
+
+    private User findUser(String username) {
+        return userRepository.findByUsername(username).orElseThrow(() ->
+                new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "username: " + username));
     }
 }
