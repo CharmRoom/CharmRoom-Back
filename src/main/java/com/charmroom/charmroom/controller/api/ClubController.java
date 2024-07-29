@@ -1,5 +1,6 @@
 package com.charmroom.charmroom.controller.api;
 
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -45,7 +46,7 @@ public class ClubController {
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/")
     public ResponseEntity<?> createClub(
-            @ModelAttribute ClubCreateRequestDto requestDto,
+            @ModelAttribute @Valid ClubCreateRequestDto requestDto,
             @AuthenticationPrincipal User user
     ) {
         ClubDto club;
@@ -93,7 +94,7 @@ public class ClubController {
     public ResponseEntity<?> updateClub(
             @PathVariable("clubId") Integer clubId,
             @AuthenticationPrincipal User user,
-            @RequestBody ClubUpdateRequestDto request
+            @RequestBody @Valid ClubUpdateRequestDto request
     ) {
         ClubDto clubDto = ClubDto.builder()
                 .name(request.getName())

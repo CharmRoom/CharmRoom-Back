@@ -1,5 +1,6 @@
 package com.charmroom.charmroom.dto.presentation;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,8 +13,11 @@ public class ClubDto {
     @NoArgsConstructor
     @Builder
     public static class ClubCreateRequestDto {
+        @NotBlank
         private String name;
+        @NotBlank
         private String description;
+        @NotBlank
         private String contact;
         private MultipartFile image;
     }
@@ -23,8 +27,11 @@ public class ClubDto {
     @NoArgsConstructor
     @Builder
     public static class ClubUpdateRequestDto {
+        @NotBlank
         private String name;
+        @NotBlank
         private String description;
+        @NotBlank
         private String contact;
     }
 

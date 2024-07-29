@@ -2,6 +2,7 @@ package com.charmroom.charmroom.controller.api;
 
 import com.charmroom.charmroom.dto.business.AdMapper;
 import com.charmroom.charmroom.service.AdService;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -124,7 +125,7 @@ public class AdminController {
 
 	@PostMapping("/ad")
 	public ResponseEntity<?> createAd(
-			@ModelAttribute AdCreateRequestDto request
+			@ModelAttribute @Valid AdCreateRequestDto request
 	) {
 		AdDto adDto = adService.create(request.getTitle(), request.getLink(), request.getStart(), request.getEnd(), request.getImage());
 		AdResponseDto response = AdMapper.toResponse(adDto);
@@ -143,7 +144,7 @@ public class AdminController {
 	@PostMapping("/ad/{adId}")
 	public ResponseEntity<?> updateAd(
 			@PathVariable("adId") Integer adId,
-			@ModelAttribute AdUpdateRequestDto requestDto
+			@ModelAttribute @Valid AdUpdateRequestDto requestDto
 	) {
 		AdDto adDto = adService.updateAd(adId, requestDto.getTitle(), requestDto.getLink(), requestDto.getStart(), requestDto.getEnd(), requestDto.getImage());
 		AdResponseDto response = AdMapper.toResponse(adDto);
