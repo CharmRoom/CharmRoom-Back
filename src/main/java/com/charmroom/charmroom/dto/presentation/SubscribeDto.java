@@ -1,5 +1,6 @@
 package com.charmroom.charmroom.dto.presentation;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,7 +12,9 @@ public class SubscribeDto {
     @NoArgsConstructor
     @Builder
     public static class SubscribeCreateRequestDto {
+        @NotBlank
         private String subscriberUserName;
+        @NotBlank
         private String targetUserName;
     }
 

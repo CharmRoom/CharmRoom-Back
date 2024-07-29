@@ -125,7 +125,7 @@ public class UserController {
 	@PreAuthorize("isAuthenticated()")
 	@PostMapping("")
 	public ResponseEntity<?> subscribe(
-			@RequestBody SubscribeCreateRequestDto request
+			@RequestBody @Valid SubscribeCreateRequestDto request
 	) {
 		SubscribeDto dto = subscribeService.subscribeOrCancel(request.getSubscriberUserName(), request.getTargetUserName());
 		SubscribeResponseDto response = SubscribeMapper.toResponse(dto);

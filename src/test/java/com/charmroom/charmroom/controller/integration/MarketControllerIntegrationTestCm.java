@@ -220,7 +220,7 @@ public class MarketControllerIntegrationTestCm extends IntegrationTestBase {
             MarketUpdateRequestDto dto = MarketUpdateRequestDto.builder()
                     .article(articleDto)
                     .price(10000)
-                    .tag("")
+                    .tag("sale")
                     .state(MarketArticleState.SALE)
                     .build();
 

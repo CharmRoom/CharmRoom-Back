@@ -2,6 +2,8 @@ package com.charmroom.charmroom.dto.presentation;
 
 import com.charmroom.charmroom.entity.enums.MarketArticleState;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,9 +15,13 @@ public class MarketDto {
     @NoArgsConstructor
     @Builder
     public static class MarketCreateRequestDto {
+        @NotNull
         private ArticleDto.ArticleCreateRequestDto article;
+        @NotNull
         private Integer price;
+        @NotNull
         private MarketArticleState state;
+        @NotBlank
         private String tag;
     }
 
@@ -24,9 +30,13 @@ public class MarketDto {
     @NoArgsConstructor
     @Builder
     public static class MarketUpdateRequestDto {
-       private ArticleDto.ArticleUpdateRequestDto article;
+        @NotNull
+        private ArticleDto.ArticleUpdateRequestDto article;
+        @NotNull
         private Integer price;
+        @NotNull
         private MarketArticleState state;
+        @NotBlank
         private String tag;
     }
 

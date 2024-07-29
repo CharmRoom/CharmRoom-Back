@@ -1,5 +1,20 @@
 package com.charmroom.charmroom.controller.api;
 
+import com.charmroom.charmroom.dto.business.ArticleDto;
+import com.charmroom.charmroom.dto.business.MarketDto;
+import com.charmroom.charmroom.dto.business.MarketMapper;
+import com.charmroom.charmroom.dto.business.WishDto;
+import com.charmroom.charmroom.dto.business.WishMapper;
+import com.charmroom.charmroom.dto.presentation.CommonResponseDto;
+import com.charmroom.charmroom.dto.presentation.MarketDto.MarketCreateRequestDto;
+import com.charmroom.charmroom.dto.presentation.MarketDto.MarketResponseDto;
+import com.charmroom.charmroom.dto.presentation.MarketDto.MarketUpdateRequestDto;
+import com.charmroom.charmroom.dto.presentation.WishDto.WishResponseDto;
+import com.charmroom.charmroom.entity.User;
+import com.charmroom.charmroom.service.MarketService;
+import com.charmroom.charmroom.service.WishService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -17,23 +32,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.charmroom.charmroom.dto.business.ArticleDto;
-import com.charmroom.charmroom.dto.business.MarketDto;
-import com.charmroom.charmroom.dto.business.MarketMapper;
-import com.charmroom.charmroom.dto.business.WishDto;
-import com.charmroom.charmroom.dto.business.WishMapper;
-import com.charmroom.charmroom.dto.presentation.CommonResponseDto;
-import com.charmroom.charmroom.dto.presentation.MarketDto.MarketCreateRequestDto;
-import com.charmroom.charmroom.dto.presentation.MarketDto.MarketResponseDto;
-import com.charmroom.charmroom.dto.presentation.MarketDto.MarketUpdateRequestDto;
-import com.charmroom.charmroom.dto.presentation.WishDto.WishResponseDto;
-import com.charmroom.charmroom.entity.User;
-import com.charmroom.charmroom.service.ArticleService;
-import com.charmroom.charmroom.service.MarketService;
-import com.charmroom.charmroom.service.WishService;
-
-import lombok.RequiredArgsConstructor;
-
 @RestController
 @RequestMapping("/api/market")
 @RequiredArgsConstructor
@@ -45,7 +43,7 @@ public class MarketController {
     @PostMapping("/{boardId}")
     public ResponseEntity<?> addMarket(
             @PathVariable("boardId") Integer boardId,
-            @ModelAttribute MarketCreateRequestDto requestDto,
+            @ModelAttribute @Valid MarketCreateRequestDto requestDto,
             @AuthenticationPrincipal User user
     ) {
         MarketDto created;
@@ -100,7 +98,7 @@ public class MarketController {
     public ResponseEntity<?> updateMarket(
             @PathVariable("marketId") Integer marketId,
             @AuthenticationPrincipal User user,
-            @RequestBody MarketUpdateRequestDto request
+            @RequestBody @Valid MarketUpdateRequestDto request
     ) {
         ArticleDto articleDto = ArticleDto.builder()
                 .title(request.getArticle().getTitle())
