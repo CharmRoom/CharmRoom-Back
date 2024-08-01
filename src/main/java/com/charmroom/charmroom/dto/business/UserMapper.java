@@ -3,6 +3,7 @@ package com.charmroom.charmroom.dto.business;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.charmroom.charmroom.dto.presentation.UserDto.CreateUserRequestDto;
 import com.charmroom.charmroom.dto.presentation.UserDto.UserResponseDto;
 import com.charmroom.charmroom.entity.Point;
 import com.charmroom.charmroom.entity.User;
@@ -50,6 +51,15 @@ public class UserMapper {
 				.withdraw(dto.isWithdraw())
 				.level(dto.getLevel().getValue())
 				.image(ImageMapper.toResponse(dto.getImage()))
+				.build();
+	}
+	
+	public static UserDto toBusinessDto(CreateUserRequestDto createUserRequestDto) {
+		return UserDto.builder()
+				.username(createUserRequestDto.getUsername())
+				.email(createUserRequestDto.getEmail())
+				.nickname(createUserRequestDto.getNickname())
+				.password(createUserRequestDto.getPassword())
 				.build();
 	}
 }
