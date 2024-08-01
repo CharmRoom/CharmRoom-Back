@@ -81,7 +81,6 @@ public class AdminController {
 	) {
 		var dto = pointService.create(username, request.getType(), request.getDiff());
 		var response = PointMapper.toResponse(dto);
-
 		return CommonResponseDto.created(response).toResponseEntity();
 	}
 
