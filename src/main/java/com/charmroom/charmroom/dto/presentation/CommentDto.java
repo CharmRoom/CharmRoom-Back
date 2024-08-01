@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.charmroom.charmroom.dto.presentation.CommentLikeDto.CommentLikeResponseDto;
 import com.charmroom.charmroom.dto.presentation.UserDto.UserResponseDto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -46,8 +47,7 @@ public class CommentDto {
 		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
 		private LocalDateTime updatedAt;
 		private boolean disabled;
-		private Integer like;
-		private Integer dislike;
-		private Boolean userLikeType;
+		@Builder.Default
+		private List<CommentLikeResponseDto> commentLike = new ArrayList<>();
 	}
 }

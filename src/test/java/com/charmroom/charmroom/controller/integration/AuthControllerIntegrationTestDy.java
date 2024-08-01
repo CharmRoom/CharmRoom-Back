@@ -111,7 +111,7 @@ public class AuthControllerIntegrationTestDy {
 			.andExpectAll(
 					status().isNotAcceptable()
 					,jsonPath("$.code").value("INVALID")
-					,jsonPath("$.data.signupRequestDto", containsString("password"))
+					,jsonPath("$.data.createUserRequestDto", containsString("password"))
 					)
 			;
 		}
@@ -225,7 +225,7 @@ public class AuthControllerIntegrationTestDy {
 			.andExpectAll(
 					status().isNotAcceptable()
 					,jsonPath("$.code").value("INVALID")
-					,jsonPath("$.data.signupRequestDto", containsString("password"))
+					,jsonPath("$.data.createUserRequestDto", containsString("password"))
 					,jsonPath("$.data.username", containsString("Duplicated"))
 					,jsonPath("$.data.email", containsString("Duplicated"))
 					,jsonPath("$.data.nickname", containsString("Duplicated"))

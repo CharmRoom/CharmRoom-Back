@@ -32,36 +32,29 @@ public class CommentMapper {
 		}
 		
 		if (!ignores.contains("childList")) {
-			for(var child : entity.getChildList()) {
-				CommentDto childDto = CommentMapper.toDto(child, "parent");
-				dto.getChildList().add(childDto);
-			}
+			var childList = entity.getChildList().stream().map(child -> CommentMapper.toDto(child, "parent")).toList();
+			dto.setChildList(childList);
 		}
 		
-		Integer like = 0, dislike = 0;
-		for(var cl : entity.getCommentLike()) {
-			if (cl.getType())
-				like++;
-			else
-				dislike++;
+		if (!ignores.contains("commentLike")) {
+			var commentLike = entity.getCommentLike().stream().map(cl -> CommentLikeMapper.toDto(cl, "comment")).toList();
+			dto.setCommentLike(commentLike);
 		}
-		dto.setLike(like);
-		dto.setDislike(dislike);
 		
 		return dto;
 	}
 
 	
 	public static CommentResponseDto toResponse(CommentDto dto) {
+		if (dto == null)
+			return null;
+		
 		var response = CommentResponseDto.builder()
 				.id(dto.getId())
 				.body(dto.getBody())
 				.createdAt(dto.getCreatedAt())
 				.updatedAt(dto.getUpdatedAt())
 				.disabled(dto.isDisabled())
-				.like(dto.getLike())
-				.dislike(dto.getDislike())
-				.userLikeType(dto.getUserLikeType())
 				.build();
 		
 		if (dto.getUser() != null)
@@ -70,18 +63,15 @@ public class CommentMapper {
 			response.setArticleId(dto.getArticle().getId());
 		if (dto.getParent() != null) {
 			var parent = toResponse(dto.getParent());
-			parent.getChildList().clear();
 			response.setParent(parent);
 		}
-		if (dto.getChildList().size() > 0) {
-			var childList = dto.getChildList().stream()
-					.map(child -> toResponse(child))
-					.toList()
-					;
-			childList.forEach(child -> child.setParent(null));
-			response.setChildList(childList);
-		}
 		
+		var childList = dto.getChildList().stream().map(CommentMapper::toResponse).toList();
+		response.setChildList(childList);
+		
+		var commentLike = dto.getCommentLike().stream().map(CommentLikeMapper::toResponse).toList();
+		response.setCommentLike(commentLike);
+	
 		return response;
 	}
 }
