@@ -29,7 +29,7 @@ public class BoardController {
 	@GetMapping
 	public ResponseEntity<?> getBoardsExposed(){
 		var dtos = boardService.getBoardsExposed();
-		var response = dtos.stream().map(dto -> BoardMapper.toResponse(dto)).collect(Collectors.toList());
+		var response = dtos.stream().map(BoardMapper::toResponse).toList();
 		return CommonResponseDto.ok(response).toResponseEntity();
 	}
 	
@@ -38,7 +38,7 @@ public class BoardController {
 			@PageableDefault(size=10, sort="id", direction=Sort.Direction.DESC) Pageable pageable
 			){
 		var dtos = boardService.getBoards(pageable);
-		var response = dtos.map(dto -> BoardMapper.toResponse(dto));
+		var response = dtos.map(BoardMapper::toResponse);
 		return CommonResponseDto.ok(response).toResponseEntity();
 	}
 
@@ -49,7 +49,7 @@ public class BoardController {
 			@PageableDefault(size=10, sort="id", direction=Sort.Direction.DESC) Pageable pageable
 			){
 		var dtos = boardService.getArticlesByBoardId(boardId, pageable);
-		var response = dtos.map(dto -> ArticleMapper.toResponse(dto));
+		var response = dtos.map(ArticleMapper::toResponse);
 		return CommonResponseDto.ok(response).toResponseEntity();
 	}
 }

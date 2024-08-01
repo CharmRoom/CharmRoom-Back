@@ -1,10 +1,9 @@
 package com.charmroom.charmroom.dto.business;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import com.charmroom.charmroom.dto.presentation.UserDto.CreateUserRequestDto;
 import com.charmroom.charmroom.dto.presentation.UserDto.UserResponseDto;
-import com.charmroom.charmroom.entity.Point;
 import com.charmroom.charmroom.entity.User;
 
 import io.jsonwebtoken.lang.Arrays;
@@ -31,13 +30,8 @@ public class UserMapper {
 			dto.setClub(club);
 		}
 		if (entity.getPointList().size() > 0 && !ignores.contains("pointList")) {
-			List<Point> pointList = entity.getPointList();
-			List<PointDto> pointDtoList = new ArrayList<>();
-			for(Point point : pointList) {
-				PointDto pointDto = PointMapper.toDto(point, "user");
-				pointDtoList.add(pointDto);
-			}
-			dto.setPointList(pointDtoList);
+			var pointList = entity.getPointList().stream().map(point -> PointMapper.toDto(point, "user")).toList();
+			dto.setPointList(pointList);
 		}
 		return dto;
 	}
@@ -50,6 +44,15 @@ public class UserMapper {
 				.withdraw(dto.isWithdraw())
 				.level(dto.getLevel().getValue())
 				.image(ImageMapper.toResponse(dto.getImage()))
+				.build();
+	}
+	
+	public static UserDto toBusinessDto(CreateUserRequestDto createUserRequestDto) {
+		return UserDto.builder()
+				.username(createUserRequestDto.getUsername())
+				.email(createUserRequestDto.getEmail())
+				.nickname(createUserRequestDto.getNickname())
+				.password(createUserRequestDto.getPassword())
 				.build();
 	}
 }

@@ -22,7 +22,6 @@ public class CommentDto {
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
 	private boolean disabled;
-	private Integer like;
-	private Integer dislike;
-	private Boolean userLikeType;
+	@Builder.Default
+	private List<CommentLikeDto> commentLike = new ArrayList<>();
 }

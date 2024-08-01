@@ -26,28 +26,13 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-@TestPropertySource(properties = {"spring.config.location = classpath:application-test.yml"})
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureMockMvc
-@Transactional
-public class AuthControllerIntegrationTestDy {
-	@Autowired
-	MockMvc mockMvc;
+public class AuthControllerIntegrationTestDy extends IntegrationTestBase {
 	
 	MockMultipartFile imageFile = new MockMultipartFile("image", "test.png", MediaType.IMAGE_PNG_VALUE, "test".getBytes());
-	String username = "test";
+	String username = "testuser";
 	String password = "password";
-	String email = "test@test.com";
-	String nickname = "nickname";
-	
-	@AfterAll
-	static void cleanUp(
-			@Value("${charmroom.upload.image.path}") String imageUploadPath,
-			@Value("${charmroom.upload.attachment.path}") String attachmentUploadPath) throws IOException {
-		FileUtils.cleanDirectory(new File(imageUploadPath));
-		FileUtils.cleanDirectory(new File(attachmentUploadPath));
-	}
-	
+	String email = "testuser@testuser.com";
+	String nickname = "testnickname";
 	
 	@Nested
 	class Signup {
@@ -111,7 +96,7 @@ public class AuthControllerIntegrationTestDy {
 			.andExpectAll(
 					status().isNotAcceptable()
 					,jsonPath("$.code").value("INVALID")
-					,jsonPath("$.data.signupRequestDto", containsString("password"))
+					,jsonPath("$.data.createUserRequestDto", containsString("password"))
 					)
 			;
 		}
@@ -225,7 +210,7 @@ public class AuthControllerIntegrationTestDy {
 			.andExpectAll(
 					status().isNotAcceptable()
 					,jsonPath("$.code").value("INVALID")
-					,jsonPath("$.data.signupRequestDto", containsString("password"))
+					,jsonPath("$.data.createUserRequestDto", containsString("password"))
 					,jsonPath("$.data.username", containsString("Duplicated"))
 					,jsonPath("$.data.email", containsString("Duplicated"))
 					,jsonPath("$.data.nickname", containsString("Duplicated"))
@@ -237,7 +222,6 @@ public class AuthControllerIntegrationTestDy {
 	@Nested
 	class Login {
 		String url = "/api/auth/login";
-		
 		@BeforeEach
 		void setup() throws Exception {
 			// given
@@ -249,7 +233,6 @@ public class AuthControllerIntegrationTestDy {
 					.param("nickname", nickname)
 					);
 		}
-		
 		@Test
 		void success() throws Exception {
 			// when

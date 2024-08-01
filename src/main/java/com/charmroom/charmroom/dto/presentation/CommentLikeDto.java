@@ -9,6 +9,7 @@ public class CommentLikeDto {
 	@AllArgsConstructor
 	@Builder
 	public static class CommentLikeResponseDto{
+		private String username;
 		private Boolean type;
 	}
 }

@@ -59,7 +59,7 @@ public class CommentController {
 			@PageableDefault(size=10, sort="id", direction=Sort.Direction.DESC) Pageable pageable
 			){
 		var dtos = commentService.getComments(articleId, pageable);
-		var response = dtos.map(dto -> CommentMapper.toResponse(dto));
+		var response = dtos.map(CommentMapper::toResponse);
 		return CommonResponseDto.ok(response).toResponseEntity();
 	}
 	
