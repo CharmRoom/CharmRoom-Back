@@ -50,7 +50,7 @@ public class AdminController {
 	public ResponseEntity<?> users(
 			@PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
 		var dtos = userService.getAllUsersByPageable(pageable);
-		var response = dtos.map(dto -> UserMapper.toResponse(dto));
+		var response = dtos.map(UserMapper::toResponse);
 		return CommonResponseDto.ok(response).toResponseEntity();
 	}
 
