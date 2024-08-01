@@ -162,6 +162,27 @@ public class AdminControllerIntegrationTestDy extends IntegrationTestBase {
 					)
 			;
 		}
+		
+		@Test
+		void invalidType() throws Exception {
+			// given
+			PointCreateRequestDto dto = PointCreateRequestDto.builder()
+					.type("random")
+					.diff(300)
+					.build(); 
+			// when
+			mockMvc.perform(post(urlPrefix + "/point/" + charmroomUser.getUsername())
+					.content(gson.toJson(dto))
+					.contentType(MediaType.APPLICATION_JSON)
+					)
+			// then
+			.andExpectAll(
+					status().isNotAcceptable()
+					,jsonPath("$.code").value("INVALID")
+					,jsonPath("$.data.type").exists()
+					)
+			;
+		}
 	}
 	
 	@Nested

@@ -78,7 +78,7 @@ public class AdminController {
 	@PostMapping("/point/{username}")
 	public ResponseEntity<?> givePoint(
 			@PathVariable("username") String username,
-			@RequestBody PointCreateRequestDto request
+			@RequestBody @Valid PointCreateRequestDto request
 	) {
 		var dto = pointService.create(username, request.getType(), request.getDiff());
 		var response = PointMapper.toResponse(dto);
