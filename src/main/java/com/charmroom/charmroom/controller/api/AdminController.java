@@ -124,10 +124,9 @@ public class AdminController {
 
 	@PostMapping("/ad")
 	public ResponseEntity<?> createAd(
-			@ModelAttribute AdCreateRequestDto request
+			@ModelAttribute @Valid AdCreateRequestDto request
 	) {
-		AdDto adDto = adService.create(request.getTitle(), request.getLink(), request.getImage(), request.getStart(), request.getEnd());
-
+		AdDto adDto = adService.create(request.getTitle(), request.getLink(), request.getStart(), request.getEnd(), request.getImage());
 		AdResponseDto response = AdMapper.toResponse(adDto);
 		return CommonResponseDto.created(response).toResponseEntity();
 	}
@@ -137,17 +136,16 @@ public class AdminController {
 			@PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
 	) {
 		Page<AdDto> dtos = adService.getAllAdsByPageable(pageable);
-		Page<AdResponseDto> response = dtos.map(dto -> AdMapper.toResponse(dto));
+		Page<AdResponseDto> response = dtos.map(AdMapper::toResponse);
 		return CommonResponseDto.ok(response).toResponseEntity();
 	}
 
 	@PostMapping("/ad/{adId}")
 	public ResponseEntity<?> updateAd(
 			@PathVariable("adId") Integer adId,
-			@ModelAttribute AdUpdateRequestDto requestDto
+			@ModelAttribute @Valid AdUpdateRequestDto requestDto
 	) {
 		AdDto adDto = adService.updateAd(adId, requestDto.getTitle(), requestDto.getLink(), requestDto.getStart(), requestDto.getEnd(), requestDto.getImage());
-
 		AdResponseDto response = AdMapper.toResponse(adDto);
 		return CommonResponseDto.ok(response).toResponseEntity();
 	}

@@ -57,10 +57,10 @@ public class ClubRegisterServiceUnitTest {
                 .build();
     }
 
-    Club createTestClub(String clubname) {
+    Club createTestClub() {
         return Club.builder()
                 .id(1)
-                .name(clubname)
+                .name("test")
                 .contact("")
                 .description("")
                 .owner(owner)
@@ -78,7 +78,7 @@ public class ClubRegisterServiceUnitTest {
     void setup() {
         owner = createTestUser("owner");
         user = createTestUser("test");
-        club = createTestClub("test");
+        club = createTestClub();
         clubRegister = createClubRegister(club, user);
     }
 

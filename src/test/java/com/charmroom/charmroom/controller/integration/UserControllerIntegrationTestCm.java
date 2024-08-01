@@ -41,7 +41,6 @@ public class UserControllerIntegrationTestCm extends IntegrationTestBase {
         @WithCharmroomUserDetails
         void success() throws Exception {
             // given
-
             List<Article> articles = new ArrayList<>();
 
             for (int i = 1; i <= 3; i++) {

@@ -88,19 +88,17 @@ public class ClubServiceUnitTest {
     @DisplayName("Create Club")
     class CreateClub {
         @Test
-        void success_whenImageFileExists() {
+        void successWhenImageFileExists() {
             // given
-            doReturn(Optional.of(owner)).when(userRepository).findByUsername(owner.getUsername());
-            doReturn(club).when(clubRepository).save(any(Club.class));
-            doReturn(false).when(clubRepository).existsByName(clubName);
-
             MockMultipartFile imageFile = new MockMultipartFile("file", "test.png", "image/png", "test".getBytes());
-
             Image image = Image.builder()
                     .path("")
                     .originalName("")
                     .build();
 
+            doReturn(Optional.of(owner)).when(userRepository).findByUsername(owner.getUsername());
+            doReturn(club).when(clubRepository).save(any(Club.class));
+            doReturn(false).when(clubRepository).existsByName(clubName);
             doReturn(image).when(uploadUtil).buildImage(imageFile);
 
             // when
@@ -112,7 +110,7 @@ public class ClubServiceUnitTest {
         }
 
         @Test
-        void success_whenImageFileNotExists() {
+        void successWhenImageFileNotExists() {
             // given
             doReturn(Optional.of(owner)).when(userRepository).findByUsername(owner.getUsername());
             doReturn(club).when(clubRepository).save(any(Club.class));
@@ -127,12 +125,12 @@ public class ClubServiceUnitTest {
         }
 
         @Test
-        void fail_ClubNameDuplicated() {
+        void failClubNameDuplicated() {
             // given
+            MockMultipartFile imageFile = new MockMultipartFile("file", "test.png", "image/png", "test".getBytes());
+
             doReturn(Optional.of(owner)).when(userRepository).findByUsername(owner.getUsername());
             doReturn(true).when(clubRepository).existsByName(clubName);
-
-            MockMultipartFile imageFile = new MockMultipartFile("file", "test.png", "image/png", "test".getBytes());
 
             // when
             BusinessLogicException thrown = assertThrows(BusinessLogicException.class, () ->
@@ -145,7 +143,7 @@ public class ClubServiceUnitTest {
 
     @Nested
     @DisplayName("Get Club List")
-    class getClubList {
+    class GetClubList {
         @Test
         void success() {
             // given
@@ -165,7 +163,7 @@ public class ClubServiceUnitTest {
 
     @Nested
     @DisplayName("Get Club")
-    class getClub {
+    class GetClub {
         @Test
         void success() {
             // given
@@ -179,7 +177,7 @@ public class ClubServiceUnitTest {
         }
 
         @Test
-        void fail_ClubNotFound() {
+        void failClubNotFound() {
             // given
             doReturn(Optional.empty()).when(clubRepository).findById(club.getId());
 
@@ -194,7 +192,7 @@ public class ClubServiceUnitTest {
 
     @Nested
     @DisplayName("Update Club Name")
-    class updateClubName {
+    class UpdateClubName {
         @Test
         void success() {
             // given
@@ -209,7 +207,7 @@ public class ClubServiceUnitTest {
         }
 
         @Test
-        void fail_ClubNotFound() {
+        void failClubNotFound() {
             // given
             doReturn(Optional.empty()).when(clubRepository).findById(club.getId());
 
@@ -224,7 +222,7 @@ public class ClubServiceUnitTest {
 
     @Nested
     @DisplayName("Update Description")
-    class updateDescription {
+    class UpdateDescription {
         @Test
         void success() {
             // given
@@ -239,7 +237,7 @@ public class ClubServiceUnitTest {
         }
 
         @Test
-        void fail_ClubNotFound() {
+        void failClubNotFound() {
             // given
             doReturn(Optional.empty()).when(clubRepository).findById(club.getId());
 
@@ -254,7 +252,7 @@ public class ClubServiceUnitTest {
 
     @Nested
     @DisplayName("Update Contact")
-    class updateContact {
+    class UpdateContact {
         @Test
         void success() {
             // given
@@ -269,7 +267,7 @@ public class ClubServiceUnitTest {
         }
 
         @Test
-        void fail_ClubNotFound() {
+        void failClubNotFound() {
             // given
             doReturn(Optional.empty()).when(clubRepository).findById(club.getId());
 
@@ -308,7 +306,7 @@ public class ClubServiceUnitTest {
 
     @Nested
     @DisplayName("Delete Club")
-    class deleteClub {
+    class DeleteClub {
         @Test
         void success() {
             // given
@@ -322,7 +320,7 @@ public class ClubServiceUnitTest {
         }
 
         @Test
-        void fail_ClubNotFound() {
+        void failClubNotFound() {
             // given
             doReturn(Optional.empty()).when(clubRepository).findById(club.getId());
 
@@ -339,7 +337,7 @@ public class ClubServiceUnitTest {
 
     @Nested
     @DisplayName("Set Image")
-    class setImage {
+    class SetImage {
         @Test
         void success() {
             // given
@@ -362,7 +360,7 @@ public class ClubServiceUnitTest {
         }
 
         @Test
-        void fail_ClubNotFound() {
+        void failClubNotFound() {
             // given
             MockMultipartFile imageFile = new MockMultipartFile("file", "test.png", "image/png", "test".getBytes());
             doReturn(Optional.empty()).when(clubRepository).findById(club.getId());

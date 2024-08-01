@@ -64,10 +64,10 @@ public class AdminControllerUnitTestCm {
 
         mockedAdDto = AdDto.builder()
                 .id(1)
-                .title("title")
+                .title("testTitle")
                 .start(LocalDateTime.now())
                 .end(LocalDateTime.now().plusDays(1))
-                .link("")
+                .link("testLink")
                 .build();
 
         gson = new Gson();
@@ -80,7 +80,7 @@ public class AdminControllerUnitTestCm {
             // given
             MockMultipartFile imageFile = new MockMultipartFile("image", "test.png", MediaType.IMAGE_PNG_VALUE, "test".getBytes());
 
-            doReturn(mockedAdDto).when(adService).create(mockedAdDto.getTitle(), mockedAdDto.getLink(), imageFile, mockedAdDto.getStart(), mockedAdDto.getEnd());
+            doReturn(mockedAdDto).when(adService).create(mockedAdDto.getTitle(), mockedAdDto.getLink(), mockedAdDto.getStart(), mockedAdDto.getEnd(), imageFile);
 
             // when
             ResultActions resultActions = mockMvc.perform(multipart("/api/admin/ad")
@@ -95,7 +95,8 @@ public class AdminControllerUnitTestCm {
             resultActions.andExpectAll(
                     status().isCreated(),
                     jsonPath("$.code").value("CREATED"),
-                    jsonPath("$.data.title").value(mockedAdDto.getTitle())
+                    jsonPath("$.data.title").value(mockedAdDto.getTitle()),
+                    jsonPath("$.data.link").value(mockedAdDto.getLink())
             );
         }
     }
@@ -106,7 +107,6 @@ public class AdminControllerUnitTestCm {
         void success() throws Exception {
             // given
             List<AdDto> dtoList = List.of(mockedAdDto, mockedAdDto, mockedAdDto);
-
             PageRequest pageRequest = PageRequest.of(0, 10, Sort.by("id").descending());
             PageImpl<AdDto> dtoPage = new PageImpl<>(dtoList, pageRequest, 3);
 
@@ -119,7 +119,13 @@ public class AdminControllerUnitTestCm {
             resultActions.andExpectAll(
                     status().isOk(),
                     jsonPath("$.data.content.size()").value(3),
-                    jsonPath("$.data.content[0].title").value(mockedAdDto.getTitle())
+                    jsonPath("$.data.content[0].title").value(mockedAdDto.getTitle()),
+                    jsonPath("$.data.content[0].link").value(mockedAdDto.getLink()),
+                    jsonPath("$.data.content[1].title").value(mockedAdDto.getTitle()),
+                    jsonPath("$.data.content[1].link").value(mockedAdDto.getLink()),
+                    jsonPath("$.data.content[2].title").value(mockedAdDto.getTitle()),
+                    jsonPath("$.data.content[2].link").value(mockedAdDto.getLink()),
+                    jsonPath("$.data.content").isArray()
             );
         }
     }
@@ -145,12 +151,13 @@ public class AdminControllerUnitTestCm {
             // then
             resultActions.andExpectAll(
                     status().isOk(),
-                    jsonPath("$.data.title").value(mockedAdDto.getTitle())
+                    jsonPath("$.data.title").value(mockedAdDto.getTitle()),
+                    jsonPath("$.data.link").value(mockedAdDto.getLink())
             );
         }
 
         @Test
-        void fail_NotFoundAd() throws Exception {
+        void failNotFoundAd() throws Exception {
             // given
             MockMultipartFile imageFile = new MockMultipartFile("image", "test.png", MediaType.IMAGE_PNG_VALUE, "test".getBytes());
 

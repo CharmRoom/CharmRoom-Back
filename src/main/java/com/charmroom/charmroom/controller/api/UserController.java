@@ -105,8 +105,7 @@ public class UserController {
 			@PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
 	) {
 		Page<ArticleDto> dtos = articleService.getArticlesByUsername(user.getUsername(), pageable);
-		Page<ArticleResponseDto> response = dtos.map(dto -> ArticleMapper.toResponse(dto));
-
+		Page<ArticleResponseDto> response = dtos.map(ArticleMapper::toResponse);
 		return CommonResponseDto.ok(response).toResponseEntity();
 	}
 
@@ -117,15 +116,14 @@ public class UserController {
 			@PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
 	) {
 		Page<WishDto> dtos = wishService.getWishesByUserName(user.getUsername(), pageable);
-		Page<WishResponseDto> response = dtos.map(dto -> WishMapper.toResponse(dto));
-
+		Page<WishResponseDto> response = dtos.map(WishMapper::toResponse);
 		return CommonResponseDto.ok(response).toResponseEntity();
 	}
 
 	@PreAuthorize("isAuthenticated()")
 	@PostMapping("")
 	public ResponseEntity<?> subscribe(
-			@RequestBody SubscribeCreateRequestDto request
+			@RequestBody @Valid SubscribeCreateRequestDto request
 	) {
 		SubscribeDto dto = subscribeService.subscribeOrCancel(request.getSubscriberUserName(), request.getTargetUserName());
 		SubscribeResponseDto response = SubscribeMapper.toResponse(dto);
@@ -139,8 +137,7 @@ public class UserController {
 			@PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
 	) {
 		Page<SubscribeDto> dtos = subscribeService.getSubscribesBySubscriber(user.getUsername(), pageable);
-		Page<SubscribeResponseDto> response = dtos.map(dto -> SubscribeMapper.toResponse(dto));
-
+		Page<SubscribeResponseDto> response = dtos.map(SubscribeMapper::toResponse);
 		return CommonResponseDto.ok(response).toResponseEntity();
 	}
 

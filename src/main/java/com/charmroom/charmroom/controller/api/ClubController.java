@@ -1,5 +1,6 @@
 package com.charmroom.charmroom.controller.api;
 
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -45,7 +46,7 @@ public class ClubController {
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/")
     public ResponseEntity<?> createClub(
-            @ModelAttribute ClubCreateRequestDto requestDto,
+            @ModelAttribute @Valid ClubCreateRequestDto requestDto,
             @AuthenticationPrincipal User user
     ) {
         ClubDto club;
@@ -73,7 +74,6 @@ public class ClubController {
     ) {
         ClubDto club = clubService.getClub(clubId);
         ClubResponseDto response = ClubMapper.toResponse(club);
-
         return CommonResponseDto.ok(response).toResponseEntity();
     }
 
@@ -83,8 +83,7 @@ public class ClubController {
             @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         Page<ClubDto> dtos = clubService.getAllClubsByPageable(pageable);
-        Page<ClubResponseDto> responseDtos = dtos.map(dto -> ClubMapper.toResponse(dto));
-
+        Page<ClubResponseDto> responseDtos = dtos.map(ClubMapper::toResponse);
         return CommonResponseDto.ok(responseDtos).toResponseEntity();
     }
 
@@ -93,7 +92,7 @@ public class ClubController {
     public ResponseEntity<?> updateClub(
             @PathVariable("clubId") Integer clubId,
             @AuthenticationPrincipal User user,
-            @RequestBody ClubUpdateRequestDto request
+            @RequestBody @Valid ClubUpdateRequestDto request
     ) {
         ClubDto clubDto = ClubDto.builder()
                 .name(request.getName())
@@ -102,7 +101,6 @@ public class ClubController {
                 .build();
 
         ClubDto dto = clubService.update(clubId, clubDto, user.getUsername());
-
         ClubResponseDto response = ClubMapper.toResponse(dto);
         return CommonResponseDto.ok(response).toResponseEntity();
     }
@@ -161,7 +159,6 @@ public class ClubController {
     ) {
         Page<ClubRegisterDto> dtos = clubRegisterService.getClubRegistersByClub(clubId, pageable, owner.getUsername());
         Page<ClubRegisterResponseDto> response = dtos.map(ClubRegisterMapper::toResponse);
-
         return CommonResponseDto.ok(response).toResponseEntity();
     }
 

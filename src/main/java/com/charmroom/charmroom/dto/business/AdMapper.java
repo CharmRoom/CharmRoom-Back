@@ -16,7 +16,6 @@ public class AdMapper {
         if (entity.getImage() != null) {
             dto.setImage(ImageMapper.toDto(entity.getImage()));
         }
-
         return dto;
     }
 
@@ -24,6 +23,7 @@ public class AdMapper {
         return AdResponseDto.builder()
                 .id(dto.getId())
                 .title(dto.getTitle())
+                .link(dto.getLink())
                 .start(dto.getStart())
                 .start(dto.getStart())
                 .end(dto.getEnd())

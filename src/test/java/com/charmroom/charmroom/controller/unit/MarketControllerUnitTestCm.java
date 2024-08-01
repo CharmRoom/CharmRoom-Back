@@ -101,7 +101,7 @@ public class MarketControllerUnitTestCm {
     @Nested
     class Create {
         @Test
-        void success_withEmptyFileList() throws Exception {
+        void successWithEmptyFileList() throws Exception {
             // given
             doReturn(mockedMarketDto).when(marketService).create(any(MarketDto.class), any(), eq(1));
 
@@ -123,7 +123,7 @@ public class MarketControllerUnitTestCm {
         }
 
         @Test
-        void success_withFileList() throws Exception {
+        void successWithFileList() throws Exception {
             // given
             MockMultipartFile file = new MockMultipartFile("article.file", "test.png", "image/png", "test".getBytes());
 
@@ -171,7 +171,6 @@ public class MarketControllerUnitTestCm {
         void success() throws Exception {
             // given
             List<MarketDto> dtoList = List.of(mockedMarketDto, mockedMarketDto, mockedMarketDto);
-
             PageRequest pageRequest = PageRequest.of(0, 10, Sort.by("id").descending());
             PageImpl<MarketDto> dtoPage = new PageImpl<>(dtoList, pageRequest, 3);
 
@@ -195,19 +194,18 @@ public class MarketControllerUnitTestCm {
         @Test
         void success() throws Exception {
             // given
-            doReturn(mockedMarketDto).when(marketService).update(eq(1), any(MarketDto.class), any());
-
             ArticleUpdateRequestDto article = ArticleUpdateRequestDto.builder()
                     .title(mockedMarketDto.getArticle().getTitle())
                     .body(mockedMarketDto.getArticle().getBody())
                     .build();
-
             MarketUpdateRequestDto request = MarketUpdateRequestDto.builder()
                     .article(article)
                     .price(mockedMarketDto.getPrice())
                     .tag(mockedMarketDto.getTag())
                     .state(mockedMarketDto.getState())
                     .build();
+
+            doReturn(mockedMarketDto).when(marketService).update(eq(1), any(MarketDto.class), any());
 
             // when
             ResultActions resultActions = mockMvc.perform(patch("/api/market/1")

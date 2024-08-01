@@ -44,9 +44,9 @@ public class ClubRegisterRepositoryUnitTest {
                 .build();
     }
 
-    Club createTestClub(String clubname) {
+    Club createTestClub() {
         return Club.builder()
-                .name(clubname)
+                .name("test")
                 .contact("")
                 .description("")
                 .build();
@@ -62,7 +62,7 @@ public class ClubRegisterRepositoryUnitTest {
     @BeforeEach
     void setup() {
         user = userRepository.save(createTestUser("test"));
-        club = clubRepository.save(createTestClub("test"));
+        club = clubRepository.save(createTestClub());
         clubRegister = createClubRegister(club, user);
     }
 
@@ -146,5 +146,4 @@ public class ClubRegisterRepositoryUnitTest {
             assertThat(all).isEmpty();
         }
     }
-
 }

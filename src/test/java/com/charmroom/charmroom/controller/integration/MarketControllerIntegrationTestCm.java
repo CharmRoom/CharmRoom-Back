@@ -56,7 +56,7 @@ public class MarketControllerIntegrationTestCm extends IntegrationTestBase {
             .body("test")
             .build();
 
-    Market buildMarket(String title) {
+    Market buildMarket() {
         return Market.builder()
                 .article(article)
                 .tag("test")
@@ -102,7 +102,7 @@ public class MarketControllerIntegrationTestCm extends IntegrationTestBase {
         }
 
         @Test
-        void fail_notFoundBoard() throws Exception {
+        void failNotFoundBoard() throws Exception {
             // given
             // when
             ResultActions resultActions = mockMvc.perform(multipart(urlPrefix + "1")
@@ -127,7 +127,7 @@ public class MarketControllerIntegrationTestCm extends IntegrationTestBase {
             // given
             boardRepository.save(board);
             articleRepository.save(article);
-            Market market = marketRepository.save(buildMarket("test"));
+            Market market = marketRepository.save(buildMarket());
 
             // when
             ResultActions resultActions = mockMvc.perform(get(urlPrefix + market.getId()));
@@ -140,7 +140,7 @@ public class MarketControllerIntegrationTestCm extends IntegrationTestBase {
         }
 
         @Test
-        void fail_notFoundArticle() throws Exception {
+        void failNotFoundArticle() throws Exception {
             // given
             // when
             ResultActions resultActions = mockMvc.perform(get(urlPrefix + "1"));
@@ -220,7 +220,7 @@ public class MarketControllerIntegrationTestCm extends IntegrationTestBase {
             MarketUpdateRequestDto dto = MarketUpdateRequestDto.builder()
                     .article(articleDto)
                     .price(10000)
-                    .tag("")
+                    .tag("sale")
                     .state(MarketArticleState.SALE)
                     .build();
 
@@ -282,7 +282,7 @@ public class MarketControllerIntegrationTestCm extends IntegrationTestBase {
             // given
             boardRepository.save(board);
             articleRepository.save(article);
-            Market market = marketRepository.save(buildMarket("test"));
+            Market market = marketRepository.save(buildMarket());
 
             // when
             ResultActions resultActions = mockMvc.perform(post(urlPrefix + market.getId() + "/wish"));
@@ -299,7 +299,7 @@ public class MarketControllerIntegrationTestCm extends IntegrationTestBase {
             // given
             boardRepository.save(board);
             articleRepository.save(article);
-            Market market = marketRepository.save(buildMarket("test"));
+            Market market = marketRepository.save(buildMarket());
 
             wishRepository.save(Wish.builder()
                     .user(charmroomUser)

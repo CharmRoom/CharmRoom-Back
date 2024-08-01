@@ -117,15 +117,14 @@ public class ClubControllerUnitTestCm {
     @Nested
     class Create {
         @Test
-        void success_withoutImage() throws Exception {
+        void successWithoutImage() throws Exception {
             // given
-            doReturn(mockedClubDto).when(clubService).createClub(any(), any(ClubDto.class));
-
             ClubCreateRequestDto request = ClubCreateRequestDto.builder()
                     .name("")
                     .description("")
                     .contact("")
                     .build();
+            doReturn(mockedClubDto).when(clubService).createClub(any(), any(ClubDto.class));
 
             // when
             ResultActions resultActions = mockMvc.perform(post("/api/club/")
@@ -140,7 +139,7 @@ public class ClubControllerUnitTestCm {
         }
 
         @Test
-        void success_withImage() throws Exception {
+        void successWithImage() throws Exception {
             // given
             MockMultipartFile imageFile = new MockMultipartFile("image", "test.png", MediaType.IMAGE_PNG_VALUE, "test".getBytes());
 
@@ -163,7 +162,7 @@ public class ClubControllerUnitTestCm {
         }
 
         @Test
-        void fail_duplicatedClubName() throws Exception {
+        void failDuplicatedClubName() throws Exception {
             // given
             doThrow(new BusinessLogicException(BusinessLogicError.DUPLICATED_CLUBNAME))
                     .when(clubService)
@@ -225,7 +224,6 @@ public class ClubControllerUnitTestCm {
         void success() throws Exception {
             // given
             List<ClubDto> dtoList = List.of(mockedClubDto, mockedClubDto, mockedClubDto);
-
             PageRequest pageRequest = PageRequest.of(0, 10, Sort.by("id").descending());
             PageImpl<ClubDto> dtoPage = new PageImpl<>(dtoList, pageRequest, 3);
 
@@ -250,13 +248,12 @@ public class ClubControllerUnitTestCm {
         @Test
         void success() throws Exception {
             // given
-            doReturn(mockedClubDto).when(clubService).update(eq(1), any(ClubDto.class), any());
-
             ClubUpdateRequestDto request = ClubUpdateRequestDto.builder()
                     .name(mockedClubDto.getName())
                     .description(mockedClubDto.getDescription())
                     .contact(mockedClubDto.getContact())
                     .build();
+            doReturn(mockedClubDto).when(clubService).update(eq(1), any(ClubDto.class), any());
 
             // when
             ResultActions resultActions = mockMvc.perform(patch("/api/club/1")

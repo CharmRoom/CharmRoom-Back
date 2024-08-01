@@ -1,5 +1,6 @@
 package com.charmroom.charmroom.controller.api;
 
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -43,19 +44,16 @@ public class ArticleController {
     @PostMapping("/{boardId}")
     public ResponseEntity<?> addArticle(
             @PathVariable(value = "boardId") Integer boardId,
-            @ModelAttribute ArticleCreateRequestDto requestDto,
+            @ModelAttribute @Valid ArticleCreateRequestDto requestDto,
             @AuthenticationPrincipal User user) {
 
         ArticleDto article;
-
         if (requestDto.getFile() == null) {
             article = articleService.createArticle(user.getUsername(), boardId, requestDto.getTitle(), requestDto.getBody());
         } else {
             article = articleService.createArticle(user.getUsername(), boardId, requestDto.getTitle(), requestDto.getBody(), requestDto.getFile());
         }
-
         ArticleResponseDto responseDto = ArticleMapper.toResponse(article);
-
         return CommonResponseDto.created(responseDto).toResponseEntity();
     }
 
@@ -75,8 +73,7 @@ public class ArticleController {
             @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         Page<ArticleDto> dtos = articleService.getArticles(boardId, pageable);
-        Page<ArticleResponseDto> responseDtos = dtos.map(dto -> ArticleMapper.toResponse(dto));
-
+        Page<ArticleResponseDto> responseDtos = dtos.map(ArticleMapper::toResponse);
         return CommonResponseDto.ok(responseDtos).toResponseEntity();
     }
 
@@ -85,11 +82,10 @@ public class ArticleController {
     public ResponseEntity<?> updateArticle(
             @PathVariable("articleId") Integer articleId,
             @AuthenticationPrincipal User user,
-            @RequestBody ArticleUpdateRequestDto request
+            @RequestBody @Valid ArticleUpdateRequestDto request
     ) {
         ArticleDto articleDto = articleService.updateArticle(articleId, user.getUsername(), request.getTitle(), request.getBody());
         ArticleResponseDto responseDto = ArticleMapper.toResponse(articleDto);
-
         return CommonResponseDto.ok(responseDto).toResponseEntity();
     }
 

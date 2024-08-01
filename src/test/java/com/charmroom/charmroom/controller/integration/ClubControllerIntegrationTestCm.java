@@ -40,8 +40,8 @@ public class ClubControllerIntegrationTestCm extends IntegrationTestBase {
     @Autowired
     ImageRepository imageRepository;
 
-    private String urlPrefix = "/api/club/";
-    private MockMultipartFile file = new MockMultipartFile("image", "profile.png", MediaType.IMAGE_PNG_VALUE, "test".getBytes());
+    private final String urlPrefix = "/api/club/";
+    private final MockMultipartFile file = new MockMultipartFile("image", "profile.png", MediaType.IMAGE_PNG_VALUE, "test".getBytes());
 
     Club buildClub(String prefix) {
         Image image = imageRepository.save(Image.builder()

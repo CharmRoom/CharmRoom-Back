@@ -25,32 +25,32 @@ public class WishService {
     private final MarketRepository marketRepository;
 
     public WishDto wishOrCancel(String username, Integer marketId) {
-        User user = userRepository.findByUsername(username).orElseThrow(() ->
-                new BusinessLogicException(BusinessLogicError.NOTFOUND_USER));
+        User user = findUser(username);
         Market market = marketRepository.findById(marketId).orElseThrow(() ->
                 new BusinessLogicException(BusinessLogicError.NOTFOUND_ARTICLE));
-
         Optional<Wish> found = wishRepository.findByUserAndMarket(user, market);
 
         if (found.isPresent()) {
             Wish wish = found.get();
             wishRepository.delete(wish);
             return null; // 찜하기 취소
-        } else {
-            Wish wish = Wish.builder()
-                    .user(user)
-                    .market(market)
-                    .build();
-            Wish saved = wishRepository.save(wish);
-            return WishMapper.doDto(saved);
         }
+        Wish wish = Wish.builder()
+                .user(user)
+                .market(market)
+                .build();
+        Wish saved = wishRepository.save(wish);
+        return WishMapper.doDto(saved);
     }
 
     public Page<WishDto> getWishesByUserName(String username, Pageable pageable) {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "username: " + username));
-
+        User user = findUser(username);
         Page<Wish> wishes = wishRepository.findAllByUser(user, pageable);
         return wishes.map(WishMapper::doDto);
+    }
+
+    private User findUser(String username) {
+        return userRepository.findByUsername(username).orElseThrow(() ->
+                new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "username: " + username));
     }
 }

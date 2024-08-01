@@ -21,6 +21,7 @@ public class ClubMapper {
 			dto.setOwner(UserMapper.toDto(entity.getOwner(), "club"));
 		}
 
+
 		if (entity.getUserList().size() > 0 && !ignores.contains("userList")) {
 			var userDtoList = entity.getUserList().stream().map(user -> UserMapper.toDto(user, "club")).toList();
 			dto.setUserList(userDtoList);

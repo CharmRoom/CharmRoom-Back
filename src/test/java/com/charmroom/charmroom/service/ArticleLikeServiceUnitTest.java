@@ -144,7 +144,6 @@ public class ArticleLikeServiceUnitTest {
             // given
             doReturn(Optional.of(user)).when(userRepository).findByUsername(user.getUsername());
             doReturn(Optional.of(article)).when(articleRepository).findById(article.getId());
-
             when(articleLikeRepository.findByUserAndArticle(user, article)).thenReturn(Optional.of(articleDislike));
 
             // when
@@ -155,7 +154,7 @@ public class ArticleLikeServiceUnitTest {
         }
 
         @Test
-        void fail_notExistingArticle() {
+        void failNotExistingArticle() {
             // given
             doReturn(Optional.of(user)).when(userRepository).findByUsername(user.getUsername());
             doReturn(Optional.empty()).when(articleRepository).findById(article.getId());
@@ -194,7 +193,6 @@ public class ArticleLikeServiceUnitTest {
             // given
             doReturn(Optional.of(user)).when(userRepository).findByUsername(user.getUsername());
             doReturn(Optional.of(article)).when(articleRepository).findById(article.getId());
-
             when(articleLikeRepository.findByUserAndArticle(user, article)).thenReturn(Optional.of(articleDislike));
 
             // when
@@ -210,7 +208,6 @@ public class ArticleLikeServiceUnitTest {
             // given
             doReturn(Optional.of(user)).when(userRepository).findByUsername(user.getUsername());
             doReturn(Optional.of(article)).when(articleRepository).findById(article.getId());
-
             doReturn(articleDislike).when(articleLikeRepository).save(any(ArticleLike.class));
 
             // when

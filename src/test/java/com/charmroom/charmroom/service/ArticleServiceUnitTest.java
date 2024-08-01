@@ -141,7 +141,7 @@ public class ArticleServiceUnitTest {
 
     @Nested
     @DisplayName("Create Article")
-    class createArticle {
+    class CreateArticle {
         @Test
         void success() {
             // given
@@ -168,7 +168,7 @@ public class ArticleServiceUnitTest {
 
     @Nested
     @DisplayName("Read ArticleList")
-    class readArticleList {
+    class ReadArticleList {
         @Test
         void success() {
             // given
@@ -208,7 +208,7 @@ public class ArticleServiceUnitTest {
 
     @Nested
     @DisplayName("Get One Article")
-    class getOneArticle {
+    class GetOneArticle {
         @Test
         void success() {
             // given
@@ -224,7 +224,7 @@ public class ArticleServiceUnitTest {
         }
 
         @Test
-        void fail_noArticleFound() {
+        void failNoArticleFound() {
             // given
             doReturn(Optional.empty()).when(articleRepository).findById(article.getId());
 
@@ -240,11 +240,10 @@ public class ArticleServiceUnitTest {
 
     @Nested
     @DisplayName("Update Article")
-    class updateArticle {
+    class UpdateArticle {
         @Test
         void success() {
             // given
-            doReturn(Optional.of(user)).when(userRepository).findByUsername(user.getUsername());
             doReturn(Optional.of(article)).when(articleRepository).findById(article.getId());
 
             String newTitle = "new title";
@@ -260,9 +259,8 @@ public class ArticleServiceUnitTest {
         }
 
         @Test
-        void fail_noArticleFound() {
+        void failNoArticleFound() {
             // given
-            doReturn(Optional.of(user)).when(userRepository).findByUsername(user.getUsername());
             doReturn(Optional.empty()).when(articleRepository).findById(article.getId());
 
             // when
@@ -277,17 +275,13 @@ public class ArticleServiceUnitTest {
         }
 
         @Test
-        void fail_unauthorizedUserUpdateArticle() {
+        void failUnauthorizedUserUpdateArticle() {
             // given
-            User unauthorized = User.builder()
-                    .username("unauthorized")
-                    .build();
-            doReturn(Optional.of(unauthorized)).when(userRepository).findByUsername(unauthorized.getUsername());
             doReturn(Optional.of(article)).when(articleRepository).findById(article.getId());
 
             // when
             BusinessLogicException thrown = assertThrows(BusinessLogicException.class, () ->
-                    articleService.updateArticle(article.getId(), unauthorized.getUsername(), "", ""));
+                    articleService.updateArticle(article.getId(), "random", "", ""));
 
             // then
             assertThat(thrown.getError()).isEqualTo(BusinessLogicError.UNAUTHORIZED_ARTICLE);
@@ -296,7 +290,7 @@ public class ArticleServiceUnitTest {
 
     @Nested
     @DisplayName("Delete Article")
-    class deleteArticle {
+    class DeleteArticle {
         @Test
         void success() {
             // given
@@ -311,7 +305,7 @@ public class ArticleServiceUnitTest {
         }
 
         @Test
-        void fail_noArticleFound() {
+        void failNoArticleFound() {
             // given
             doReturn(Optional.empty()).when(articleRepository).findById(article.getId());
 

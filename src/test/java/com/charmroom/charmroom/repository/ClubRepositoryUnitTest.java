@@ -64,7 +64,7 @@ public class ClubRepositoryUnitTest {
 
     @Nested
     @DisplayName("Crete Club")
-    class createTestClub {
+    class CreateTestClub {
         @Test
         void success() {
             // given
@@ -79,7 +79,7 @@ public class ClubRepositoryUnitTest {
 
     @Nested
     @DisplayName("Read Club")
-    class readTestClub {
+    class ReadTestClub {
         @Test
         void success() {
             // given
@@ -92,7 +92,7 @@ public class ClubRepositoryUnitTest {
         }
 
         @Test
-        void fail_readTestClubWithWongId() {
+        void failReadTestClubWithWongId() {
             // given
             clubRepository.save(club);
             Integer wrongId = 999;
@@ -106,7 +106,7 @@ public class ClubRepositoryUnitTest {
 
     @Nested
     @DisplayName("Update Club")
-    class updateTestClub {
+    class UpdateTestClub {
         @Test
         void success() {
             // given
@@ -134,7 +134,7 @@ public class ClubRepositoryUnitTest {
 
     @Nested
     @DisplayName("Delete Club")
-    class deleteTestClub {
+    class DeleteTestClub {
         @Test
         void success() {
             // given

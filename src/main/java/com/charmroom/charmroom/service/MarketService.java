@@ -39,8 +39,7 @@ public class MarketService {
     public MarketDto create(MarketDto marketDto, String username, Integer boardId, List<MultipartFile> files) {
         User user = userRepository.findByUsername(username).orElseThrow(() ->
                 new BusinessLogicException(BusinessLogicError.NOTFOUND_USER));
-
-        Board board = boardRepository.findById(boardId).orElseThrow(() -> new BusinessLogicException(BusinessLogicError.NOTFOUND_BOARD));
+        Board board = findBoard(boardId);
 
         Article article = Article.builder()
                 .user(user)
@@ -48,13 +47,11 @@ public class MarketService {
                 .title(marketDto.getArticle().getTitle())
                 .body(marketDto.getArticle().getBody())
                 .build();
-
         for (MultipartFile file : files) {
             Attachment attachment = uploadUtils.buildAttachment(file, article);
             Attachment saved = attachmentRepository.save(attachment);
             article.getAttachmentList().add(saved);
         }
-
         Article savedArticle = articleRepository.save(article);
 
         Market market = Market.builder()
@@ -63,7 +60,6 @@ public class MarketService {
                 .state(marketDto.getState())
                 .tag(marketDto.getTag())
                 .build();
-
         Market saved = marketRepository.save(market);
         return MarketMapper.toDto(saved);
     }
@@ -73,85 +69,77 @@ public class MarketService {
     }
 
     public Page<MarketDto> getMarkets(Integer boardId, Pageable pageable) {
-        Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new BusinessLogicException
-                        (BusinessLogicError.NOTFOUND_BOARD, "boardId: " + boardId));
-
+        Board board = findBoard(boardId);
         Page<Market> markets = marketRepository.findAllByBoard(board, pageable);
-
-        return markets.map(market -> MarketMapper.toDto(market));
+        return markets.map(MarketMapper::toDto);
     }
 
     public MarketDto getMarket(Integer marketId) {
-        Market found =  marketRepository.findById(marketId).orElseThrow(() ->
-                new BusinessLogicException(BusinessLogicError.NOTFOUND_ARTICLE, "marketId: " + marketId));
-
+        Market found = findMarket(marketId);
         return MarketMapper.toDto(found);
     }
 
     @Transactional
     public MarketDto updatePrice(Integer marketId, int price) {
-        Market market = marketRepository.findById(marketId).orElseThrow(() ->
-                new BusinessLogicException(BusinessLogicError.NOTFOUND_ARTICLE, "marketId: " + marketId));
-
+        Market market = findMarket(marketId);
         market.updatePrice(price);
         return MarketMapper.toDto(market);
     }
 
     @Transactional
     public MarketDto updateTag(Integer marketId, String newTag) {
-        Market market = marketRepository.findById(marketId).orElseThrow(() ->
-                new BusinessLogicException(BusinessLogicError.NOTFOUND_ARTICLE, "marketId: " + marketId));
-
+        Market market = findMarket(marketId);
         market.updateTag(newTag);
         return MarketMapper.toDto(market);
     }
 
     @Transactional
     public MarketDto updateState(Integer marketId, MarketArticleState newState) {
-        Market market = marketRepository.findById(marketId).orElseThrow(() ->
-                new BusinessLogicException(BusinessLogicError.NOTFOUND_ARTICLE, "marketId: " + marketId));
-
+        Market market = findMarket(marketId);
         market.updateState(newState);
         return MarketMapper.toDto(market);
     }
 
     @Transactional
     public MarketDto updateArticle(Integer marketId, String title, String body) {
-        Market market = marketRepository.findById(marketId).orElseThrow(() ->
-                new BusinessLogicException(BusinessLogicError.NOTFOUND_ARTICLE, "marketId: " + marketId));
-
+        Market market = findMarket(marketId);
         market.getArticle().updatedBody(body);
         market.getArticle().updateTitle(title);
         return MarketMapper.toDto(market);
     }
 
+    @Transactional
     public MarketDto update(Integer marketId, MarketDto marketDto, String username) {
-        Market market = marketRepository.findById(marketId).orElseThrow(() ->
-                new BusinessLogicException(BusinessLogicError.NOTFOUND_ARTICLE, "marketId: " + marketId));
+        Market market = findMarket(marketId);
 
         if(!username.equals(market.getArticle().getUser().getUsername())) {
             throw new BusinessLogicException(BusinessLogicError.UNAUTHORIZED_ARTICLE, "marketId: " + marketId);
         }
-
         market.getArticle().updateTitle(marketDto.getArticle().getTitle());
         market.getArticle().updatedBody(marketDto.getArticle().getBody());
         market.updateState(marketDto.getState());
         market.updateTag(marketDto.getTag());
         market.updatePrice(marketDto.getPrice());
-
         return MarketMapper.toDto(market);
     }
 
     public void delete(Integer marketId, String username) {
-        Market market = marketRepository.findById(marketId).orElseThrow(() ->
-                new BusinessLogicException(BusinessLogicError.NOTFOUND_ARTICLE, "marketId: " + marketId));
+        Market market = findMarket(marketId);
 
         if(!username.equals(market.getArticle().getUser().getUsername())) {
             throw new BusinessLogicException(BusinessLogicError.UNAUTHORIZED_ARTICLE, "marketId: " + marketId);
         }
-
         marketRepository.delete(market);
         articleRepository.delete(market.getArticle());
+    }
+
+    private Market findMarket(Integer marketId) {
+        return marketRepository.findById(marketId).orElseThrow(() ->
+                new BusinessLogicException(BusinessLogicError.NOTFOUND_ARTICLE, "marketId: " + marketId));
+    }
+
+    private Board findBoard(Integer boardId) {
+        return boardRepository.findById(boardId).orElseThrow(() ->
+                new BusinessLogicException(BusinessLogicError.NOTFOUND_BOARD, "boardId: " + boardId));
     }
 }

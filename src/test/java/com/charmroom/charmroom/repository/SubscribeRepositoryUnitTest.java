@@ -54,7 +54,6 @@ public class SubscribeRepositoryUnitTest {
         userRepository.save(target);
 
         return Subscribe.builder()
-
                 .subscriber(subscriber)
                 .target(target)
                 .build();
@@ -64,13 +63,12 @@ public class SubscribeRepositoryUnitTest {
     void setUp() {
         subscriber = createSubscriber();
         userRepository.save(subscriber);
-
         subscribe = createSubscribe(subscriber);
     }
 
     @Nested
     @DisplayName("Create Subscribe")
-    class createTestSubscribe {
+    class CreateTestSubscribe {
         @Test
         void success() {
             // given
@@ -84,7 +82,7 @@ public class SubscribeRepositoryUnitTest {
 
     @Nested
     @DisplayName("Read Subscribe")
-    class readTestSubscribe {
+    class ReadTestSubscribe {
         @Test
         void success() {
             // given
@@ -96,7 +94,7 @@ public class SubscribeRepositoryUnitTest {
         }
 
         @Test
-        void fail_ReadSubscribeWithDifferentTarget() {
+        void failReadSubscribeWithDifferentTarget() {
             // given
             subscribeRepository.save(subscribe);
             User different = User.builder()
@@ -118,7 +116,7 @@ public class SubscribeRepositoryUnitTest {
 
     @Nested
     @DisplayName("Delete Subscribe")
-    class deleteTestSubscribe {
+    class DeleteTestSubscribe {
         @Test
         void success() {
             // given
