@@ -1,11 +1,7 @@
 package com.charmroom.charmroom.dto.business;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.charmroom.charmroom.entity.Club;
-import com.charmroom.charmroom.entity.User;
 import com.charmroom.charmroom.dto.presentation.ClubDto.ClubResponseDto;
+import com.charmroom.charmroom.entity.Club;
 
 import io.jsonwebtoken.lang.Arrays;
 
@@ -26,12 +22,7 @@ public class ClubMapper {
 		}
 
 		if (entity.getUserList().size() > 0 && !ignores.contains("userList")) {
-			List<User> userList = entity.getUserList();
-			List<UserDto> userDtoList = new ArrayList<>();
-			for (User user : userList) {
-				UserDto userDto = UserMapper.toDto(user, "club");
-				userDtoList.add(userDto);
-			}
+			var userDtoList = entity.getUserList().stream().map(user -> UserMapper.toDto(user, "club")).toList();
 			dto.setUserList(userDtoList);
 		}
 		return dto;
