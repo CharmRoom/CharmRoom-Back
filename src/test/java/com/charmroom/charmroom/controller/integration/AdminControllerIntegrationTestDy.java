@@ -187,6 +187,26 @@ public class AdminControllerIntegrationTestDy extends IntegrationTestBase {
 					)
 			;
 		}
+		@Test
+		void invalid() throws Exception {
+			// given
+			BoardCreateRequestDto dto = BoardCreateRequestDto.builder()
+					.name("")
+					.type("random")
+					.build();
+			// when
+			mockMvc.perform(request
+					.content(gson.toJson(dto))
+					.contentType(MediaType.APPLICATION_JSON)
+					)
+			// then
+			.andExpectAll(
+					status().isNotAcceptable()
+					,jsonPath("$.code").value("INVALID")
+					,jsonPath("$.data.name").exists()
+					,jsonPath("$.data.type").exists()
+					);
+		}
 	}
 	
 	@Nested

@@ -8,6 +8,7 @@ import com.charmroom.charmroom.dto.presentation.CommentLikeDto.CommentLikeRespon
 import com.charmroom.charmroom.dto.presentation.UserDto.UserResponseDto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,6 +20,7 @@ public class CommentDto {
 	@NoArgsConstructor
 	@Builder
 	public static class CommentCreateRequestDto{
+		@NotEmpty
 		private String body;
 		private Integer parentId;
 	}
@@ -28,6 +30,7 @@ public class CommentDto {
 	@NoArgsConstructor
 	@Builder
 	public static class CommentUpdateRequestDto{
+		@NotEmpty
 		private String body;
 	}
 	
