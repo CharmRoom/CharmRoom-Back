@@ -48,7 +48,7 @@ public class ArticleControllerIntegrationTestCm extends IntegrationTestBase {
                 .user(charmroomUser)
                 .board(board)
                 .title(title)
-                .body("")
+                .body("testBody")
                 .build();
     }
 
@@ -74,12 +74,13 @@ public class ArticleControllerIntegrationTestCm extends IntegrationTestBase {
             resultActions.andDo(print());
             resultActions.andExpectAll(
                     status().isCreated(),
-                    jsonPath("$.data.title").value(dto.getTitle())
+                    jsonPath("$.data.title").value(dto.getTitle()),
+                    jsonPath("$.data.body").value(dto.getBody())
             );
         }
 
         @Test
-        void fail_notFoundBoard() throws Exception {
+        void failNotFoundBoard() throws Exception {
             // given
             // when
             ResultActions resultActions = mockMvc.perform(multipart(urlPrefix + "1")
@@ -109,12 +110,13 @@ public class ArticleControllerIntegrationTestCm extends IntegrationTestBase {
             resultActions.andDo(print());
             resultActions.andExpectAll(
                     status().isOk(),
-                    jsonPath("$.data.title").value(article.getTitle())
+                    jsonPath("$.data.title").value(article.getTitle()),
+                    jsonPath("$.data.body").value(article.getBody())
             );
         }
 
         @Test
-        void fail_notFoundArticle() throws Exception {
+        void failNotFoundArticle() throws Exception {
             // given
             // when
             ResultActions resultActions = mockMvc.perform(get(urlPrefix + "1"));
@@ -146,7 +148,10 @@ public class ArticleControllerIntegrationTestCm extends IntegrationTestBase {
                     status().isOk(),
                     jsonPath("$.data.content.size()").value(articles.size()),
                     jsonPath("$.data.content").isArray(),
-                    jsonPath("$.data.content[0].title").value("test3")
+                    jsonPath("$.data.content[0].title").value("test3"),
+                    jsonPath("$.data.content[1].title").value("test2"),
+                    jsonPath("$.data.content[2].title").value("test1"),
+                    jsonPath("$.data.content[0].body").value("testBody")
             );
         }
     }
@@ -172,12 +177,13 @@ public class ArticleControllerIntegrationTestCm extends IntegrationTestBase {
             // then
             resultActions.andExpectAll(
                     status().isOk(),
-                    jsonPath("$.data.title").value("updated")
+                    jsonPath("$.data.title").value("updated"),
+                    jsonPath("$.data.body").value("updated")
             );
         }
 
         @Test
-        void fail_notFoundArticle() throws Exception {
+        void failNotFoundArticle() throws Exception {
             // given
             // when
             ResultActions resultActions = mockMvc.perform(patch(urlPrefix + "1")
@@ -231,7 +237,7 @@ public class ArticleControllerIntegrationTestCm extends IntegrationTestBase {
         }
 
         @Test
-        void success_whenAlreadyLikeExists() throws Exception {
+        void successWhenAlreadyLikeExists() throws Exception {
             // given
             boardRepository.save(board);
             Article article = articleRepository.save(buildArticle("test"));
@@ -252,7 +258,7 @@ public class ArticleControllerIntegrationTestCm extends IntegrationTestBase {
         }
 
         @Test
-        void success_whenAlreadyDislikeExists() throws Exception {
+        void successWhenAlreadyDislikeExists() throws Exception {
             // given
             boardRepository.save(board);
             Article article = articleRepository.save(buildArticle("test"));
@@ -295,7 +301,7 @@ public class ArticleControllerIntegrationTestCm extends IntegrationTestBase {
         }
 
         @Test
-        void success_whenAlreadyDislikeExists() throws Exception {
+        void successWhenAlreadyDislikeExists() throws Exception {
             // given
             boardRepository.save(board);
             Article article = articleRepository.save(buildArticle("test"));
@@ -316,7 +322,7 @@ public class ArticleControllerIntegrationTestCm extends IntegrationTestBase {
         }
 
         @Test
-        void success_whenAlreadyLikeExists() throws Exception {
+        void successWhenAlreadyLikeExists() throws Exception {
             // given
             boardRepository.save(board);
             Article article = articleRepository.save(buildArticle("test"));

@@ -53,7 +53,7 @@ public class ArticleRepositoryUnitTest {
 
     @Nested
     @DisplayName("Create Article")
-    class createTestArticle {
+    class CreateTestArticle {
         @Test
         void success() {
             // given
@@ -67,7 +67,7 @@ public class ArticleRepositoryUnitTest {
         }
 
         @Test
-        void fail_whenSaveArticleWithNullTitle() {
+        void failWhenSaveArticleWithNullTitle() {
             // given
             article.updateTitle(null);
 
@@ -79,7 +79,7 @@ public class ArticleRepositoryUnitTest {
 
     @Nested
     @DisplayName("Read Article")
-    class readTestArticle {
+    class ReadTestArticle {
         @Test
         void success() {
             // given
@@ -95,7 +95,7 @@ public class ArticleRepositoryUnitTest {
         }
 
         @Test
-        void fail_FindByNonexistentId() {
+        void failFindByNonexistentId() {
             // given
             articleRepository.save(article);
             Integer nonexistentId = 999;
@@ -110,7 +110,7 @@ public class ArticleRepositoryUnitTest {
 
     @Nested
     @DisplayName("Updated Article")
-    class updateTestArticle {
+    class UpdateTestArticle {
         @Test
         void success() {
             // given
@@ -128,7 +128,7 @@ public class ArticleRepositoryUnitTest {
         }
 
         @Test
-        void fail_whenUpdateTitleToNull() {
+        void failWhenUpdateTitleToNull() {
             // given
             article.updateTitle(null);
 
@@ -140,7 +140,7 @@ public class ArticleRepositoryUnitTest {
 
     @Nested
     @DisplayName("Delete Article")
-    class deleteTestArticle {
+    class DeleteTestArticle {
         @Test
         void success() {
             // given
@@ -158,7 +158,7 @@ public class ArticleRepositoryUnitTest {
         }
 
         @Test
-        void fail_whenDeleteNonExistentArticle() {
+        void failWhenDeleteNonExistentArticle() {
             // given
             articleRepository.save(article);
             Integer nonExistentId = 999;
@@ -172,6 +172,5 @@ public class ArticleRepositoryUnitTest {
                 articleRepository.deleteById(nonExistentId);
             });
         }
-
     }
 }

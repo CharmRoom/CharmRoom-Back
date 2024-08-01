@@ -123,7 +123,6 @@ public class MarketServiceUnitTest {
             doReturn(Optional.of(user)).when(userRepository).findByUsername(user.getUsername());
             doReturn(Optional.of(board)).when(boardRepository).findById(board.getId());
             doReturn(article).when(articleRepository).save(any(Article.class));
-
             doReturn(market).when(marketRepository).save(any(Market.class));
 
             // when
@@ -142,9 +141,7 @@ public class MarketServiceUnitTest {
             doReturn(Optional.of(board)).when(boardRepository).findById(board.getId());
             doReturn(article).when(articleRepository).save(any(Article.class));
 
-            Attachment attachment = Attachment.builder()
-                    .build();
-
+            Attachment attachment = Attachment.builder().build();
             List<MultipartFile> files = new ArrayList<>();
 
             MockMultipartFile file1 = new MockMultipartFile("test", "test.png", "image/png", "test".getBytes());
@@ -154,10 +151,8 @@ public class MarketServiceUnitTest {
             files.add(file2);
 
             doReturn(market).when(marketRepository).save(any(Market.class));
-
             doReturn(attachment).when(uploadUtils).buildAttachment(eq(file1), any(Article.class));
             doReturn(attachment).when(uploadUtils).buildAttachment(eq(file2), any(Article.class));
-
             doReturn(attachment).when(attachmentRepository).save(attachment);
 
             // when
@@ -206,7 +201,7 @@ public class MarketServiceUnitTest {
         }
 
         @Test
-        void fail_NotFoundArticle() {
+        void failNotFoundArticle() {
             // given
             doReturn(Optional.empty()).when(marketRepository).findById(marketId);
 
@@ -287,7 +282,7 @@ public class MarketServiceUnitTest {
         }
 
         @Test
-        void fail_NotFoundArticle() {
+        void failNotFoundArticle() {
             // given
             doReturn(Optional.empty()).when(marketRepository).findById(marketId);
 
@@ -296,7 +291,6 @@ public class MarketServiceUnitTest {
 
             // then
             assertThat(thrown.getError()).isEqualTo(BusinessLogicError.NOTFOUND_ARTICLE);
-
         }
     }
 }

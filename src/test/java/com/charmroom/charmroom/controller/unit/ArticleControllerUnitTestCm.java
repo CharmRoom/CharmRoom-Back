@@ -89,7 +89,7 @@ public class ArticleControllerUnitTestCm {
     @Nested
     class Create {
         @Test
-        void success_withEmptyFileList() throws Exception {
+        void successWithEmptyFileList() throws Exception {
             // given
             doReturn(mockedArticleDto).when(articleService).createArticle(any(), eq(1), eq(mockedArticleDto.getTitle()), eq(mockedArticleDto.getBody()));
 
@@ -106,7 +106,7 @@ public class ArticleControllerUnitTestCm {
         }
 
         @Test
-        void success_withFileList() throws Exception{
+        void successWithFileList() throws Exception{
             // given
             MockMultipartFile file = new MockMultipartFile("file", "test.png", "image/png", "test".getBytes());
 
@@ -148,7 +148,6 @@ public class ArticleControllerUnitTestCm {
         void success() throws Exception {
             // given
             List<ArticleDto> dtoList = List.of(mockedArticleDto, mockedArticleDto, mockedArticleDto);
-
             PageRequest pageRequest = PageRequest.of(0, 10, Sort.by("id").descending());
             PageImpl<ArticleDto> dtoPage = new PageImpl<>(dtoList, pageRequest, 3);
 
@@ -172,12 +171,11 @@ public class ArticleControllerUnitTestCm {
         @Test
         void success() throws Exception {
             // given
-            doReturn(mockedArticleDto).when(articleService).updateArticle(eq(1), any(), eq(mockedArticleDto.getTitle()), eq(mockedArticleDto.getBody()));
-
             ArticleUpdateRequestDto request = ArticleUpdateRequestDto.builder()
                     .title(mockedArticleDto.getTitle())
                     .body(mockedArticleDto.getBody())
                     .build();
+            doReturn(mockedArticleDto).when(articleService).updateArticle(eq(1), any(), eq(mockedArticleDto.getTitle()), eq(mockedArticleDto.getBody()));
 
             // when
             ResultActions resultActions = mockMvc.perform(patch("/api/article/1")
@@ -242,7 +240,6 @@ public class ArticleControllerUnitTestCm {
             ArticleLikeDto mockedArticleLikeDto = ArticleLikeDto.builder()
                     .type(false)
                     .build();
-
             doReturn(mockedArticleLikeDto).when(articleLikeService).dislike(any(), eq(1));
 
             // when

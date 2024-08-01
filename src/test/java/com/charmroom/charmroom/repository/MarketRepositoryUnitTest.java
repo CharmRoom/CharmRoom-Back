@@ -86,7 +86,7 @@ public class MarketRepositoryUnitTest {
 
     @Nested
     @DisplayName("Create Market Article")
-    class createMarketArticle {
+    class CreateMarketArticle {
         @Test
         void success() {
             // given
@@ -101,7 +101,7 @@ public class MarketRepositoryUnitTest {
 
     @Nested
     @DisplayName("Read Market Article")
-    class readMarketArticle {
+    class ReadMarketArticle {
         @Test
         void success() {
             // given
@@ -121,7 +121,7 @@ public class MarketRepositoryUnitTest {
         }
 
         @Test
-        void fail_readMarketWithWrongId() {
+        void failReadMarketWithWrongId() {
             // given
             marketRepository.save(market);
             Integer wrongMarketId = 999;
@@ -134,8 +134,8 @@ public class MarketRepositoryUnitTest {
 
     @Nested
     @DisplayName("Get Markets By Board")
-    class getMarketsByBoard {
-        private Market buildMarket(Board board, User user) {
+    class GetMarketsByBoard {
+        private void buildMarket(Board board, User user) {
             Article saved = articleRepository.save(Article.builder()
                     .title("")
                     .body("")
@@ -143,11 +143,11 @@ public class MarketRepositoryUnitTest {
                     .board(board)
                     .build());
 
-            return marketRepository.save(Market.builder()
+            marketRepository.save(Market.builder()
                     .article(saved)
-                            .price(100)
-                            .state(MarketArticleState.SALE)
-                            .tag("")
+                    .price(100)
+                    .state(MarketArticleState.SALE)
+                    .tag("")
                     .build());
         }
 
@@ -158,7 +158,6 @@ public class MarketRepositoryUnitTest {
                     .name("")
                     .type(BoardType.MARKET)
                     .build());
-
             for (int i = 0; i < 5; i++) {
                 buildMarket(board, article.getUser());
             }
@@ -176,7 +175,7 @@ public class MarketRepositoryUnitTest {
 
     @Nested
     @DisplayName("Update Market Article")
-    class updateMarketArticle {
+    class UpdateMarketArticle {
         @Test
         void success() {
             // given
@@ -196,9 +195,9 @@ public class MarketRepositoryUnitTest {
 
     @Nested
     @DisplayName("Delete Market Article")
-    class deleteMarketArticle {
+    class DeleteMarketArticle {
         @Test
-        void success_deleteSomeMarketArticles() {
+        void successDeleteSomeMarketArticles() {
             // give
             Article article1 = createTestArticle("a");
             articleRepository.save(article1);
@@ -221,7 +220,7 @@ public class MarketRepositoryUnitTest {
         }
 
         @Test
-        void success_deleteOneMarketArticle() {
+        void successDeleteOneMarketArticle() {
             // given
             Market saved = marketRepository.save(market);
 

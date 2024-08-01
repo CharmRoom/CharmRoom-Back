@@ -27,7 +27,6 @@ public class AdRepositoryUnitTest {
     ImageRepository imageRepository;
 
     private Ad ad;
-    private Image image;
 
     private Image createTestImage() {
         return Image.builder()
@@ -36,7 +35,7 @@ public class AdRepositoryUnitTest {
     }
 
     private Ad createTestAd() {
-        image = createTestImage();
+        Image image = createTestImage();
         imageRepository.save(image);
 
         return Ad.builder()
@@ -53,7 +52,7 @@ public class AdRepositoryUnitTest {
 
     @Nested
     @DisplayName("Create Ad")
-    class createTestAd {
+    class CreateTestAd {
         @Test
         void success() {
             // given
@@ -68,7 +67,7 @@ public class AdRepositoryUnitTest {
 
     @Nested
     @DisplayName("Read Ad")
-    class readTestAd {
+    class ReadTestAd {
         @Test
         void success() {
             // given
@@ -83,7 +82,7 @@ public class AdRepositoryUnitTest {
         }
 
         @Test
-        void fail_readAdWithWrongId() {
+        void failReadAdWithWrongId() {
             // given
             adRepository.save(ad);
             Integer wrongId = 999;
@@ -99,7 +98,7 @@ public class AdRepositoryUnitTest {
 
     @Nested
     @DisplayName("Update Ad")
-    class updateTestAd {
+    class UpdateTestAd {
         @Test
         void success() {
             // given
@@ -128,7 +127,7 @@ public class AdRepositoryUnitTest {
 
     @Nested
     @DisplayName("Delete Ad")
-    class deleteTestAd {
+    class DeleteTestAd {
         @Test
         void success() {
             // given

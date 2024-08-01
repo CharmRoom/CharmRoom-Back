@@ -22,7 +22,7 @@ public class AdDto {
         @NotBlank
         private String title;
         @NotBlank
-        @Size(min = 255)
+        @Size(max = 255)
         private String link;
         @NotNull
         @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")

@@ -45,8 +45,8 @@ public class ArticleLikeRepositoryUnitTest {
         return User.builder().username(username).email(username + "@test.com").nickname(username).password("").withdraw(false).build();
     }
 
-    private Article createTestArticle(String username) {
-        User user = createTestUser(username);
+    private Article createTestArticle() {
+        User user = createTestUser("2");
         userRepository.save(user);
         Board board = createTestBoard();
         boardRepository.save(board);
@@ -61,10 +61,8 @@ public class ArticleLikeRepositoryUnitTest {
     void setUp() {
         user = createTestUser("1");
         userRepository.save(user);
-
-        article = createTestArticle("2");
+        article = createTestArticle();
         articleRepository.save(article);
-
         articleLike = createTestArticleLike();
     }
 

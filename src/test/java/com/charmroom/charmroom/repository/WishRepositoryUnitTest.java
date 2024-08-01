@@ -133,10 +133,8 @@ public class WishRepositoryUnitTest {
         void fail_readWishWithDifferentMarket() {
             // given
             Wish saved = wishRepository.save(wish);
-
             Article article = Article.builder().title(".").body(".").view(1).build();
             articleRepository.save(article);
-
             Market different = Market.builder()
                     .price(2000)
                     .tag("test tag")

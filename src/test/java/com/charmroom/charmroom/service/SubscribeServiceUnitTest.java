@@ -69,7 +69,6 @@ public class SubscribeServiceUnitTest {
             // given
             doReturn(Optional.of(target)).when(userRepository).findByUsername(target.getUsername());
             doReturn(Optional.of(subscriber)).when(userRepository).findByUsername(subscriber.getUsername());
-
             doReturn(Optional.empty()).when(subscribeRepository).findBySubscriberAndTarget(subscriber, target);
             doReturn(subscribe).when(subscribeRepository).save(any(Subscribe.class));
 
@@ -87,7 +86,6 @@ public class SubscribeServiceUnitTest {
             // given
             doReturn(Optional.of(target)).when(userRepository).findByUsername(target.getUsername());
             doReturn(Optional.of(subscriber)).when(userRepository).findByUsername(subscriber.getUsername());
-
             doReturn(Optional.of(subscribe)).when(subscribeRepository).findBySubscriberAndTarget(subscriber, target);
 
             // when
@@ -102,6 +100,14 @@ public class SubscribeServiceUnitTest {
     @Nested
     @DisplayName("get Subscribes")
     class GetSubscribes {
+
+        private Subscribe getSubscribe(User subscriber, User target) {
+            return Subscribe.builder()
+                    .subscriber(subscriber)
+                    .target(target)
+                    .build();
+        }
+
         @Test
         void success() {
             // given
@@ -110,20 +116,9 @@ public class SubscribeServiceUnitTest {
             User target3 = createUser("target3");
             User subscriber = createUser("subscriber");
 
-            Subscribe subscribe1 = Subscribe.builder()
-                    .subscriber(subscriber)
-                    .target(target1)
-                    .build();
-
-            Subscribe subscribe2 = Subscribe.builder()
-                    .subscriber(subscriber)
-                    .target(target2)
-                    .build();
-
-            Subscribe subscribe3 = Subscribe.builder()
-                    .subscriber(subscriber)
-                    .target(target3)
-                    .build();
+            Subscribe subscribe1 = getSubscribe(subscriber, target1);
+            Subscribe subscribe2 = getSubscribe(subscriber, target2);
+            Subscribe subscribe3 = getSubscribe(subscriber, target3);
 
             List<Subscribe> subscribeList = List.of(subscribe1, subscribe2, subscribe3);
             PageRequest pageRequest = PageRequest.of(0, 3);

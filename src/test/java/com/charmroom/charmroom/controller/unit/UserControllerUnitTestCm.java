@@ -67,6 +67,22 @@ public class UserControllerUnitTestCm {
 
     Gson gson;
 
+    private UserDto getUserDto() {
+        return UserDto.builder()
+                .id(1)
+                .username("")
+                .level(UserLevel.ROLE_BASIC)
+                .build();
+    }
+
+    private SubscribeDto getSubscribeDto(UserDto userDto, int num) {
+        return SubscribeDto.builder()
+                .id(num)
+                .subscriber(mockedDto)
+                .target(userDto)
+                .build();
+    }
+
     @BeforeEach
     void setup() {
         mockMvc = MockMvcBuilders
@@ -126,7 +142,6 @@ public class UserControllerUnitTestCm {
                     .id(1)
                     .article(mockedArticle)
                     .build();
-
             mockedWish = WishDto.builder()
                     .user(mockedDto)
                     .market(market)
@@ -154,23 +169,14 @@ public class UserControllerUnitTestCm {
         @Test
         void success() throws Exception {
             // given
-            UserDto target = UserDto.builder()
-                    .id(1)
-                    .username("")
-                    .level(UserLevel.ROLE_BASIC)
-                    .build();
-
-            SubscribeDto dto = SubscribeDto.builder()
-                    .target(target)
-                    .subscriber(mockedDto)
-                    .build();
-
-            doReturn(dto).when(subscribeService).subscribeOrCancel(any(), any());
-
+            UserDto target = getUserDto();
+            SubscribeDto dto = getSubscribeDto(target, 1);
             SubscribeCreateRequestDto requestDto = SubscribeCreateRequestDto.builder()
                     .subscriberUserName(mockedDto.getUsername())
                     .targetUserName(target.getUsername())
                     .build();
+
+            doReturn(dto).when(subscribeService).subscribeOrCancel(any(), any());
 
             // when
             ResultActions resultActions = mockMvc.perform(post("/api/user")
@@ -190,39 +196,13 @@ public class UserControllerUnitTestCm {
         @Test
         void success() throws Exception {
             // given
-            UserDto target1 = UserDto.builder()
-                    .id(1)
-                    .username("")
-                    .level(UserLevel.ROLE_BASIC)
-                    .build();
-            UserDto target2 = UserDto.builder()
-                    .id(1)
-                    .username("")
-                    .level(UserLevel.ROLE_BASIC)
-                    .build();
-            UserDto target3 = UserDto.builder()
-                    .id(1)
-                    .username("")
-                    .level(UserLevel.ROLE_BASIC)
-                    .build();
+            UserDto target1 = getUserDto();
+            UserDto target2 = getUserDto();
+            UserDto target3 = getUserDto();
 
-            SubscribeDto subs1 = SubscribeDto.builder()
-                    .id(1)
-                    .subscriber(mockedDto)
-                    .target(target1)
-                    .build();
-
-            SubscribeDto subs2 = SubscribeDto.builder()
-                    .id(2)
-                    .subscriber(mockedDto)
-                    .target(target2)
-                    .build();
-
-            SubscribeDto subs3 = SubscribeDto.builder()
-                    .id(3)
-                    .subscriber(mockedDto)
-                    .target(target3)
-                    .build();
+            SubscribeDto subs1 = getSubscribeDto(target1, 1);
+            SubscribeDto subs2 = getSubscribeDto(target2, 2);
+            SubscribeDto subs3 = getSubscribeDto(target3, 3);
 
             List<SubscribeDto> dtoList = List.of(subs1, subs2, subs3);
             PageRequest pageRequest = PageRequest.of(0, 10, Sort.by("id").descending());
@@ -242,7 +222,7 @@ public class UserControllerUnitTestCm {
         }
 
         @Test
-        void fail_NotFoundUser() throws Exception {
+        void failNotFoundUser() throws Exception {
             // given
             doThrow(new BusinessLogicException(BusinessLogicError.NOTFOUND_USER))
                     .when(subscribeService)

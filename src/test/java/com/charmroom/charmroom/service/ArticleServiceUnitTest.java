@@ -141,7 +141,7 @@ public class ArticleServiceUnitTest {
 
     @Nested
     @DisplayName("Create Article")
-    class createArticle {
+    class CreateArticle {
         @Test
         void success() {
             // given
@@ -168,7 +168,7 @@ public class ArticleServiceUnitTest {
 
     @Nested
     @DisplayName("Read ArticleList")
-    class readArticleList {
+    class ReadArticleList {
         @Test
         void success() {
             // given
@@ -208,7 +208,7 @@ public class ArticleServiceUnitTest {
 
     @Nested
     @DisplayName("Get One Article")
-    class getOneArticle {
+    class GetOneArticle {
         @Test
         void success() {
             // given
@@ -224,7 +224,7 @@ public class ArticleServiceUnitTest {
         }
 
         @Test
-        void fail_noArticleFound() {
+        void failNoArticleFound() {
             // given
             doReturn(Optional.empty()).when(articleRepository).findById(article.getId());
 
@@ -240,7 +240,7 @@ public class ArticleServiceUnitTest {
 
     @Nested
     @DisplayName("Update Article")
-    class updateArticle {
+    class UpdateArticle {
         @Test
         void success() {
             // given
@@ -259,7 +259,7 @@ public class ArticleServiceUnitTest {
         }
 
         @Test
-        void fail_noArticleFound() {
+        void failNoArticleFound() {
             // given
             doReturn(Optional.empty()).when(articleRepository).findById(article.getId());
 
@@ -275,7 +275,7 @@ public class ArticleServiceUnitTest {
         }
 
         @Test
-        void fail_unauthorizedUserUpdateArticle() {
+        void failUnauthorizedUserUpdateArticle() {
             // given
             doReturn(Optional.of(article)).when(articleRepository).findById(article.getId());
 
@@ -290,7 +290,7 @@ public class ArticleServiceUnitTest {
 
     @Nested
     @DisplayName("Delete Article")
-    class deleteArticle {
+    class DeleteArticle {
         @Test
         void success() {
             // given
@@ -305,7 +305,7 @@ public class ArticleServiceUnitTest {
         }
 
         @Test
-        void fail_noArticleFound() {
+        void failNoArticleFound() {
             // given
             doReturn(Optional.empty()).when(articleRepository).findById(article.getId());
 

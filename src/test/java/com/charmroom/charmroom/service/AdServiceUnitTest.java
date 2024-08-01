@@ -54,8 +54,9 @@ public class AdServiceUnitTest {
 
     Image createImage() {
         return Image.builder()
-                .path("")
-                .originalName("")
+                .id(1)
+                .path("testPath")
+                .originalName("testName")
                 .build();
     }
 
@@ -137,7 +138,7 @@ public class AdServiceUnitTest {
         }
 
         @Test
-        void fail_AdNotFound() {
+        void failAdNotFound() {
             // given
             doReturn(Optional.empty()).when(adRepository).findById(adId);
 
@@ -167,7 +168,7 @@ public class AdServiceUnitTest {
         }
 
         @Test
-        void fail_AdNotFound() {
+        void failAdNotFound() {
             // given
             doReturn(Optional.empty()).when(adRepository).findById(adId);
 
@@ -188,11 +189,7 @@ public class AdServiceUnitTest {
         void success() {
             // given
             MultipartFile imageFile = new MockMultipartFile("new file", "test.png", "image/png", "test".getBytes());
-            Image image = Image.builder()
-                    .path("")
-                    .originalName("")
-                    .build();
-
+            ad.updateImage(null);
             doReturn(image).when(uploadUtil).buildImage(imageFile);
             doReturn(image).when(imageRepository).save(image);
             doReturn(Optional.of(ad)).when(adRepository).findById(adId);
@@ -206,7 +203,7 @@ public class AdServiceUnitTest {
         }
 
         @Test
-        void fail_AdNotFound() {
+        void failAdNotFound() {
             // given
             MultipartFile imageFile = new MockMultipartFile("new file", "test.png", "image/png", "test".getBytes());
 
@@ -226,15 +223,6 @@ public class AdServiceUnitTest {
             // given
             MockMultipartFile imageFile = new MockMultipartFile("file", "test.png", "image/png", "test".getBytes());
 
-            Image image = Image.builder()
-                    .path("")
-                    .originalName("")
-                    .build();
-
-            Ad ad = Ad.builder()
-                    .image(image)
-                    .build();
-
             doReturn(Optional.of(ad)).when(adRepository).findById(ad.getId());
             doNothing().when(imageRepository).delete(ad.getImage());
             doReturn(image).when(uploadUtil).buildImage(imageFile);
@@ -253,7 +241,7 @@ public class AdServiceUnitTest {
     @DisplayName("Update Time")
     class UpdateTime {
         @Test
-        void success_updateStartTime() {
+        void successUpdateStartTime() {
             // given
             doReturn(Optional.of(ad)).when(adRepository).findById(adId);
             LocalDateTime newStartTime = LocalDateTime.of(2024, 1, 6, 0, 0);
@@ -267,7 +255,7 @@ public class AdServiceUnitTest {
         }
 
         @Test
-        void success_updateEndTime() {
+        void successUpdateEndTime() {
             // given
             doReturn(Optional.of(ad)).when(adRepository).findById(adId);
             LocalDateTime newEndTime = LocalDateTime.of(2024, 12, 1, 0, 0);

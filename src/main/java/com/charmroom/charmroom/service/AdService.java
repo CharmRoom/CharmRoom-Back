@@ -111,7 +111,6 @@ public class AdService {
     private Image buildImage(MultipartFile imageFile, Ad ad) {
         if (ad.getImage() != null) {
             imageRepository.delete(ad.getImage());
-            return null;
         }
 
         Image image = uploadUtil.buildImage(imageFile);
