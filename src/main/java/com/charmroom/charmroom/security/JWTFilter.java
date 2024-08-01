@@ -43,12 +43,7 @@ public class JWTFilter extends OncePerRequestFilter {
 		
 		// User 엔티티 생성
 		var user = customUserDetailsService.loadUserByUsername(username);
-//		User user = User.builder()
-//				.username(username)
-//				.password("fake_password")
-//				.level(UserLevel.valueOf(role))
-//				.build();
-//		
+
 		// Spring Security 인증 토큰 생성
 		Authentication authToken = new UsernamePasswordAuthenticationToken(
 				user, null, user.getAuthorities());
