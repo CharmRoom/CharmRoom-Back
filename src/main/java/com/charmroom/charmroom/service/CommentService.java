@@ -56,14 +56,14 @@ public class CommentService {
 		Article article = articleRepository.findById(articleId)
 				.orElseThrow(() -> new BusinessLogicException(BusinessLogicError.NOTFOUND_ARTICLE, "id: " + articleId));
 		Page<Comment> comments = commentRepository.findAllByArticle(article, pageable);
-		return comments.map(comment -> CommentMapper.toDto(comment));
+		return comments.map(CommentMapper::toDto);
 	}
 
 	public Page<CommentDto> getCommentsByUsername(String username, Pageable pageable) {
 		User user = userRepository.findByUsername(username)
 				.orElseThrow(() -> new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "username: " + username));
 		Page<Comment> comments = commentRepository.findAllByUser(user, pageable);
-		return comments.map(comment -> CommentMapper.toDto(comment));
+		return comments.map(CommentMapper::toDto);
 	}
 	@Transactional
 	public CommentDto update(Integer commentId, String username, String body) {
@@ -90,10 +90,12 @@ public class CommentService {
 		return CommentMapper.toDto(comment);
 	}
 	
+	@Transactional
 	public CommentDto disable(Integer commentId, String username) {
 		return setDisable(commentId, username, true);
 	}
 	
+	@Transactional
 	public CommentDto enable(Integer commentId, String username) {
 		return setDisable(commentId, username, false);
 	}
