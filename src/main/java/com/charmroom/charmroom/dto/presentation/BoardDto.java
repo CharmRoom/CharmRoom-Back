@@ -1,5 +1,8 @@
 package com.charmroom.charmroom.dto.presentation;
 
+import com.charmroom.charmroom.dto.validation.ValidBoardType;
+
+import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,7 +14,9 @@ public class BoardDto {
 	@NoArgsConstructor
 	@Builder
 	public static class BoardCreateRequestDto{
+		@NotEmpty
 		private String name;
+		@ValidBoardType
 		private String type;
 	}
 	
@@ -20,7 +25,9 @@ public class BoardDto {
 	@NoArgsConstructor
 	@Builder
 	public static class BoardUpdateRequestDto{
+		@NotEmpty
 		private String name;
+		@ValidBoardType
 		private String type;
 	}
 

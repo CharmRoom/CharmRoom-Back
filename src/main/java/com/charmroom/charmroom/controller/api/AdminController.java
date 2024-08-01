@@ -1,7 +1,5 @@
 package com.charmroom.charmroom.controller.api;
 
-import com.charmroom.charmroom.dto.business.AdMapper;
-import com.charmroom.charmroom.service.AdService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -19,21 +17,24 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.charmroom.charmroom.dto.business.AdDto;
+import com.charmroom.charmroom.dto.business.AdMapper;
 import com.charmroom.charmroom.dto.business.BoardMapper;
 import com.charmroom.charmroom.dto.business.PointMapper;
 import com.charmroom.charmroom.dto.business.UserMapper;
-import com.charmroom.charmroom.dto.business.AdDto;
 import com.charmroom.charmroom.dto.presentation.AdDto.AdCreateRequestDto;
 import com.charmroom.charmroom.dto.presentation.AdDto.AdResponseDto;
+import com.charmroom.charmroom.dto.presentation.AdDto.AdUpdateRequestDto;
 import com.charmroom.charmroom.dto.presentation.BoardDto.BoardCreateRequestDto;
 import com.charmroom.charmroom.dto.presentation.BoardDto.BoardUpdateRequestDto;
 import com.charmroom.charmroom.dto.presentation.CommonResponseDto;
 import com.charmroom.charmroom.dto.presentation.PointDto.PointCreateRequestDto;
-import com.charmroom.charmroom.dto.presentation.AdDto.AdUpdateRequestDto;
+import com.charmroom.charmroom.service.AdService;
 import com.charmroom.charmroom.service.BoardService;
 import com.charmroom.charmroom.service.PointService;
 import com.charmroom.charmroom.service.UserService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -50,7 +51,7 @@ public class AdminController {
 	public ResponseEntity<?> users(
 			@PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
 		var dtos = userService.getAllUsersByPageable(pageable);
-		var response = dtos.map(dto -> UserMapper.toResponse(dto));
+		var response = dtos.map(UserMapper::toResponse);
 		return CommonResponseDto.ok(response).toResponseEntity();
 	}
 
@@ -77,17 +78,16 @@ public class AdminController {
 	@PostMapping("/point/{username}")
 	public ResponseEntity<?> givePoint(
 			@PathVariable("username") String username,
-			@RequestBody PointCreateRequestDto request
+			@RequestBody @Valid PointCreateRequestDto request
 	) {
 		var dto = pointService.create(username, request.getType(), request.getDiff());
 		var response = PointMapper.toResponse(dto);
-
 		return CommonResponseDto.created(response).toResponseEntity();
 	}
 
 	@PostMapping("/board")
 	public ResponseEntity<?> createBoard(
-			@RequestBody BoardCreateRequestDto request
+			@RequestBody @Valid BoardCreateRequestDto request
 	) {
 		var dto = boardService.create(request.getName(), request.getType());
 		var response = BoardMapper.toResponse(dto);
@@ -97,7 +97,7 @@ public class AdminController {
 	@PostMapping("/board/{boardId}")
 	public ResponseEntity<?> updateBoard(
 			@PathVariable("boardId") Integer boardId,
-			@RequestBody BoardUpdateRequestDto request
+			@RequestBody @Valid BoardUpdateRequestDto request
 	) {
 		var dto = boardService.update(boardId, request.getName(), request.getType());
 		var response = BoardMapper.toResponse(dto);

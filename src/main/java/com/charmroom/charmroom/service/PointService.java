@@ -37,7 +37,7 @@ public class PointService {
 		User user = userRepository.findByUsername(username)
 				.orElseThrow(() -> new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "username: " + username));
 		Page<Point> points = pointRepository.findAllByUser(user, pageable);
-		return points.map(point -> PointMapper.toDto(point));
+		return points.map(PointMapper::toDto);
 	}
 	
 	public void delete(Integer id) {

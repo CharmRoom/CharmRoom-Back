@@ -50,9 +50,7 @@ public class SecurityConfig {
 		// 로그인 필터 추가
 		LoginFilter loginFilter = new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil);
 		loginFilter.setFilterProcessesUrl("/api/auth/login"); // POST
-		http.addFilterAt(
-				loginFilter,
-				UsernamePasswordAuthenticationFilter.class);
+		http.addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class);
 		
 		// 세션 설정
 		http.sessionManagement((session) -> session

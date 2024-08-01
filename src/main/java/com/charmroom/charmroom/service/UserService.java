@@ -69,7 +69,7 @@ public class UserService {
 	
 	public Page<UserDto> getAllUsersByPageable(Pageable pageable){
 		Page<User> users = userRepository.findAll(pageable);
-		return users.map(user -> UserMapper.toDto(user));
+		return users.map(UserMapper::toDto);
 	}
 	
 	public Boolean isDuplicatedUsername(String username) {

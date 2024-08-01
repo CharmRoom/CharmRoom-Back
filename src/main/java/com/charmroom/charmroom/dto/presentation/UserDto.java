@@ -19,7 +19,7 @@ public class UserDto {
 	@AllArgsConstructor
 	@Builder
 	@ValidUser.Same.PasswordConfirm(password = "password", rePassword = "rePassword")
-	public static class SignupRequestDto {
+	public static class CreateUserRequestDto {
 		@Size(min = 3, max = 30)
 		@NotEmpty(message = "ID는 필수항목입니다.")
 		@ValidUser.Unique.Username

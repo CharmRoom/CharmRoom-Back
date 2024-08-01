@@ -39,17 +39,17 @@ public class BoardService {
 	}
 	
 	public Page<BoardDto> getBoards(Pageable pageable){
-		return boardRepository.findAll(pageable).map(board -> BoardMapper.toDto(board));
+		return boardRepository.findAll(pageable).map(BoardMapper::toDto);
 	}
 	
 	public List<BoardDto> getBoardsExposed(){
 		List<Board> boards = boardRepository.findAllByExposed(true);
-		return boards.stream().map(dto -> BoardMapper.toDto(dto)).collect(Collectors.toList());
+		return boards.stream().map(BoardMapper::toDto).toList();
 	}
 	
 	public Page<ArticleDto> getArticlesByBoardId(Integer boardId, Pageable pageable){
 		Board board = loadById(boardId);
-		return articleRepository.findAllByBoard(board, pageable).map(article -> ArticleMapper.toDto(article));
+		return articleRepository.findAllByBoard(board, pageable).map(ArticleMapper::toDto);
 	}
 	
 	private Board loadById(Integer id) {

@@ -83,7 +83,7 @@ public class UserController {
 			@AuthenticationPrincipal User user,
 			@PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
 		var dtos = pointService.pointsByUsername(user.getUsername(), pageable);
-		var response = dtos.map(dto -> PointMapper.toResponse(dto));
+		var response = dtos.map(PointMapper::toResponse);
 		return CommonResponseDto.ok(response).toResponseEntity();
 	}
 
@@ -94,7 +94,7 @@ public class UserController {
 			@PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
 	) {
 		var dtos = commentService.getCommentsByUsername(user.getUsername(), pageable);
-		var response = dtos.map(dto -> CommentMapper.toResponse(dto));
+		var response = dtos.map(CommentMapper::toResponse);
 		return CommonResponseDto.ok(response).toResponseEntity();
 	}
 
