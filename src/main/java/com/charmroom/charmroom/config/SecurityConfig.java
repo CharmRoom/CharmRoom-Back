@@ -13,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.charmroom.charmroom.repository.RefreshTokenRepository;
 import com.charmroom.charmroom.security.JWTFilter;
 import com.charmroom.charmroom.security.JWTUtil;
 import com.charmroom.charmroom.security.LoginFilter;
@@ -29,7 +30,7 @@ public class SecurityConfig {
 	private final AuthenticationConfiguration authenticationConfiguration;
 	private final JWTUtil jwtUtil;
 	private final CustomUserDetailsService customUserDetailsService;
-	
+	private final RefreshTokenRepository refreshTokenRepository;
 	@Bean
 	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
@@ -48,7 +49,7 @@ public class SecurityConfig {
 				LoginFilter.class);
 		
 		// 로그인 필터 추가
-		LoginFilter loginFilter = new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil);
+		LoginFilter loginFilter = new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, refreshTokenRepository);
 		loginFilter.setFilterProcessesUrl("/api/auth/login"); // POST
 		http.addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class);
 		

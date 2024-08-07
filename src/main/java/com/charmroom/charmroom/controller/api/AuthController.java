@@ -6,7 +6,9 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.CookieGenerator;
 
+import com.charmroom.charmroom.dto.business.TokenDto;
 import com.charmroom.charmroom.dto.business.UserDto;
 import com.charmroom.charmroom.dto.business.UserMapper;
 import com.charmroom.charmroom.dto.presentation.CommonResponseDto;
@@ -54,8 +56,15 @@ public class AuthController {
 				break;
 			}
 		}
-		String accessToken = authService.reissue(refreshToken);
-		response.setHeader("Authorization", "Bearer " + accessToken);
+		TokenDto token = authService.reissue(refreshToken);
+		Cookie refresh = new Cookie("refresh", token.getRefresh());
+		refresh.setMaxAge(24*60*60);
+		refresh.setHttpOnly(true);
+		
+		response.setHeader("Authorization", "Bearer " + token.getAccess());
+		response.addCookie(refresh);
+		
 		return ResponseEntity.ok().build();
 	}
+	
 }

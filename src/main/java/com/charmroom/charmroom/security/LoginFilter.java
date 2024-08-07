@@ -9,7 +9,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.charmroom.charmroom.entity.User;
+import com.charmroom.charmroom.entity.RefreshToken;
+import com.charmroom.charmroom.repository.RefreshTokenRepository;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -23,6 +24,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 	
 	private final AuthenticationManager authenticationManager;
 	private final JWTUtil jwtUtil;
+	private final RefreshTokenRepository refreshTokenRepository;
 	
 	@Override
 	public Authentication attemptAuthentication(
@@ -50,7 +52,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 		
 		String access = jwtUtil.createJwt("access", username, role, 600000L);
 		String refresh = jwtUtil.createJwt("refresh", username, role, 86400000L);
-		
+		refreshTokenRepository.save(RefreshToken.builder().token(refresh).username(username).build());
 		response.setHeader("Authorization", "Bearer " + access);
 		response.addCookie(createCookie("refresh", refresh));
 		response.setStatus(HttpStatus.OK.value());

@@ -1,10 +1,12 @@
 package com.charmroom.charmroom.service;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.charmroom.charmroom.dto.business.TokenDto;
+import com.charmroom.charmroom.entity.RefreshToken;
 import com.charmroom.charmroom.exception.BusinessLogicError;
 import com.charmroom.charmroom.exception.BusinessLogicException;
+import com.charmroom.charmroom.repository.RefreshTokenRepository;
 import com.charmroom.charmroom.security.JWTUtil;
 
 import io.jsonwebtoken.ExpiredJwtException;
@@ -14,8 +16,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AuthService {
 	private final JWTUtil jwtUtil;
+	private final RefreshTokenRepository refreshTokenRepository;
 	
-	public String reissue(String refreshToken) {
+	public TokenDto reissue(String refreshToken) {
 		if (refreshToken == null)
 			throw new BusinessLogicException(BusinessLogicError.INVALID_REFRESH, "refresh token null");
 		
@@ -27,12 +30,26 @@ public class AuthService {
 		
 		String category = jwtUtil.getCategory(refreshToken);
 		if (!category.equals("refresh"))
-			throw new BusinessLogicException(BusinessLogicError.INVALID_REFRESH, "invalid refresh category");
+			throw new BusinessLogicException(BusinessLogicError.INVALID_REFRESH, "invalid refresh token");
+		
+		if (!refreshTokenRepository.existsById(refreshToken))
+			throw new BusinessLogicException(BusinessLogicError.INVALID_REFRESH, "Roated refresh token");
 		
 		String username = jwtUtil.getUsername(refreshToken);
 		String role = jwtUtil.getRole(refreshToken);
 		
-		String accessToken = jwtUtil.createJwt("access", username, role, 600000L);
-		return accessToken;
+		String newAccessToken = jwtUtil.createJwt("access", username, role, 600000L);
+		String newRefreshToken = jwtUtil.createJwt("refresh", username, role, 86400000L);
+		
+		refreshTokenRepository.deleteById(refreshToken);
+		refreshTokenRepository.save(RefreshToken.builder()
+				.token(newRefreshToken)
+				.username(username)
+				.build());
+		
+		return TokenDto.builder()
+				.access(newAccessToken)
+				.refresh(newRefreshToken)
+				.build();
 	}
 }
