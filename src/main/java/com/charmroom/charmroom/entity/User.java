@@ -37,13 +37,13 @@ public class User implements UserDetails {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	
-	@Column(length = 30, nullable = false, unique = true)
+	@Column(length = 255, nullable = false, unique = true)
 	private String username;
 	
 	@Column(length = 255, nullable = false, unique = true)
 	private String email;
 	
-	@Column(length = 30, nullable = false, unique = true)
+	@Column(length = 255, nullable = false)
 	private String nickname;
 	
 	@Column(length = 255, nullable = false)
@@ -90,7 +90,11 @@ public class User implements UserDetails {
 	public void updateClub(Club club) {
 		this.club = club;
 	}
-	
+
+	public void updateEmail(String email) {
+		this.email = email;
+	}
+
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return List.of(new SimpleGrantedAuthority(this.level.getValue()));
@@ -125,5 +129,4 @@ public class User implements UserDetails {
 	public boolean isEnabled() {
 		return UserDetails.super.isEnabled();
 	}
-
 }

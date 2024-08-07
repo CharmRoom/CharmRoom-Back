@@ -41,7 +41,6 @@ public class UserDto {
 		
 		@Size(min = 3, max = 30)
 		@NotEmpty(message = "닉네임은 필수항목입니다.")
-		@ValidUser.Unique.Nickname
 		private String nickname;
 		
 		MultipartFile image;
