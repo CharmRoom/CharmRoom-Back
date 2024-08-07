@@ -34,8 +34,6 @@ public class JWTFilter extends OncePerRequestFilter {
 			filterChain.doFilter(request, response);
 			return; // 헤더 없으면 다음 필터로
 		}
-		
-		System.out.println("authorization now");
 		String accessToken = authorization.split(" ")[1];
 		
 		try {
