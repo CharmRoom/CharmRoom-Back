@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.util.CookieGenerator;
 
 import com.charmroom.charmroom.dto.business.TokenDto;
 import com.charmroom.charmroom.dto.business.UserDto;
@@ -17,7 +16,6 @@ import com.charmroom.charmroom.dto.presentation.UserDto.UserResponseDto;
 import com.charmroom.charmroom.service.AuthService;
 import com.charmroom.charmroom.service.UserService;
 
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.lang.Arrays;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -67,4 +65,24 @@ public class AuthController {
 		return ResponseEntity.ok().build();
 	}
 	
+	@PostMapping("/logout")
+	public ResponseEntity<?> logout(
+			HttpServletRequest request,
+			HttpServletResponse response
+			){
+		String refreshToken = null;
+		var cookies = Arrays.asList(request.getCookies());
+		for(Cookie cookie: cookies) {
+			if (cookie.getName().equals("refresh")) {
+				refreshToken = cookie.getValue();
+				break;
+			}
+		}
+		authService.logout(refreshToken);
+		Cookie refresh = new Cookie("refresh", null);
+		refresh.setMaxAge(0);
+		refresh.setHttpOnly(true);
+		response.addCookie(refresh);
+		return ResponseEntity.ok().build();
+	}
 }

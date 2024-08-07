@@ -18,7 +18,7 @@ public class AuthService {
 	private final JWTUtil jwtUtil;
 	private final RefreshTokenRepository refreshTokenRepository;
 	
-	public TokenDto reissue(String refreshToken) {
+	private void tokenValidation(String refreshToken) {
 		if (refreshToken == null)
 			throw new BusinessLogicException(BusinessLogicError.INVALID_REFRESH, "refresh token null");
 		
@@ -34,6 +34,10 @@ public class AuthService {
 		
 		if (!refreshTokenRepository.existsById(refreshToken))
 			throw new BusinessLogicException(BusinessLogicError.INVALID_REFRESH, "Roated refresh token");
+	}
+	
+	public TokenDto reissue(String refreshToken) {
+		tokenValidation(refreshToken);
 		
 		String username = jwtUtil.getUsername(refreshToken);
 		String role = jwtUtil.getRole(refreshToken);
@@ -51,5 +55,10 @@ public class AuthService {
 				.access(newAccessToken)
 				.refresh(newRefreshToken)
 				.build();
+	}
+	
+	public void logout(String refreshToken) {
+		tokenValidation(refreshToken);
+		refreshTokenRepository.deleteById(refreshToken);
 	}
 }
