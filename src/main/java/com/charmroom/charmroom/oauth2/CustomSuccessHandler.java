@@ -38,7 +38,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         response.addCookie(createCookie("access", access, 600000));
         response.addCookie(createCookie("refresh", refresh, 86400000));
 
-        response.sendRedirect("http://localhost:8080/");
+        response.sendRedirect("/oauth2/c2h");
     }
 
     private Cookie createCookie(String key, String value, int exp) {

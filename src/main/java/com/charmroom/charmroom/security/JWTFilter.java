@@ -30,26 +30,14 @@ public class JWTFilter extends OncePerRequestFilter {
 			HttpServletResponse response,
 			FilterChain filterChain)
 			throws ServletException, IOException {
-		var cookie = Arrays.asList(request.getCookies());
-		String value = "";
-		for (Cookie c : cookie) {
-			if (c.getName().equals("access")) {
-				value = c.getValue();
-			}
-		}
-		if (value == null || value.equals("")) {
-			filterChain.doFilter(request, response);
-			return;
-		}
-		String accessToken = value;
 
-//		String authorization = request.getHeader("Authorization");
-//		// 헤더 검증
-//		if (authorization == null || !authorization.startsWith("Bearer ")) {
-//			filterChain.doFilter(request, response);
-//			return; // 헤더 없으면 다음 필터로
-//		}
-//		String accessToken = authorization.split(" ")[1];
+		String authorization = request.getHeader("Authorization");
+		// 헤더 검증
+		if (authorization == null || !authorization.startsWith("Bearer ")) {
+			filterChain.doFilter(request, response);
+			return; // 헤더 없으면 다음 필터로
+		}
+		String accessToken = authorization.split(" ")[1];
 
 		try {
 			jwtUtil.isExpired(accessToken);

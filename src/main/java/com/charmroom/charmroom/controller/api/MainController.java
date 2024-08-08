@@ -22,9 +22,4 @@ public class MainController {
 			return "Not logged in";
 		return "ID: " + principal.getName();
 	}
-
-	@GetMapping("/social")
-	public String social() {
-		return "social_login";
-	}
 }
