@@ -18,11 +18,24 @@ jobs:
       contents: read
 
     steps:
+    - name: Setup MySQL
+      uses: mirromutth/mysql-action@v1.1
+      with:
+        host port: 3306
+        container port: 3306
+        mysql database: 'test'
+        mysql user: 'dev'
+        mysql password: 'dev'
+        
+    - name: Setup Redis
+      uses: zhulik/redis-action@1.1.0
+      
+    
     - uses: actions/checkout@v4
-    - name: Set up JDK 21
+    - name: Set up JDK 17
       uses: actions/setup-java@v4
       with:
-        java-version: '21'
+        java-version: '17'
         distribution: 'temurin'
 
     - name: Set application.yml
@@ -50,10 +63,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: Set up JDK 21
+    - name: Set up JDK 17
       uses: actions/setup-java@v4
       with:
-        java-version: '21'
+        java-version: '17'
         distribution: 'temurin'
 
     # Generates and submits a dependency graph, enabling Dependabot Alerts for all project dependencies.
