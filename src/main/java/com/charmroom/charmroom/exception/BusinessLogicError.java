@@ -70,7 +70,10 @@ public enum BusinessLogicError {
 	DELETE_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "DELETE_FAIL", "file delete failed"),
 	
 	NOTFOUND_FILE(HttpStatus.NOT_FOUND, "NOTFOUND_FILE", "File not found"),
-	BADPATH_FILE(HttpStatus.BAD_REQUEST, "BADPATH_FILE", "File path is malformed")
+	BADPATH_FILE(HttpStatus.BAD_REQUEST, "BADPATH_FILE", "File path is malformed"),
+	
+	INVALID_REFRESH(HttpStatus.UNAUTHORIZED, "INVALID_REFRESH", "Invalid refresh token"),
+	
 	// end ETC
 	;
   
