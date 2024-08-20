@@ -3,6 +3,8 @@ package com.charmroom.charmroom.security;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import io.jsonwebtoken.lang.Arrays;
+import jakarta.servlet.http.Cookie;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,6 +30,7 @@ public class JWTFilter extends OncePerRequestFilter {
 			HttpServletResponse response,
 			FilterChain filterChain)
 			throws ServletException, IOException {
+
 		String authorization = request.getHeader("Authorization");
 		// 헤더 검증
 		if (authorization == null || !authorization.startsWith("Bearer ")) {
@@ -35,26 +38,26 @@ public class JWTFilter extends OncePerRequestFilter {
 			return; // 헤더 없으면 다음 필터로
 		}
 		String accessToken = authorization.split(" ")[1];
-		
+
 		try {
 			jwtUtil.isExpired(accessToken);
 		}catch (ExpiredJwtException e) {
 			PrintWriter writer = response.getWriter();
 			writer.print("access token expired");
-			
+
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			return;
 		}
-		
+
 		String category = jwtUtil.getCategory(accessToken);
 		if (!category.equals("access")) {
 			PrintWriter writer = response.getWriter();
 			writer.print("invalid access token");
-			
+
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			return;
 		}
-		
+
 		String username = jwtUtil.getUsername(accessToken);
 		
 		// User 엔티티 생성

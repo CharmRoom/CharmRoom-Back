@@ -1,0 +1,24 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+</head>
+<body>
+</body>
+
+<script>
+	document.addEventListener("DOMContentLoaded", function() {
+		fetch('/api/auth/oauth2/c2h', {
+			method: "POST",
+			credentials:"include"
+		})
+		.then(res => {
+			var access = res.headers.get("Authorization");
+			console.log(access);
+			localStorage.setItem("access", access);
+		});
+	});
+</script>
+</html>

@@ -37,8 +37,6 @@ public class UserService {
 			throw new BusinessLogicException(BusinessLogicError.DUPLICATED_USERNAME);
 		if (isDuplicatedEmail(userDto.getEmail()))
 			throw new BusinessLogicException(BusinessLogicError.DUPLICATED_EMAIL);
-		if (isDuplicatedNickname(userDto.getNickname()))
-			throw new BusinessLogicException(BusinessLogicError.DUPLICATED_NICKNAME);
 		
 		Image userImage = null;
 		if (imageFile != null) {

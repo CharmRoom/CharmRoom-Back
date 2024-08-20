@@ -2,6 +2,7 @@ package com.charmroom.charmroom.controller.api;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -83,6 +84,28 @@ public class AuthController {
 		refresh.setMaxAge(0);
 		refresh.setHttpOnly(true);
 		response.addCookie(refresh);
+		return ResponseEntity.ok().build();
+	}
+	
+	@PostMapping("/oauth2/c2h")
+	public ResponseEntity<?> cookieToHeader(
+			HttpServletRequest request,
+			HttpServletResponse response
+			){
+		String accessToken = null;
+		
+		var cookies = Arrays.asList(request.getCookies());
+		for(Cookie cookie: cookies) {
+			if (cookie.getName().equals("access")) {
+				accessToken = cookie.getValue();
+				break;
+			}
+		}
+		response.setHeader("Authorization", "Bearer " + accessToken);
+		Cookie access = new Cookie("access", null);
+		access.setMaxAge(0);
+		access.setHttpOnly(true);
+		response.addCookie(access);
 		return ResponseEntity.ok().build();
 	}
 }

@@ -1,8 +1,11 @@
 package com.charmroom.charmroom.config;
 
+import com.charmroom.charmroom.oauth2.CustomSuccessHandler;
+import com.charmroom.charmroom.service.oauth2.CustomOAuth2UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -31,6 +34,9 @@ public class SecurityConfig {
 	private final JWTUtil jwtUtil;
 	private final CustomUserDetailsService customUserDetailsService;
 	private final RefreshTokenRepository refreshTokenRepository;
+	private final CustomOAuth2UserService customOAuth2UserService;
+	private final CustomSuccessHandler customSuccessHandler;
+
 	@Bean
 	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
@@ -42,6 +48,13 @@ public class SecurityConfig {
 		
 		// HTTP basic 인증 disable
 		http.httpBasic((httpBasic) -> httpBasic.disable());
+
+		// oauth
+		http.oauth2Login((oauth2) -> oauth2
+				.userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig
+						.userService(customOAuth2UserService))
+				.successHandler(customSuccessHandler)
+		);
 		
 		// JWTFilter 등록
 		http.addFilterBefore(
