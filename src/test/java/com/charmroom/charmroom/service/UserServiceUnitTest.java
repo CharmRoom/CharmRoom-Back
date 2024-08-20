@@ -89,7 +89,6 @@ public class UserServiceUnitTest {
 			doReturn(mockedUser).when(userRepository).save(any(User.class));
 			doReturn(false).when(userRepository).existsByUsername(username);
 			doReturn(false).when(userRepository).existsByEmail(email);
-			doReturn(false).when(userRepository).existsByNickname(nickname);
 			
 			// when
 			UserDto created = userService.create(userDto);
@@ -104,7 +103,6 @@ public class UserServiceUnitTest {
 			doReturn(mockedUser).when(userRepository).save(any(User.class));
 			doReturn(false).when(userRepository).existsByUsername(username);
 			doReturn(false).when(userRepository).existsByEmail(email);
-			doReturn(false).when(userRepository).existsByNickname(nickname);
 			
 			MockMultipartFile imageFile = new MockMultipartFile("file", "test.png", "image/png", "test".getBytes());
 			Image image = Image.builder()
@@ -150,22 +148,6 @@ public class UserServiceUnitTest {
 			// then
 			assertThat(thrown.getError()).isEqualTo(BusinessLogicError.DUPLICATED_EMAIL);
 			
-		}
-		
-		@Test
-		void failNicknameDuplicated() {
-			// given
-			doReturn(false).when(userRepository).existsByUsername(username);
-			doReturn(false).when(userRepository).existsByEmail(email);
-			doReturn(true).when(userRepository).existsByNickname(nickname);
-			
-			var thrown = assertThrows(BusinessLogicException.class, () -> {
-				// when
-				userService.create(userDto);	
-			});
-			
-			// then
-			assertThat(thrown.getError()).isEqualTo(BusinessLogicError.DUPLICATED_NICKNAME);
 		}
 	}
 	

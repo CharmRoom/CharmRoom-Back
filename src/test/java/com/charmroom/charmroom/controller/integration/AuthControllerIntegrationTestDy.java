@@ -3,6 +3,7 @@ package com.charmroom.charmroom.controller.integration;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -148,34 +149,6 @@ public class AuthControllerIntegrationTestDy extends IntegrationTestBase {
 		}
 		
 		@Test
-		void failDuplicatedNickname() throws Exception{
-			// given
-			mockMvc.perform(multipart(url)
-					.param("username", username)
-					.param("password", password)
-					.param("rePassword", password)
-					.param("email", email)
-					.param("nickname", nickname)
-					);
-			// when
-			mockMvc.perform(multipart(url)
-					.file(imageFile)
-					.param("username", "a" + username)
-					.param("password", password)
-					.param("rePassword", password)
-					.param("email", "a" +  email)
-					.param("nickname", nickname)
-					)
-			// then
-			.andExpectAll(
-					status().isNotAcceptable()
-					,jsonPath("$.code").value("INVALID")
-					,jsonPath("$.data.nickname", containsString("Duplicated"))
-					)
-			;
-		}
-		
-		@Test
 		void failMultipleValidationError() throws Exception{
 			// given
 			mockMvc.perform(multipart(url)
@@ -201,7 +174,6 @@ public class AuthControllerIntegrationTestDy extends IntegrationTestBase {
 					,jsonPath("$.data.createUserRequestDto", containsString("password"))
 					,jsonPath("$.data.username", containsString("Duplicated"))
 					,jsonPath("$.data.email", containsString("Duplicated"))
-					,jsonPath("$.data.nickname", containsString("Duplicated"))
 					)
 			;
 		}
