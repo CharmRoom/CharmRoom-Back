@@ -13,5 +13,10 @@
     "name": "jwt.secret",
     "type": "java.lang.String",
     "description": "JWT secret key"
+  },
+  {
+    "name": "charmroom.cors.allowed-origins",
+    "type": "java.lang.String",
+    "description": "A description for 'charmroom.cors.allowed-origin'"
   }
 ]}
