@@ -103,6 +103,22 @@ public class BoardServiceUnitTest {
 	}
 	
 	@Nested
+	class getBoard{
+		@Test
+		void success() {
+			// given
+			var board = buildBoard(1);
+			doReturn(Optional.of(board)).when(boardRepository).findById(1);
+			
+			// when
+			var result = boardService.getBoard(1);
+			
+			// then
+			assertThat(result).isNotNull();
+		}
+	}
+	
+	@Nested
 	class getArticlesByBoardId{
 		@Test
 		void success() {
