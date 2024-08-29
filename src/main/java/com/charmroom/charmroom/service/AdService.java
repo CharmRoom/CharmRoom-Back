@@ -1,6 +1,7 @@
 package com.charmroom.charmroom.service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -48,6 +49,11 @@ public class AdService {
         return ads.map(AdMapper::toDto);
     }
 
+    public List<AdDto> getAllAdsActive(){
+    	var now = LocalDateTime.now();
+    	List<Ad> ads = adRepository.findByStartBeforeAndEndAfter(now, now);
+    	return ads.stream().map(AdMapper::toDto).toList();
+    }
     @Transactional
     public AdDto updateTitle(Integer adId, String newAdTitle) {
         Ad ad = getAd(adId);
