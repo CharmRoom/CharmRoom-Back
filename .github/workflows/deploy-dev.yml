@@ -25,7 +25,7 @@ jobs:
       - name: Set application.yml
         run: |
           mkdir -p src/main/resources
-          echo "${{ secrets.DEV_APPLICATION_YML }}" > src/main/resources/application.yml
+          echo "${{ secrets.APPLICATION_YML }}" > src/main/resources/application.yml
 
       - name: Set application-test.yml
         run: |
