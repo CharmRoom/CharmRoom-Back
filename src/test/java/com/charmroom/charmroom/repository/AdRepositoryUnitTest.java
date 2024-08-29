@@ -12,9 +12,12 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.TestPropertySource;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.intThat;
 
 @DataJpaTest
 @TestPropertySource(properties = {"spring.config.location = classpath:application-test.yml"})
@@ -80,7 +83,33 @@ public class AdRepositoryUnitTest {
             assertThat(found).isNotNull();
             assertThat(found).isEqualTo(saved);
         }
-
+        
+        @Test
+        void activeOnly() {
+        	// given
+        	List<Ad> adList = new ArrayList<>();
+        	var now = LocalDateTime.now();
+        	for(Long i = -1L; i < 3; i++) {
+        		Image image = imageRepository.save(Image.builder()
+                        .path("/example/example" + i)
+                        .build());
+        		adList.add(adRepository.save(Ad.builder()
+        				.image(image)
+        				.title("" + i)
+        				.link("")
+        				.start(now.minusDays(i))
+        				.end(now.plusDays(i))
+        				.build()));
+        	}
+        	
+        	// when
+        	List<Ad> found = adRepository.findByStartBeforeAndEndAfter(now, now);
+        	
+        	// then
+        	assertThat(found).isNotEmpty();
+        	assertThat(found).size().isEqualTo(2);
+        	
+        }
         @Test
         void failReadAdWithWrongId() {
             // given
