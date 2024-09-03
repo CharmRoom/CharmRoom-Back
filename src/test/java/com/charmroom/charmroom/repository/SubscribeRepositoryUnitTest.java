@@ -1,7 +1,11 @@
 package com.charmroom.charmroom.repository;
 
+import com.charmroom.charmroom.entity.Article;
+import com.charmroom.charmroom.entity.Board;
 import com.charmroom.charmroom.entity.Subscribe;
 import com.charmroom.charmroom.entity.User;
+import com.charmroom.charmroom.entity.enums.BoardType;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -9,8 +13,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.test.context.TestPropertySource;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,6 +32,7 @@ public class SubscribeRepositoryUnitTest {
     SubscribeRepository subscribeRepository;
     @Autowired
     UserRepository userRepository;
+    
 
     private Subscribe subscribe;
     private User subscriber;
@@ -128,5 +136,42 @@ public class SubscribeRepositoryUnitTest {
             assertThat(found).isNotNull();
             assertThat(found).isEmpty();
         }
+    }
+    
+    @Nested
+    @DisplayName("Get Articles by subscribe")
+    class getArticlesBySubscribe {
+    	@Autowired
+        ArticleRepository articleRepository;
+    	@Autowired
+    	BoardRepository boardRepository;
+    	
+    	@Test
+    	void success() {
+    		// given
+    		Subscribe saved = subscribeRepository.save(subscribe);
+    		Board board = boardRepository.save(Board.builder()
+    				.name("test")
+    				.type(BoardType.LIST)
+    				.build());
+    		
+    		List<Article> articles = new ArrayList<>();
+    		for(int i = 0; i < 3; i++) {
+    			articles.add(articleRepository.save(Article.builder()
+    					.user(saved.getTarget())
+    					.board(board)
+    					.title(Integer.toString(i))
+    					.body(" ")
+    					.build()));
+    		}
+    		var pageRequest = PageRequest.of(0, 10, Direction.ASC, "id");
+    		
+    		// when
+    		var result = subscribeRepository.findArticlesBySubscriber(subscriber, pageRequest);
+    		
+    		// then
+    		assertThat(result).hasSize(3);
+    		assertThat(result).hasSameElementsAs(articles);
+    	}
     }
 }
