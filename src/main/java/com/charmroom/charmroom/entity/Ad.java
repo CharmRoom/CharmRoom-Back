@@ -29,10 +29,8 @@ public class Ad {
     @Column(nullable = false)
     private String title;
 
-    @CreationTimestamp
     private LocalDateTime start;
 
-    @CreationTimestamp
     private LocalDateTime end;
 
     @Column(length = 255)

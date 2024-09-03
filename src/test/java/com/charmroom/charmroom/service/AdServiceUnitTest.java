@@ -123,6 +123,22 @@ public class AdServiceUnitTest {
     }
 
     @Nested
+    @DisplayName("Get Active Ad List")
+    class GetActiveAdList {
+    	@Test
+    	void success() {
+    		// given
+    		List<Ad> adList = List.of(createAd("1"), createAd("2"), createAd("3"));
+    		doReturn(adList).when(adRepository).findByStartBeforeAndEndAfter(any(LocalDateTime.class), any(LocalDateTime.class));
+    		
+    		// when
+    		List<AdDto> allAdsActive = adService.getAllAdsActive();
+    		
+    		// then
+    		assertThat(allAdsActive).hasSize(3);
+    	}
+    }
+    @Nested
     @DisplayName("Update title")
     class UpdateTitle {
         @Test
