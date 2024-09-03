@@ -82,6 +82,24 @@ public class BoardControllerIntegrationTestDy extends IntegrationTestBase {
 	}
 	
 	@Nested
+	class getBoard{
+		@Test
+		void success() throws Exception {
+			// given
+			Board b = boardRepository.save(buildBoard("123", BoardType.LIST, true));
+			
+			// when
+			mockMvc.perform(get(urlPrefix + "/info/" + b.getId()))
+			// then
+			.andExpectAll(
+					status().isOk()
+					,jsonPath("$.data").exists()
+					,jsonPath("$.data.name").value("123")
+					);
+		}
+		
+	}
+	@Nested
 	class GetArticles {
 		@Autowired
 		ArticleRepository articleRepository;

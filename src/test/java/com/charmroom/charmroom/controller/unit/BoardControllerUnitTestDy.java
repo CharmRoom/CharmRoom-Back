@@ -105,6 +105,24 @@ public class BoardControllerUnitTestDy {
 		}
 	}
 	@Nested
+	class GetBoard{
+		@Test
+		void success() throws Exception {
+			// given 
+			var dto = mockedBoardDto;
+			doReturn(dto).when(boardService).getBoard(1);
+			// when
+			mockMvc.perform(get("/api/board/info/1"))
+			// then
+			.andExpectAll(
+					status().isOk(),
+					jsonPath("$.data").exists(),
+					jsonPath("$.data.name").value(mockedBoardDto.getName())
+					)
+			;
+		}
+	}
+	@Nested
 	class GetArticles{
 		@Test
 		void success() throws Exception{

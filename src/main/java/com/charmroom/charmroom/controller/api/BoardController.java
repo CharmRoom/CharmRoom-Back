@@ -40,6 +40,14 @@ public class BoardController {
 		return CommonResponseDto.ok(response).toResponseEntity();
 	}
 
+	@GetMapping("/info/{boardId}")
+	public ResponseEntity<?> getBoard(
+			@PathVariable("boardId") Integer boardId
+			){
+		var dto = boardService.getBoard(boardId);
+		var response = BoardMapper.toResponse(dto);
+		return CommonResponseDto.ok(response).toResponseEntity();
+	}
 	
 	@GetMapping("/{boardId}")
 	public ResponseEntity<?> getArticles(

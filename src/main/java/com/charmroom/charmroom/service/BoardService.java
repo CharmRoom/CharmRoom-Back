@@ -41,6 +41,10 @@ public class BoardService {
 		return boardRepository.findAll(pageable).map(BoardMapper::toDto);
 	}
 	
+	public BoardDto getBoard(Integer boardId) {
+		return BoardMapper.toDto(loadById(boardId));
+	}
+	
 	public List<BoardDto> getBoardsExposed(){
 		List<Board> boards = boardRepository.findAllByExposed(true);
 		return boards.stream().map(BoardMapper::toDto).toList();
