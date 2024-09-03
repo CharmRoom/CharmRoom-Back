@@ -179,7 +179,7 @@ public class UserControllerUnitTestCm {
             doReturn(dto).when(subscribeService).subscribeOrCancel(any(), any());
 
             // when
-            ResultActions resultActions = mockMvc.perform(post("/api/user")
+            ResultActions resultActions = mockMvc.perform(post("/api/user/subscribe")
                     .content(gson.toJson(requestDto))
                     .contentType(MediaType.APPLICATION_JSON));
 
