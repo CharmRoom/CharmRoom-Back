@@ -20,6 +20,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -30,6 +31,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.Validator;
 
 import com.charmroom.charmroom.controller.api.UserController;
+import com.charmroom.charmroom.dto.business.ArticleDto;
+import com.charmroom.charmroom.dto.business.BoardDto;
 import com.charmroom.charmroom.dto.business.CommentDto;
 import com.charmroom.charmroom.dto.business.PointMapper;
 import com.charmroom.charmroom.dto.business.UserDto;
@@ -37,12 +40,14 @@ import com.charmroom.charmroom.dto.business.UserMapper;
 import com.charmroom.charmroom.dto.presentation.UserDto.UserUpdateRequest;
 import com.charmroom.charmroom.entity.Point;
 import com.charmroom.charmroom.entity.User;
+import com.charmroom.charmroom.entity.enums.BoardType;
 import com.charmroom.charmroom.entity.enums.PointType;
 import com.charmroom.charmroom.exception.BusinessLogicError;
 import com.charmroom.charmroom.exception.BusinessLogicException;
 import com.charmroom.charmroom.exception.ExceptionHandlerAdvice;
 import com.charmroom.charmroom.service.CommentService;
 import com.charmroom.charmroom.service.PointService;
+import com.charmroom.charmroom.service.SubscribeService;
 import com.charmroom.charmroom.service.UserService;
 import com.google.gson.Gson;
 
@@ -54,6 +59,8 @@ public class UserControllerUnitTestDy {
 	PointService pointService;
 	@Mock
 	CommentService commentService;
+	@Mock
+	SubscribeService subscribeService;
 	
 	@InjectMocks
 	UserController userController;
@@ -242,6 +249,44 @@ public class UserControllerUnitTestDy {
 					jsonPath("$.data.content[0].body").value("test")
 					)
 			;
+		}
+	}
+	
+	@Nested
+	class GetFeeds {
+		
+		
+		@Test
+		void success() throws Exception {
+			
+			// given
+			
+			var dto = ArticleDto.builder()
+					.board(BoardDto.builder()
+							.id(1)
+							.name("123")
+							.type(BoardType.LIST)
+							.exposed(true)
+							.build())
+					.user(mockedDto)
+					.id(1)
+					.title("")
+					.body("")
+					.build();
+			var dtos = List.of(dto, dto, dto);
+			var pr = PageRequest.of(0, 10, Sort.by("id").descending());
+			var pDtos = new PageImpl<>(dtos, pr, 3);
+			
+			doReturn(pDtos).when(subscribeService).getArticlesBySubscriber(any(), eq(pr));
+			
+			// when
+			mockMvc.perform(get("/api/user/feed"))
+			// then
+			.andExpectAll(status().isOk()
+					,jsonPath("$.data.totalElements").value(3)
+					,jsonPath("$.data.content").isArray()
+					);
+			
 		}
 	}
 	

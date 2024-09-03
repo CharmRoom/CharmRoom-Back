@@ -121,7 +121,7 @@ public class UserController {
 	}
 
 	@PreAuthorize("isAuthenticated()")
-	@PostMapping("")
+	@PostMapping("/subscribe")
 	public ResponseEntity<?> subscribe(
 			@RequestBody @Valid SubscribeCreateRequestDto request
 	) {
@@ -138,6 +138,17 @@ public class UserController {
 	) {
 		Page<SubscribeDto> dtos = subscribeService.getSubscribesBySubscriber(user.getUsername(), pageable);
 		Page<SubscribeResponseDto> response = dtos.map(SubscribeMapper::toResponse);
+		return CommonResponseDto.ok(response).toResponseEntity();
+	}
+	
+	@PreAuthorize("isAuthenticated()")
+	@GetMapping("/feed")
+	public ResponseEntity<?> getMyFeeds(
+			@AuthenticationPrincipal User user,
+			@PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
+			){
+		var dtos = subscribeService.getArticlesBySubscriber(user.getUsername(), pageable);
+		var response = dtos.map(ArticleMapper::toResponse);
 		return CommonResponseDto.ok(response).toResponseEntity();
 	}
 

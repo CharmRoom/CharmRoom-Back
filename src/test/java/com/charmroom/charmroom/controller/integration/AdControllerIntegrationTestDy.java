@@ -31,8 +31,8 @@ public class AdControllerIntegrationTestDy extends IntegrationTestBase {
 		return adRepository.save(Ad.builder()
 				.title(s)
 				.link(s)
-				.start(LocalDateTime.of(2024, 8, 28, 0, 0))
-				.end(LocalDateTime.of(2024, 8, 30, 0, 0))
+				.start(LocalDateTime.of(1990, 8, 28, 0, 0))
+				.end(LocalDateTime.of(2999, 8, 30, 0, 0))
 				.image(image)
 				.build());
 	}

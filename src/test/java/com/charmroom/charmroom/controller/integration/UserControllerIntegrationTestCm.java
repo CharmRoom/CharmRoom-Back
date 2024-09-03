@@ -120,7 +120,7 @@ public class UserControllerIntegrationTestCm extends IntegrationTestBase {
 
     @Nested
     class CreateSubscribe {
-        MockHttpServletRequestBuilder request = post("/api/user");
+        MockHttpServletRequestBuilder request = post("/api/user/subscribe");
         @Autowired
         SubscribeRepository subscribeRepository;
         @Autowired
