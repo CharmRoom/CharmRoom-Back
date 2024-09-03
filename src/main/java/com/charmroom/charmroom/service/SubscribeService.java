@@ -1,19 +1,24 @@
 package com.charmroom.charmroom.service;
 
+import java.util.Optional;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
+import com.charmroom.charmroom.dto.business.ArticleDto;
+import com.charmroom.charmroom.dto.business.ArticleMapper;
 import com.charmroom.charmroom.dto.business.SubscribeDto;
 import com.charmroom.charmroom.dto.business.SubscribeMapper;
+import com.charmroom.charmroom.entity.Article;
 import com.charmroom.charmroom.entity.Subscribe;
 import com.charmroom.charmroom.entity.User;
 import com.charmroom.charmroom.exception.BusinessLogicError;
 import com.charmroom.charmroom.exception.BusinessLogicException;
 import com.charmroom.charmroom.repository.SubscribeRepository;
 import com.charmroom.charmroom.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -46,6 +51,11 @@ public class SubscribeService {
         return subscribes.map(SubscribeMapper::toDto);
     }
 
+    public Page<ArticleDto> getArticlesBySubscriber(String subscriberName, Pageable pageable){
+    	User subscriber = findSubscriber(subscriberName);
+    	Page<Article> articles = subscribeRepository.findArticlesBySubscriber(subscriber, pageable);
+    	return articles.map(ArticleMapper::toDto);
+    }
     private User findSubscriber(String subscriberName) {
         return userRepository.findByUsername(subscriberName).orElseThrow(() ->
                 new BusinessLogicException(BusinessLogicError.NOTFOUND_USER, "subscriberName: " + subscriberName));

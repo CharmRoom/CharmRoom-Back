@@ -1,8 +1,11 @@
 package com.charmroom.charmroom.service;
 
 import com.charmroom.charmroom.dto.business.SubscribeDto;
+import com.charmroom.charmroom.entity.Article;
+import com.charmroom.charmroom.entity.Board;
 import com.charmroom.charmroom.entity.Subscribe;
 import com.charmroom.charmroom.entity.User;
+import com.charmroom.charmroom.entity.enums.BoardType;
 import com.charmroom.charmroom.repository.SubscribeRepository;
 import com.charmroom.charmroom.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -133,5 +137,41 @@ public class SubscribeServiceUnitTest {
             // then
             assertThat(result).hasSize(3);
         }
+    }
+    
+    @Nested
+    class GetArticlesBySubscriber{
+    	@Test
+    	void success() {
+    		// given
+    		User target = createUser("target1");
+    		User subscriber = createUser("subscriber");
+    		
+    		List<Article> articles = new ArrayList<>();
+    		
+    		for(int i = 0; i < 3; i++) {
+    			articles.add(Article.builder()
+    					.board(Board.builder()
+    							.name(Integer.toString(i))
+    							.type(BoardType.LIST)
+    							.build())
+    					.user(target)
+    					.title(Integer.toString(i))
+    					.body("")
+    					.build());
+    		}
+    		
+    		var pageImpl = new PageImpl<>(articles);
+    		var pr = PageRequest.of(0, 10);
+    		
+    		doReturn(Optional.of(subscriber)).when(userRepository).findByUsername(subscriber.getUsername());
+    		doReturn(pageImpl).when(subscribeRepository).findArticlesBySubscriber(subscriber, pr);
+    		
+    		// when
+    		var result = subscribeService.getArticlesBySubscriber(subscriber.getUsername(), pr);
+    		
+    		// then
+    		assertThat(result).hasSize(3);
+    	}
     }
 }
