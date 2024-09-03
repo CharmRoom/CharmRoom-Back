@@ -14,17 +14,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
+import com.charmroom.charmroom.controller.integration.IntegrationTestBase.WithCharmroomUserDetails;
 import com.charmroom.charmroom.dto.presentation.UserDto.UserUpdateRequest;
 import com.charmroom.charmroom.entity.Article;
 import com.charmroom.charmroom.entity.Board;
 import com.charmroom.charmroom.entity.Comment;
 import com.charmroom.charmroom.entity.Point;
+import com.charmroom.charmroom.entity.Subscribe;
 import com.charmroom.charmroom.entity.enums.BoardType;
 import com.charmroom.charmroom.entity.enums.PointType;
 import com.charmroom.charmroom.repository.ArticleRepository;
 import com.charmroom.charmroom.repository.BoardRepository;
 import com.charmroom.charmroom.repository.CommentRepository;
 import com.charmroom.charmroom.repository.PointRepository;
+import com.charmroom.charmroom.repository.SubscribeRepository;
 
 public class UserControllerIntegrationTestDy extends IntegrationTestBase {
 	
@@ -202,6 +205,44 @@ public class UserControllerIntegrationTestDy extends IntegrationTestBase {
 					,jsonPath("$.data.content[*].childList[?(@.size() > 0)]").exists()
 					)
 			;
+		}
+	}
+	@Nested
+	class GetFeeds {
+		@Autowired
+		SubscribeRepository subsRepo;
+		@Autowired
+		BoardRepository boardRepo;
+		@Autowired
+		ArticleRepository articleRepo;
+		
+		@Test
+		@WithCharmroomUserDetails
+		void success() throws Exception{
+			subsRepo.save(Subscribe.builder()
+					.subscriber(charmroomUser)
+					.target(charmroomAdmin)
+					.build());
+			Board board = boardRepo.save(Board.builder()
+					.name("")
+					.type(BoardType.LIST)
+					.build());
+			for(int i = 0; i < 3; i++) {
+				articleRepo.save(Article.builder()
+						.board(board)
+						.user(charmroomAdmin)
+						.title("")
+						.body("")
+						.build());
+			}
+			
+			// when
+			mockMvc.perform(get("/api/user/feed"))
+			
+			// then
+			.andExpectAll(status().isOk()
+					,jsonPath("$.data.totalElements").value(3)
+					,jsonPath("$.data.content").isArray());
 		}
 	}
 }
